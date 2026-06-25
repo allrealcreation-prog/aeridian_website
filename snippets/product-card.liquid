@@ -1,0 +1,236 @@
+{% comment %}
+  AERIDIAN Universal Product Card
+  Requires: product (Object)
+{% endcomment %}
+
+<style>
+  .product-card {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    background: transparent;
+    border-radius: var(--radius-sm);
+    transition: transform var(--duration-base) var(--ease-premium);
+    height: 100%;
+  }
+
+  /* Image Container */
+  .product-card__media {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4/5;
+    background-color: var(--bg-secondary);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    margin-bottom: var(--space-16);
+    border: 1px solid var(--border-subtle);
+    transition: border-color var(--duration-fast);
+  }
+
+  .product-card__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 300ms var(--ease-luxury), opacity 300ms var(--ease-luxury), filter 300ms var(--ease-luxury);
+  }
+
+  .product-card__image--secondary {
+    position: absolute;
+    top: 0; left: 0;
+    opacity: 0;
+  }
+
+  /* Badges */
+  .product-card__badges {
+    position: absolute;
+    top: var(--space-12);
+    left: var(--space-12);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    z-index: 2;
+  }
+
+  .badge {
+    background: var(--glass-bg);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--border-subtle);
+    padding: 4px 8px;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-primary);
+    border-radius: 2px;
+  }
+
+  .badge--sold-out { background: rgba(255, 0, 0, 0.1); color: #ff4444; border-color: rgba(255,0,0,0.2); }
+  .badge--sale { background: var(--glow-color); color: var(--accent-color); border-color: var(--accent-color); }
+
+  /* Quick Actions (Hover) */
+  .product-card__actions {
+    position: absolute;
+    bottom: var(--space-12);
+    left: 0; width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: var(--space-8);
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity var(--duration-base), transform var(--duration-base);
+    z-index: 2;
+  }
+
+  .pc-action-btn {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-primary);
+    padding: var(--space-8) var(--space-16);
+    border-radius: var(--radius-sm);
+    font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: background var(--duration-fast), color var(--duration-fast);
+  }
+  .pc-action-btn:hover {
+    background: var(--text-primary);
+    color: var(--bg-primary);
+  }
+
+  /* Metadata */
+  .product-card__info {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
+
+  .product-card__vendor {
+    font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--text-secondary); margin-bottom: 4px;
+  }
+
+  .product-card__title {
+    font-size: var(--font-body-small);
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-weight: 500;
+    margin-bottom: var(--space-8);
+    transition: color var(--duration-fast) var(--ease-luxury);
+  }
+
+  .product-card__price {
+    font-size: var(--font-caption);
+    color: var(--text-secondary);
+    display: flex; gap: var(--space-8);
+  }
+
+  .price--compare { text-decoration: line-through; opacity: 0.5; }
+  .price--sale { color: var(--accent-color); font-weight: bold; }
+
+  /* Premium Hover Sequence */
+  @media (hover: hover) {
+    .product-card:hover .product-card__media {
+      border-color: var(--border-heavy);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.05); /* Subdued soft elevation */
+    }
+    .product-card:hover .product-card__image--primary {
+      transform: scale(1.01);
+      filter: brightness(0.95);
+      {% if product.images[1] %}opacity: 0;{% endif %}
+    }
+    .product-card:hover .product-card__image--secondary {
+      opacity: 1;
+      transform: scale(1.01);
+    }
+    .product-card:hover .product-card__actions {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .product-card:hover .product-card__title {
+      color: var(--text-primary);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .product-card, .product-card__image, .product-card__actions { transition: none !important; transform: none !important; }
+  }
+</style>
+
+<div class="product-card" {% if product %}data-product-handle="{{ product.handle }}"{% endif %}>
+  
+  {%- if placeholder -%}
+    <a href="#" class="product-card__media">
+      {{ 'product-' | append: dummy_idx | placeholder_svg_tag: 'product-card__image product-card__image--primary' }}
+      <div class="product-card__actions">
+        <button class="pc-action-btn js-quick-view js-magnetic">Quick View</button>
+        <button class="pc-action-btn js-wishlist-toggle js-magnetic">★</button>
+      </div>
+    </a>
+    <div class="product-card__info">
+      <div class="product-card__vendor">AERIDIAN</div>
+      <a href="#" class="product-card__title">{{ dummy_title }}</a>
+      <div class="product-card__price">
+        <span>$295.00</span>
+      </div>
+    </div>
+  {%- else -%}
+  
+  <a href="{{ product.url }}" class="product-card__media">
+    <!-- Badges -->
+    <div class="product-card__badges">
+      {%- if product.available == false -%}
+        <span class="badge badge--sold-out">Archive</span>
+      {%- elsif product.compare_at_price > product.price -%}
+        <span class="badge badge--sale">Signal</span>
+      {%- endif -%}
+    </div>
+
+    <!-- Images (Phase 15 Optimized) -->
+    {%- if product.featured_image -%}
+      <img src="{{ product.featured_image | image_url: width: 600 }}" 
+           srcset="{{ product.featured_image | image_url: width: 300 }} 300w, 
+                   {{ product.featured_image | image_url: width: 600 }} 600w, 
+                   {{ product.featured_image | image_url: width: 900 }} 900w"
+           sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+           alt="{{ product.title | escape }}" 
+           loading="lazy" 
+           class="product-card__image product-card__image--primary">
+      {%- if product.images[1] -%}
+        <img src="{{ product.images[1] | image_url: width: 600 }}" 
+             srcset="{{ product.images[1] | image_url: width: 300 }} 300w, 
+                     {{ product.images[1] | image_url: width: 600 }} 600w"
+             sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+             alt="" 
+             loading="lazy" 
+             class="product-card__image product-card__image--secondary">
+      {%- endif -%}
+    {%- else -%}
+      <div style="width:100%; height:100%; display:flex; justify-content:center; align-items:center; color:var(--text-secondary);">
+        AERIDIAN
+      </div>
+    {%- endif -%}
+
+    <!-- Hover Actions -->
+    <div class="product-card__actions">
+      {%- if settings.enable_quick_view -%}
+        <button class="pc-action-btn js-quick-view js-magnetic" data-handle="{{ product.handle }}">Quick View</button>
+      {%- endif -%}
+      <button class="pc-action-btn js-wishlist-toggle js-magnetic" data-handle="{{ product.handle }}">★</button>
+    </div>
+  </a>
+
+  <div class="product-card__info">
+    <div class="product-card__vendor">{{ product.vendor | default: 'AERIDIAN' }}</div>
+    <a href="{{ product.url }}" class="product-card__title">{{ product.title }}</a>
+    
+    <div class="product-card__price">
+      {%- if product.compare_at_price > product.price -%}
+        <span class="price--compare">{{ product.compare_at_price | money }}</span>
+        <span class="price--sale">{{ product.price | money }}</span>
+      {%- else -%}
+        <span>{{ product.price | money }}</span>
+      {%- endif -%}
+    </div>
+  </div>
+    </div>
+  {%- endif -%}
+</div>

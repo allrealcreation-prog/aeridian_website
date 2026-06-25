@@ -1,0 +1,29 @@
+<article class="container container--narrow" style="padding-top: var(--space-120); padding-bottom: var(--space-120);">
+  <header style="text-align: center; margin-bottom: var(--space-64);">
+    <div style="font-size: var(--font-caption); color: var(--text-secondary); margin-bottom: var(--space-16); text-transform: uppercase; letter-spacing: 0.1em;">
+      {{ article.published_at | date: "%B %d, %Y" }} &mdash; {{ article.author }}
+    </div>
+    <h1 style="font-size: var(--font-heading-1); margin-bottom: var(--space-48);">{{ article.title }}</h1>
+  </header>
+
+  {%- if article.image -%}
+    <div style="margin-bottom: var(--space-64); width: 100%;">
+      <img src="{{ article.image | image_url: width: 1200 }}" alt="{{ article.title | escape }}" style="width: 100%; height: auto; display: block;">
+    </div>
+  {%- endif -%}
+
+  <div class="article-content" style="color: var(--text-secondary); line-height: 1.8; font-size: 1.1rem;">
+    {{ article.content }}
+  </div>
+
+  <div style="margin-top: var(--space-120); padding-top: var(--space-64); border-top: 1px solid var(--border-subtle); text-align: center;">
+    <a href="{{ blog.url }}" class="btn-secondary">Return to {{ blog.title }}</a>
+  </div>
+</article>
+
+{% schema %}
+{
+  "name": "Article Content",
+  "settings": []
+}
+{% endschema %}

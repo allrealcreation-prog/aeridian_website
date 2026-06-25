@@ -1,0 +1,114 @@
+<style>
+  .cd-addresses {
+    background-color: var(--color-primary-obsidian);
+    color: var(--color-primary-pure-white);
+    min-height: 100vh;
+    padding: var(--space-120) var(--space-24);
+  }
+
+  html[data-theme="light"] .cd-addresses {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+  }
+
+  .cda-container {
+    max-width: var(--container-large);
+    margin: 0 auto;
+  }
+
+  .cda-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-32);
+    margin-top: var(--space-48);
+  }
+
+  .cda-card {
+    background: rgba(17, 17, 17, 0.4);
+    backdrop-filter: blur(12px);
+    border: var(--border-subtle);
+    border-radius: var(--radius-sm);
+    padding: var(--space-32);
+    display: flex; flex-direction: column;
+  }
+  html[data-theme="light"] .cda-card { background: rgba(255, 255, 255, 0.6); }
+
+  .cda-card.is-add {
+    display: flex; justify-content: center; align-items: center; text-align: center;
+    border-style: dashed; cursor: pointer; transition: border-color var(--duration-fast);
+  }
+  .cda-card.is-add:hover { border-color: var(--color-accent-atmospheric); color: var(--color-accent-atmospheric); }
+
+  .cda-badge {
+    background: rgba(127, 217, 255, 0.1); color: var(--color-accent-atmospheric);
+    padding: 4px 8px; border-radius: 4px; font-size: 10px; text-transform: uppercase;
+    display: inline-block; margin-bottom: var(--space-16);
+  }
+
+  .cda-text {
+    color: var(--color-secondary-titanium);
+    line-height: 1.6;
+    margin-bottom: var(--space-24);
+    flex: 1;
+  }
+
+  .cda-actions {
+    display: flex; gap: var(--space-16);
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding-top: var(--space-16);
+  }
+  html[data-theme="light"] .cda-actions { border-top-color: rgba(0,0,0,0.1); }
+
+  .cda-action-btn {
+    background: transparent; border: none; color: inherit; cursor: pointer;
+    font-size: var(--font-caption); text-transform: uppercase; letter-spacing: 0.1em;
+    transition: color var(--duration-fast);
+  }
+  .cda-action-btn:hover { color: var(--color-accent-atmospheric); }
+
+  @media screen and (max-width: 1024px) { .cda-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media screen and (max-width: 767px) { .cda-grid { grid-template-columns: 1fr; } }
+</style>
+
+<div class="cd-addresses">
+  <div class="cda-container">
+    <a href="{{ routes.account_url }}" style="color: var(--color-secondary-titanium); font-size: var(--font-caption); text-transform: uppercase; letter-spacing: 0.1em; text-decoration: none; display: inline-block; margin-bottom: var(--space-24);">← Back to Dashboard</a>
+
+    <h1 style="font-size: var(--font-heading-1);">Address Management</h1>
+    <p style="color: var(--color-secondary-titanium);">Manage your shipping and billing destinations.</p>
+
+    <div class="cda-grid">
+      
+      <!-- Add New Card -->
+      <div class="cda-card is-add" onclick="alert('In a live environment, this reveals the Shopify customer_address form modal.')">
+        <div style="font-size: 32px; margin-bottom: 8px;">+</div>
+        <div style="font-size: var(--font-caption); text-transform: uppercase; letter-spacing: 0.1em;">Add New Address</div>
+      </div>
+
+      <!-- Loop Addresses -->
+      {% for address in customer.addresses %}
+        <div class="cda-card">
+          {% if address == customer.default_address %}
+            <div><span class="cda-badge">Default Address</span></div>
+          {% endif %}
+          
+          <div class="cda-text">
+            <strong>{{ address.first_name }} {{ address.last_name }}</strong><br>
+            {{ address.company }}<br>
+            {{ address.street }}<br>
+            {{ address.city }}, {{ address.province }} {{ address.zip }}<br>
+            {{ address.country }}<br>
+            {{ address.phone }}
+          </div>
+
+          <div class="cda-actions">
+            <button class="cda-action-btn">Edit</button>
+            <button class="cda-action-btn" style="color: #ff4444;">Delete</button>
+          </div>
+        </div>
+      {% endfor %}
+
+    </div>
+
+  </div>
+</div>

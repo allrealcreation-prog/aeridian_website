@@ -1,0 +1,376 @@
+<style>
+  .collection-grid-system {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    min-height: 100vh;
+    padding: var(--space-48) var(--space-24);
+  }
+
+  .cg-container {
+    max-width: var(--container-large);
+    margin: 0 auto;
+  }
+
+  /* Toolbar (Filters Toggle & Sort) */
+  .cg-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: var(--space-24);
+    border-bottom: 1px solid var(--border-subtle);
+    margin-bottom: var(--space-48);
+  }
+
+  .cg-toolbar-btn {
+    background: transparent;
+    border: 1px solid var(--border-subtle);
+    color: var(--text-primary);
+    padding: var(--space-12) var(--space-24);
+    font-size: var(--font-caption);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    display: flex; gap: var(--space-8); align-items: center;
+    transition: border-color var(--duration-fast);
+  }
+  .cg-toolbar-btn:hover { border-color: var(--text-primary); }
+
+  .cg-sort-select {
+    background: transparent;
+    border: none;
+    color: var(--text-primary);
+    font-size: var(--font-caption);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    outline: none;
+  }
+
+  /* Main Layout */
+  .cg-layout {
+    display: block;
+    transition: opacity var(--duration-base) var(--ease-premium);
+  }
+
+  /* Filter Sidebar (Drawer) */
+  .cg-sidebar {
+    position: fixed;
+    top: 0;
+    left: -100%;
+    visibility: hidden;
+    opacity: 0;
+    width: 340px;
+    height: 100vh;
+    background: var(--bg-primary);
+    z-index: 10000;
+    padding: var(--space-48) var(--space-24);
+    overflow-y: auto;
+    overflow-x: hidden;
+    transition: left var(--duration-base) var(--ease-premium), opacity var(--duration-fast), visibility var(--duration-fast);
+  }
+  .cg-sidebar.is-open { 
+    left: 0; 
+    visibility: visible;
+    opacity: 1;
+  }
+
+  .cg-filter-group {
+    border-bottom: 1px solid var(--border-subtle);
+    padding: var(--space-24) 0;
+  }
+  .cg-filter-group__header {
+    font-size: var(--font-body-small);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: bold;
+    margin-bottom: var(--space-16);
+  }
+  
+  .cg-filter-list { list-style: none; padding: 0; margin: 0; }
+  .cg-filter-item { margin-bottom: var(--space-8); display: flex; align-items: center; gap: var(--space-8); }
+  
+  .cg-checkbox {
+    width: 16px; height: 16px;
+    border: 1px solid var(--border-heavy);
+    background: transparent;
+    border-radius: 2px;
+    appearance: none; cursor: pointer;
+  }
+  .cg-checkbox:checked { background: var(--text-primary); border-color: var(--text-primary); }
+
+  .cg-filter-label { font-size: var(--font-caption); color: var(--text-secondary); cursor: pointer; transition: color var(--duration-fast); }
+  .cg-filter-label:hover { color: var(--text-primary); }
+
+  /* Product Grid */
+  .cg-grid {
+    display: grid;
+    grid-template-columns: repeat(var(--desktop-cols, 3), 1fr);
+    gap: var(--space-32);
+    transition: opacity var(--duration-base);
+  }
+  .cg-grid.is-loading { opacity: 0.5; pointer-events: none; }
+
+  /* Load More System */
+  .cg-pagination {
+    text-align: center;
+    padding-top: var(--space-80);
+    margin-top: var(--space-48);
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  .cg-load-more {
+    display: inline-flex;
+    background: transparent;
+    color: var(--text-primary);
+    border: 1px solid var(--border-subtle);
+    padding: var(--space-16) var(--space-48);
+    font-size: var(--font-caption);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    transition: border-color var(--duration-fast), background var(--duration-fast);
+  }
+  .cg-load-more:hover { border-color: var(--text-primary); }
+  .cg-load-more.is-loading { background: var(--glass-bg); pointer-events: none; color: transparent; position: relative; }
+  .cg-load-more.is-loading::after {
+    content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 16px; height: 16px; border: 2px solid var(--text-secondary); border-top-color: var(--text-primary);
+    border-radius: 50%; animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin { 100% { transform: translate(-50%, -50%) rotate(360deg); } }
+
+  /* Mobile Responsive */
+  @media screen and (max-width: 1024px) {
+    .cg-sidebar { width: 100%; }
+    .cg-grid { grid-template-columns: repeat(2, 1fr); gap: var(--space-16); }
+  }
+  @media screen and (max-width: 767px) {
+    .cg-grid { grid-template-columns: repeat(var(--mobile-cols, 2), 1fr); }
+  }
+  .cg-scrim { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: rgba(0,0,0,0.5); z-index: 9999; opacity: 0; transition: opacity 0.3s; }
+  .cg-scrim.is-active { display: block; opacity: 1; }
+</style>
+
+<section class="collection-grid-system" data-section-id="{{ section.id }}" style="--desktop-cols: {{ section.settings.columns_desktop }}; --mobile-cols: {{ section.settings.columns_mobile }};">
+  <div class="cg-container">
+    
+    <!-- Toolbar -->
+    <div class="cg-toolbar" data-scroll-reveal>
+      <button class="cg-toolbar-btn js-magnetic" id="ToggleFiltersBtn" data-magnetic-intensity="0.2" aria-expanded="false" aria-controls="CollectionSidebar">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+        Filter Artifacts
+      </button>
+
+      <div>
+        <select class="cg-sort-select" id="CollectionSort">
+          {%- for option in collection.sort_options -%}
+            <option value="{{ option.value }}" {% if option.value == collection.sort_by %}selected{% endif %}>{{ option.name }}</option>
+          {%- endfor -%}
+        </select>
+      </div>
+    </div>
+
+    <!-- Active Filters Display -->
+    <div id="ActiveFiltersContainer" style="margin-bottom: var(--space-24); display: flex; gap: 8px; flex-wrap: wrap;">
+      {%- assign active_filter_count = 0 -%}
+      {%- for filter in collection.filters -%}
+        {%- assign active_filter_count = active_filter_count | plus: filter.active_values.size -%}
+        {%- for active_value in filter.active_values -%}
+          <span class="badge" style="display: flex; gap: 4px; align-items: center;">
+            {{ active_value.label }}
+            <a href="{{ active_value.url_to_remove }}" class="js-remove-filter" style="color: inherit; text-decoration: none;">×</a>
+          </span>
+        {%- endfor -%}
+      {%- endfor -%}
+      {%- if active_filter_count > 0 -%}
+        <a href="{{ collection.url }}?sort_by={{ collection.sort_by }}" class="js-clear-filters" style="font-size: 10px; color: var(--text-secondary); text-transform: uppercase; text-decoration: underline;">Clear All</a>
+      {%- endif -%}
+    </div>
+
+    <div class="cg-layout" id="CollectionLayout">
+      <div class="cg-scrim" id="CollectionScrim"></div>
+      
+      <!-- Sidebar / Filters Form -->
+      <aside class="cg-sidebar" id="CollectionSidebar">
+        <!-- Close Btn -->
+        <button id="CloseFiltersMobile" aria-label="Close Filters" style="background: transparent; border: none; color: var(--text-primary); font-size: 24px; position: absolute; top: 16px; right: 24px; cursor: pointer;">×</button>
+        
+        <form id="CollectionFilterForm">
+          {%- for filter in collection.filters -%}
+            <div class="cg-filter-group">
+              <div class="cg-filter-group__header">{{ filter.label }}</div>
+              
+              {%- case filter.type -%}
+                {%- when 'list' -%}
+                  <ul class="cg-filter-list">
+                    {%- for value in filter.values -%}
+                      <li class="cg-filter-item">
+                        <input type="checkbox" name="{{ value.param_name }}" value="{{ value.value }}" id="Filter-{{ filter.label | handle }}-{{ forloop.index }}" class="cg-checkbox js-filter-checkbox" {% if value.active %}checked{% endif %} {% if value.count == 0 and value.active == false %}disabled{% endif %}>
+                        <label for="Filter-{{ filter.label | handle }}-{{ forloop.index }}" class="cg-filter-label" {% if value.count == 0 and value.active == false %}style="opacity: 0.3;"{% endif %}>
+                          {{ value.label }} ({{ value.count }})
+                        </label>
+                      </li>
+                    {%- endfor -%}
+                  </ul>
+                
+                {%- when 'price_range' -%}
+                  <!-- Simplistic implementation for Phase 13 -->
+                  <div style="display: flex; gap: var(--space-8); align-items: center;">
+                    <input type="number" name="{{ filter.min_value.param_name }}" value="{{ filter.min_value.value | divided_by: 100 }}" placeholder="Min" class="cg-checkbox" style="width: 60px; height: 30px; padding: 4px; border-radius: 2px;">
+                    <span style="color: var(--text-secondary);">-</span>
+                    <input type="number" name="{{ filter.max_value.param_name }}" value="{{ filter.max_value.value | divided_by: 100 }}" placeholder="Max" class="cg-checkbox" style="width: 60px; height: 30px; padding: 4px; border-radius: 2px;">
+                  </div>
+              {%- endcase -%}
+            </div>
+          {%- endfor -%}
+          
+          <div style="margin-top: var(--space-32); padding-top: var(--space-24); border-top: 1px solid var(--border-subtle);">
+            <button type="button" id="ApplyFiltersBtn" class="btn-primary" style="width: 100%;">Apply Filters</button>
+          </div>
+        </form>
+      </aside>
+
+      <!-- Main Grid Area -->
+      <div id="ProductGridContainer">
+        {%- paginate collection.products by section.settings.products_per_page -%}
+          
+          {%- if collection.products.size == 0 -%}
+            <!-- Premium Placeholder Grid -->
+            <div class="cg-grid" id="CollectionGrid">
+              {% assign dummy_names = "Aeris Tech Jacket,Strata Cargo Pant,Nova Utility Pant,Obsidian Shell Jacket,Titan Overshirt,Vector Tee,Core Essential Tee,Atmos Hoodie" | split: "," %}
+              {%- for i in (1..8) -%}
+                <div data-scroll-reveal>
+                  {% assign idx = forloop.index0 %}
+                  {% assign dummy_title = dummy_names[idx] %}
+                  {% render 'product-card', placeholder: true, dummy_title: dummy_title, dummy_idx: i %}
+                </div>
+              {%- endfor -%}
+            </div>
+          {%- else -%}
+            <div class="cg-grid" id="CollectionGrid">
+              {%- for product in collection.products -%}
+                <div data-scroll-reveal>
+                  {% render 'product-card', product: product %}
+                </div>
+              {%- endfor -%}
+            </div>
+
+            <!-- Pagination (Load More Mode) -->
+            {%- if paginate.next -%}
+              <div class="cg-pagination">
+                <button class="cg-load-more js-load-more js-magnetic" data-magnetic-intensity="0.2" data-next-url="{{ paginate.next.url }}">Load More Artifacts</button>
+              </div>
+            {%- endif -%}
+
+          {%- endif -%}
+
+        {%- endpaginate -%}
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- Include Real-Time Ajax Filtering Script -->
+<script src="{{ 'collection-filters.js' | asset_url }}" defer></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const layout = document.getElementById('CollectionLayout');
+
+  function openDrawer() {
+    const toggleBtn = document.getElementById('ToggleFiltersBtn');
+    const sidebar = document.getElementById('CollectionSidebar');
+    const scrim = document.getElementById('CollectionScrim');
+    
+    if(toggleBtn) toggleBtn.setAttribute('aria-expanded', 'true');
+    if(sidebar) {
+      sidebar.classList.add('is-open');
+      sidebar.setAttribute('aria-hidden', 'false');
+    }
+    if(scrim) scrim.classList.add('is-active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeDrawer() {
+    const toggleBtn = document.getElementById('ToggleFiltersBtn');
+    const sidebar = document.getElementById('CollectionSidebar');
+    const scrim = document.getElementById('CollectionScrim');
+    
+    if(toggleBtn) toggleBtn.setAttribute('aria-expanded', 'false');
+    if(sidebar) {
+      sidebar.classList.remove('is-open');
+      sidebar.setAttribute('aria-hidden', 'true');
+    }
+    if (scrim) scrim.classList.remove('is-active');
+    document.body.style.overflow = '';
+  }
+
+  // Use Event Delegation to survive DOM replacements from collection-filters.js
+  document.addEventListener('click', (e) => {
+    // Open Trigger
+    if(e.target.closest('#ToggleFiltersBtn')) {
+      e.preventDefault();
+      openDrawer();
+      return;
+    }
+
+    // Close Triggers
+    if(
+      e.target.closest('#CloseFiltersMobile') || 
+      e.target.closest('#ApplyFiltersBtn') || 
+      e.target.closest('#CollectionScrim')
+    ) {
+      e.preventDefault();
+      closeDrawer();
+      return;
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    const sidebar = document.getElementById('CollectionSidebar');
+    if(e.key === 'Escape' && sidebar && sidebar.classList.contains('is-open')) {
+      closeDrawer();
+    }
+  });
+});
+</script>
+
+{% schema %}
+{
+  "name": "Collection Grid",
+  "settings": [
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "default": 3,
+      "label": "Desktop Grid Columns"
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "label": "Mobile Grid Columns",
+      "options": [
+        { "value": "1", "label": "1 Column" },
+        { "value": "2", "label": "2 Columns" }
+      ],
+      "default": "2"
+    },
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "min": 12,
+      "max": 48,
+      "step": 4,
+      "default": 24,
+      "label": "Products per load"
+    }
+  ]
+}
+{% endschema %}

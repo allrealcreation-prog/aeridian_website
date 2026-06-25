@@ -1,0 +1,264 @@
+<style>
+  .product-spotlight {
+    position: relative;
+    background-color: var(--color-primary-obsidian);
+    color: var(--color-primary-pure-white);
+  }
+
+  html[data-theme="light"] .product-spotlight {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+  }
+
+  .ps-wrapper {
+    height: 140vh; /* Scroll distance */
+    position: relative;
+  }
+
+  .ps-pin {
+    height: 100vh;
+    position: sticky;
+    top: 0;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    perspective: 1200px;
+  }
+
+  /* The 2.5D Image Setup */
+  .ps-garment-container {
+    position: relative;
+    width: 60vw;
+    max-width: 600px;
+    aspect-ratio: 3/4;
+    transform-style: preserve-3d;
+    z-index: 10;
+  }
+
+  .ps-garment-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    will-change: transform;
+  }
+
+  .ps-garment-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 120%;
+    height: 120%;
+    background: radial-gradient(circle, rgba(127, 217, 255, 0.15) 0%, transparent 60%);
+    z-index: 1;
+    opacity: 0.5;
+  }
+
+  html[data-theme="light"] .ps-garment-glow {
+    background: radial-gradient(circle, rgba(0, 0, 0, 0.1) 0%, transparent 60%);
+  }
+
+  /* Feature Callouts */
+  .ps-callout {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    gap: var(--space-12);
+    opacity: 0; /* Handled by GSAP */
+    z-index: 20;
+    pointer-events: none;
+  }
+
+  .ps-callout__dot {
+    width: 8px;
+    height: 8px;
+    background-color: var(--color-accent-atmospheric);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--color-accent-atmospheric);
+    position: relative;
+  }
+
+  .ps-callout__dot::after {
+    content: '';
+    position: absolute;
+    top: -4px; left: -4px; right: -4px; bottom: -4px;
+    border: 1px solid var(--color-accent-atmospheric);
+    border-radius: 50%;
+    animation: pulseDot 2s infinite;
+  }
+
+  @keyframes pulseDot {
+    0% { transform: scale(1); opacity: 1; }
+    100% { transform: scale(2); opacity: 0; }
+  }
+
+  .ps-callout__line {
+    width: 60px;
+    height: 1px;
+    background-color: rgba(255,255,255,0.3);
+  }
+
+  html[data-theme="light"] .ps-callout__line {
+    background-color: rgba(0,0,0,0.3);
+  }
+
+  .ps-callout__text {
+    background: rgba(17, 17, 17, 0.6);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: var(--space-8) var(--space-16);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-caption);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+  }
+
+  html[data-theme="light"] .ps-callout__text {
+    background: rgba(255, 255, 255, 0.8);
+    border-color: rgba(0, 0, 0, 0.1);
+  }
+
+  /* Positioning the Callouts */
+  #Callout1 { top: 20%; left: 80%; }
+  #Callout2 { top: 50%; right: 80%; flex-direction: row-reverse; }
+  #Callout3 { top: 80%; left: 70%; }
+
+  @media screen and (max-width: 767px) {
+    .ps-garment-container { width: 90vw; }
+    .ps-callout { flex-direction: column; text-align: center; }
+    .ps-callout__line { width: 1px; height: 30px; }
+    #Callout1 { top: 10%; left: 50%; transform: translateX(-50%); }
+    #Callout2 { top: auto; bottom: 10%; right: auto; left: 50%; transform: translateX(-50%); flex-direction: column-reverse; }
+    #Callout3 { display: none; }
+  }
+</style>
+
+<section class="product-spotlight" data-section-id="{{ section.id }}">
+  <div class="ps-wrapper" id="PS-Wrapper">
+    <div class="ps-pin" id="PS-Pin">
+      
+      <div style="position: absolute; top: var(--space-64); text-align: center; width: 100%; z-index: 5;">
+        <div class="fp-intro__label">AERIDIAN Signature</div>
+        <h2 style="font-size: var(--font-display-l); opacity: 0.1; text-transform: uppercase; letter-spacing: 0.1em; position: absolute; left: 50%; transform: translateX(-50%); top: 50%; white-space: nowrap; pointer-events: none;">{{ section.settings.title | default: 'AERIDIAN CORE' }}</h2>
+      </div>
+
+      <div class="ps-garment-glow" id="PSGlow"></div>
+
+      <div class="ps-garment-container" id="PSGarment">
+        <!-- 2.5D Parallax Layers -->
+        {%- if section.settings.image != blank -%}
+          <img src="{{ section.settings.image | image_url: width: 1000 }}" class="ps-garment-layer" style="z-index: 2; transform: translateZ(50px);" id="PSLayerFront">
+          <!-- Fake back layer for depth -->
+          <img src="{{ section.settings.image | image_url: width: 1000 }}" class="ps-garment-layer" style="z-index: 1; filter: brightness(0.2) blur(4px); transform: translateZ(-50px) scale(0.95);" id="PSLayerBack">
+        {%- else -%}
+          {{ 'product-2' | placeholder_svg_tag: 'ps-garment-layer' }}
+        {%- endif -%}
+
+        <!-- Feature Callouts -->
+        <div class="ps-callout" id="Callout1">
+          <div class="ps-callout__dot"></div>
+          <div class="ps-callout__line"></div>
+          <div class="ps-callout__text">Adaptive Nanotech Shell</div>
+        </div>
+
+        <div class="ps-callout" id="Callout2">
+          <div class="ps-callout__dot"></div>
+          <div class="ps-callout__line"></div>
+          <div class="ps-callout__text">Magnetic Quick-Release</div>
+        </div>
+
+        <div class="ps-callout" id="Callout3">
+          <div class="ps-callout__dot"></div>
+          <div class="ps-callout__line"></div>
+          <div class="ps-callout__text">Titanium Hardware</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  if(typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+    const isReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    
+    if(!isReducedMotion) {
+      // 1. Mouse Parallax (2.5D Effect)
+      const pin = document.getElementById('PS-Pin');
+      const garment = document.getElementById('PSGarment');
+      const front = document.getElementById('PSLayerFront');
+      const back = document.getElementById('PSLayerBack');
+
+      if(pin && window.innerWidth > 1024) {
+        pin.addEventListener('mousemove', (e) => {
+          const x = (e.clientX / window.innerWidth - 0.5) * 2;
+          const y = (e.clientY / window.innerHeight - 0.5) * 2;
+          
+          gsap.to(garment, {
+            rotationY: x * 15,
+            rotationX: -y * 15,
+            duration: 1,
+            ease: "power2.out"
+          });
+          
+          if(front && back) {
+             gsap.to(front, { x: x * -20, y: y * -20, duration: 1 });
+             gsap.to(back, { x: x * 20, y: y * 20, duration: 1 });
+          }
+        });
+        
+        pin.addEventListener('mouseleave', () => {
+          gsap.to(garment, { rotationY: 0, rotationX: 0, duration: 1 });
+          if(front && back) gsap.to([front, back], { x: 0, y: 0, duration: 1 });
+        });
+      }
+
+      // 2. Scroll Timeline (Reveal Callouts)
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: "#PS-Wrapper",
+          start: "top top",
+          end: "bottom bottom",
+          scrub: true
+        }
+      });
+
+      tl.to(garment, { scale: 1.1, duration: 1 })
+        .to("#Callout1", { opacity: 1, x: 20, duration: 0.5 }, 0.2)
+        .to("#Callout2", { opacity: 1, x: -20, duration: 0.5 }, 0.5)
+        .to("#Callout3", { opacity: 1, x: 20, duration: 0.5 }, 0.8)
+        .to("#PSGlow", { scale: 1.5, opacity: 0.8, duration: 1 }, 0);
+    }
+  }
+});
+</script>
+
+{% schema %}
+{
+  "name": "Product Spotlight",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Background Title",
+      "default": "AERIDIAN CORE"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Garment PNG (Transparent Background)"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Interactive Spotlight"
+    }
+  ]
+}
+{% endschema %}

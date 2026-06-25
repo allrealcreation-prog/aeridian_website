@@ -1,0 +1,382 @@
+/* 
+ * AERIDIAN GLOBAL STYLESHEET
+ * Core tokens mapped to fluid typography, layout scales, and luxury interactions.
+ */
+
+@font-face {
+  font-family: 'Mexon';
+  src: url('Mexon.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* ==========================================================================
+     COLOR SYSTEM
+     ========================================================================== */
+  
+  /* Primary Colors */
+  --color-primary-obsidian: #050505;
+  --color-primary-carbon: #111111;
+  --color-primary-pure-white: #FFFFFF;
+  --color-primary-soft-white: #F5F5F5;
+
+  /* Secondary Colors */
+  --color-secondary-titanium: #BFC3C9;
+  --color-secondary-steel: #8B919B;
+
+  /* Accent Color */
+  --color-accent-atmospheric: #7FD9FF;
+
+  /* ==========================================================================
+     TYPOGRAPHY SYSTEM
+     ========================================================================== */
+
+  /* Typography */
+  --font-display: 'Mexon', sans-serif;
+  --font-body: 'Inter', sans-serif;
+
+  /* Scales & Weights */
+  --font-display-xl: clamp(4rem, 8vw, 8rem);
+  --font-display-l: clamp(3rem, 5vw, 5rem);
+  --font-heading-1: clamp(2.25rem, 4vw, 3.5rem);
+  --font-heading-2: clamp(1.75rem, 3vw, 2.5rem);
+  --font-heading-3: clamp(1.25rem, 2vw, 1.75rem);
+  
+  --font-body-large: 1.125rem; /* 18px */
+  --font-body-regular: 1rem; /* 16px */
+  --font-body-small: 0.875rem; /* 14px */
+  --font-caption: 0.75rem; /* 12px */
+
+  /* Line Heights */
+  --line-height-display: 1.0;
+  --line-height-heading: 1.2;
+  --line-height-body: 1.5;
+
+  /* Tracking (Letter Spacing) */
+  --tracking-display: -0.02em;
+  --tracking-body: 0.01em;
+  --tracking-caption: 0.05em;
+
+  /* ==========================================================================
+     SPACING SYSTEM (8pt base)
+     ========================================================================== */
+  
+  --space-4: 4px;
+  --space-8: 8px;
+  --space-12: 12px;
+  --space-16: 16px;
+  --space-24: 24px;
+  --space-32: 32px;
+  --space-48: 48px;
+  --space-64: 64px;
+  --space-80: 80px;
+  --space-120: 120px;
+  --space-160: 160px;
+
+  /* ==========================================================================
+     BORDERS, RADIUS & SURFACES
+     ========================================================================== */
+  
+  --radius-sm: 12px;
+  --radius-md: 20px;
+  --radius-lg: 32px;
+  --radius-pill: 9999px;
+
+  --border-subtle: 1px solid var(--color-primary-carbon);
+  --border-focus: 1px solid var(--color-accent-atmospheric);
+
+  --elevation-1: 0 4px 24px rgba(0, 0, 0, 0.4);
+
+  /* ==========================================================================
+     MOTION SYSTEM ("Weightless Precision")
+     ========================================================================== */
+  
+  /* Easing Curves */
+  --ease-luxury: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-entrance: cubic-bezier(0.1, 1, 0.2, 1);
+  --ease-exit: cubic-bezier(0.8, 0, 0.9, 0.1);
+
+  /* Durations */
+  --duration-fast: 250ms;
+  --duration-base: 300ms;
+  --duration-slow: 500ms;
+  --duration-reveal: 800ms;
+
+  /* ==========================================================================
+     LAYOUT SYSTEM
+     ========================================================================== */
+     
+  --container-large: 1440px;
+  --container-standard: 1280px;
+  --container-narrow: 980px;
+}
+
+/* ==========================================================================
+   GLOBAL RESETS & FOUNDATION
+   ========================================================================== */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-primary-obsidian);
+  color: var(--color-primary-soft-white);
+  font-family: var(--font-body);
+  line-height: var(--line-height-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Accessibility */
+.visually-hidden {
+  position: absolute !important;
+  overflow: hidden;
+  clip: rect(1px, 1px, 1px, 1px);
+  width: 1px;
+  height: 1px;
+  word-wrap: normal;
+}
+.skip-to-content-link:focus {
+  position: fixed !important;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10000;
+  clip: auto;
+  width: auto;
+  height: auto;
+  background-color: var(--color-primary-obsidian);
+  color: var(--color-primary-pure-white);
+  padding: var(--space-16) var(--space-32);
+  font-family: var(--font-body);
+  font-size: var(--font-body-large);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border: 1px solid var(--border-subtle);
+  border-top: none;
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  text-decoration: none;
+}
+
+/* Typography Base Elements */
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  color: var(--color-primary-pure-white);
+  font-family: var(--font-body);
+  line-height: var(--line-height-heading);
+  font-weight: 500;
+}
+
+h1 {
+  font-size: var(--font-heading-1);
+}
+
+h2 {
+  font-size: var(--font-heading-2);
+}
+
+h3 {
+  font-size: var(--font-heading-3);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+  transition: color var(--duration-fast) var(--ease-luxury);
+}
+
+a:hover {
+  color: var(--color-primary-pure-white);
+}
+
+/* ==========================================================================
+   BUTTON INTERACTION SYSTEM (Phase 18.2)
+   ========================================================================== */
+
+.btn-magnetic-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.btn-primary, .btn-secondary {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-16) var(--space-32);
+  font-size: var(--font-body-small);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  overflow: hidden;
+  /* Luxury Physics */
+  transition: transform 200ms var(--ease-luxury), 
+              background-color 200ms var(--ease-luxury), 
+              border-color 200ms var(--ease-luxury), 
+              color 200ms var(--ease-luxury),
+              box-shadow 200ms var(--ease-luxury),
+              opacity 200ms var(--ease-luxury);
+  will-change: transform, box-shadow, opacity;
+}
+
+.btn-primary {
+  background-color: var(--text-primary);
+  color: var(--bg-primary);
+  border: 1px solid var(--text-primary);
+  box-shadow: 0 2px 8px rgba(0,0,0,0);
+}
+
+.btn-secondary {
+  background-color: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--border-heavy);
+}
+
+/* Secondary Hover Underline Base */
+.btn-secondary::after {
+  content: '';
+  position: absolute;
+  bottom: calc(var(--space-16) - 4px);
+  left: 50%;
+  width: calc(100% - var(--space-64));
+  height: 1px;
+  background-color: var(--text-primary);
+  transform: translateX(-50%) scaleX(0);
+  transform-origin: center;
+  transition: transform 200ms var(--ease-luxury);
+}
+
+/* Hover: Lift and glow (Primary) */
+.btn-magnetic-wrapper:hover .btn-primary,
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px var(--shadow-color);
+  opacity: 0.95;
+}
+
+/* Hover: Underline reveal (Secondary) */
+.btn-magnetic-wrapper:hover .btn-secondary,
+.btn-secondary:hover {
+  transform: translateY(-1px);
+  border-color: var(--text-secondary);
+  opacity: 0.8;
+}
+
+.btn-magnetic-wrapper:hover .btn-secondary::after,
+.btn-secondary:hover::after {
+  transform: translateX(-50%) scaleX(1);
+}
+
+/* Active: Tactile Press */
+.btn-magnetic-wrapper:active .btn-primary,
+.btn-primary:active,
+.btn-magnetic-wrapper:active .btn-secondary,
+.btn-secondary:active {
+  transform: scale(0.98);
+  box-shadow: 0 1px 4px var(--shadow-color);
+  transition-duration: 100ms; /* Instant tactile compression */
+}
+
+/* Layout Utilities */
+.container {
+  width: 100%;
+  max-width: var(--container-standard);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--space-24);
+  padding-right: var(--space-24);
+}
+
+.container--large {
+  max-width: var(--container-large);
+}
+
+.container--narrow {
+  max-width: var(--container-narrow);
+}
+
+/* Media Queries Foundation */
+@media screen and (max-width: 1024px) {
+  .container {
+    padding-left: var(--space-32);
+    padding-right: var(--space-32);
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .container {
+    padding-left: var(--space-16);
+    padding-right: var(--space-16);
+  }
+}
+
+/* Accessibility Focus States */
+:focus-visible {
+  outline: var(--border-focus);
+  outline-offset: 2px;
+}
+
+/* ==========================================================================
+   GLOBAL BRAND COMPONENTS
+   ========================================================================== */
+
+.brand-lockup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.brand-lockup__wordmark {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  margin-bottom: var(--space-16);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.brand-lockup__tagline {
+  font-family: var(--font-body);
+  font-size: var(--font-caption);
+  color: var(--text-secondary);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  width: 100%;
+}
+
+@media screen and (max-width: 330px) {
+  .brand-lockup__tagline {
+    white-space: normal;
+  }
+}
+
+/* ==========================================================================
+   LIGHT MODE OVERRIDES
+   ========================================================================== */
+
+html[data-theme="light"] {
+  --color-primary-obsidian: #EEEEEE;
+  --color-primary-carbon: #FFFFFF;
+  --color-primary-pure-white: #050505;
+  --color-primary-soft-white: #222222;
+  --color-secondary-titanium: #666666;
+  --color-secondary-steel: #888888;
+  --border-subtle: 1px solid rgba(0, 0, 0, 0.1);
+}

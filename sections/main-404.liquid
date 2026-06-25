@@ -1,0 +1,43 @@
+<div class="container" style="min-height: 80vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+  <div class="brand-lockup" style="margin-bottom: var(--space-64);">
+    <div class="brand-lockup__wordmark">
+      {% render 'icon-wordmark' %}
+    </div>
+    <div class="brand-lockup__tagline">{{ section.settings.subheading | default: 'ALWAYS NEW TO THE WORLD.' }}</div>
+  </div>
+  
+  <h1 style="font-size: var(--font-heading-1); margin-bottom: var(--space-24);">{{ section.settings.heading | default: '404 - DESTINATION NOT FOUND' }}</h1>
+  <p style="color: var(--text-secondary); margin-bottom: var(--space-48); max-width: 500px;">
+    {{ section.settings.text | default: 'The frequency you are searching for does not exist in our current broadcast. Please return to the core signal.' }}
+  </p>
+  
+  <div class="btn-magnetic-wrapper js-magnetic" data-magnetic-intensity="0.2">
+    <a href="{{ routes.root_url }}" class="btn-primary">Return to Signal</a>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "404 Experience",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "404 - DESTINATION NOT FOUND"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Brand Tagline",
+      "default": "ALWAYS NEW TO THE WORLD."
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "Description",
+      "default": "The frequency you are searching for does not exist in our current broadcast. Please return to the core signal."
+    }
+  ]
+}
+{% endschema %}

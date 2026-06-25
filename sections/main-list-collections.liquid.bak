@@ -1,0 +1,25 @@
+<div class="container" style="padding-top: var(--space-120); padding-bottom: var(--space-120);">
+  <h1 style="text-align: center; margin-bottom: var(--space-64);">Collections Directory</h1>
+  <div class="grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: var(--space-32);">
+    {%- for collection in collections -%}
+      <div class="collection-card" style="position: relative; overflow: hidden; aspect-ratio: 4/5;">
+        {%- if collection.image -%}
+          <img src="{{ collection.image | image_url: width: 800 }}" alt="{{ collection.title | escape }}" style="width: 100%; height: 100%; object-fit: cover;">
+        {%- else -%}
+          {{ 'collection-1' | placeholder_svg_tag: 'placeholder-svg' }}
+        {%- endif -%}
+        <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); display: flex; align-items: flex-end; padding: var(--space-24);">
+          <h2 style="margin: 0; color: #fff;">{{ collection.title }}</h2>
+        </div>
+        <a href="{{ collection.url }}" style="position: absolute; inset: 0;" aria-label="View {{ collection.title }}"></a>
+      </div>
+    {%- endfor -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Collections Directory",
+  "settings": []
+}
+{% endschema %}

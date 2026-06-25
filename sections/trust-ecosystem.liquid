@@ -1,0 +1,292 @@
+<style>
+  .trust-eco {
+    position: relative;
+    /* Tokenized */
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+  }
+
+  .te-container {
+    max-width: var(--container-large);
+    margin: 0 auto;
+    padding: 0 var(--space-24);
+  }
+
+  .te-section-title {
+    font-size: var(--font-caption);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-24);
+  }
+
+  /* PART 1: TRUST BANNER */
+  .te-banner {
+    height: 60vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    position: relative;
+  }
+  .te-banner__bg {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60%; height: 60%;
+    background: radial-gradient(circle, var(--glow-color) 0%, transparent 70%);
+    z-index: 1;
+  }
+
+  /* PART 2: CREDIBILITY GRID */
+  .te-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-24);
+    padding: var(--space-80) 0;
+  }
+  .te-card {
+    /* Tokenized */
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    padding: var(--space-48);
+    transition: transform var(--duration-base), box-shadow var(--duration-base), border-color var(--duration-base);
+  }
+  .te-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px var(--shadow-color);
+    border-color: var(--accent-color);
+  }
+
+  /* PART 3 & 4: ASSURANCE HUB */
+  .te-assurance {
+    padding: var(--space-80) 0;
+    border-top: 1px solid var(--border-subtle);
+  }
+  .te-accordion {
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  .te-accordion__header {
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: inherit;
+    text-align: left;
+    padding: var(--space-32) 0;
+    font-size: var(--font-heading-2);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .te-accordion__content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height var(--duration-slow) var(--ease-luxury);
+  }
+  .te-accordion.is-open .te-accordion__content { max-height: 300px; }
+  .te-accordion__inner {
+    padding-bottom: var(--space-32);
+    color: var(--text-secondary);
+    font-size: var(--font-body-large);
+  }
+
+  /* PART 8: SOCIAL PROOF COUNTERS */
+  .te-proof {
+    padding: var(--space-120) 0;
+    text-align: center;
+  }
+  .te-proof-grid {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: var(--space-32);
+    margin-top: var(--space-64);
+  }
+  .te-proof-item__num {
+    font-size: var(--font-display-l);
+    color: var(--accent-color);
+    font-weight: bold;
+    margin-bottom: var(--space-8);
+  }
+
+  /* PART 9: VALUES WALL */
+  .te-values {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+    padding-bottom: var(--space-120);
+  }
+  .te-value-word {
+    font-size: clamp(4rem, 10vw, 10rem);
+    text-transform: uppercase;
+    font-weight: bold;
+    white-space: nowrap;
+    opacity: 0.1;
+    line-height: 0.9;
+    transition: color var(--duration-fast);
+  }
+  .te-value-word:hover {
+    color: var(--accent-color);
+    opacity: 0.5;
+  }
+
+  @media screen and (max-width: 767px) {
+    .te-grid { grid-template-columns: 1fr; }
+    .te-accordion__header { font-size: var(--font-heading-3); }
+    .te-proof-grid { flex-direction: column; }
+  }
+</style>
+
+<section class="trust-eco" data-section-id="{{ section.id }}">
+  <div class="te-container">
+    
+    <!-- PART 1: TRUST BANNER -->
+    <div class="te-banner">
+      <div class="te-banner__bg"></div>
+      <div style="position: relative; z-index: 2;">
+        <div class="te-section-title">AERIDIAN Standards</div>
+        <h2 style="font-size: var(--font-display-l); margin-bottom: var(--space-24);">Designed For Discovery.<br>Built For Trust.</h2>
+        <p style="color: var(--text-secondary); font-size: var(--font-body-large);">Premium quality. Transparent policies.<br>Reliable delivery. Human support.</p>
+      </div>
+    </div>
+
+    <!-- PART 2: CREDIBILITY GRID -->
+    <div class="te-grid">
+      <div class="te-card" data-scroll-reveal>
+        <h3 style="font-size: var(--font-heading-2); margin-bottom: var(--space-16);">Premium Quality</h3>
+        <p style="color: var(--text-secondary);">Every design is produced with uncompromising attention to detail and long-term wearability.</p>
+      </div>
+      <div class="te-card" data-scroll-reveal>
+        <h3 style="font-size: var(--font-heading-2); margin-bottom: var(--space-16);">Secure Payments</h3>
+        <p style="color: var(--text-secondary);">Protected transactions through trusted, globally recognized payment providers.</p>
+      </div>
+      <div class="te-card" data-scroll-reveal>
+        <h3 style="font-size: var(--font-heading-2); margin-bottom: var(--space-16);">Reliable Support</h3>
+        <p style="color: var(--text-secondary);">Dedicated human assistance whenever customers need help with orders or sizing.</p>
+      </div>
+      <div class="te-card" data-scroll-reveal>
+        <h3 style="font-size: var(--font-heading-2); margin-bottom: var(--space-16);">Future Innovation</h3>
+        <p style="color: var(--text-secondary);">A constantly evolving platform built around creativity, exploration, and durability.</p>
+      </div>
+    </div>
+
+    <!-- PART 3 & 4: CUSTOMER ASSURANCE HUB -->
+    <div class="te-assurance">
+      <div class="te-section-title" style="margin-bottom: var(--space-48);">Shopping Confidence</div>
+      
+      <div class="te-accordion">
+        <button class="te-accordion__header" onclick="this.parentElement.classList.toggle('is-open')">
+          Fast Global Shipping
+          <span>+</span>
+        </button>
+        <div class="te-accordion__content">
+          <div class="te-accordion__inner">We ship to over 80 countries globally using express couriers, ensuring your artifacts arrive safely and swiftly.</div>
+        </div>
+      </div>
+      
+      <div class="te-accordion">
+        <button class="te-accordion__header" onclick="this.parentElement.classList.toggle('is-open')">
+          Easy Returns & Refunds
+          <span>+</span>
+        </button>
+        <div class="te-accordion__content">
+          <div class="te-accordion__inner">Not perfectly satisfied? Return unworn items within 14 days for a full refund or seamless exchange via our portal.</div>
+        </div>
+      </div>
+
+      <div class="te-accordion">
+        <button class="te-accordion__header" onclick="this.parentElement.classList.toggle('is-open')">
+          Verified Payment Security
+          <span>+</span>
+        </button>
+        <div class="te-accordion__content">
+          <div class="te-accordion__inner">Checkout is fortified with 256-bit SSL encryption. We never store your raw credit card data.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PART 8: SOCIAL PROOF ENGINE -->
+    <div class="te-proof" id="TEProof">
+      <div class="te-section-title">Community Growth</div>
+      <div class="te-proof-grid">
+        <div class="te-proof-item">
+          <div class="te-proof-item__num js-te-counter" data-target="15420">0</div>
+          <div style="text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-secondary); font-size: var(--font-caption);">Verified Customers</div>
+        </div>
+        <div class="te-proof-item">
+          <div class="te-proof-item__num js-te-counter" data-target="4900">0</div>
+          <div style="text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-secondary); font-size: var(--font-caption);">5-Star Reviews</div>
+        </div>
+        <div class="te-proof-item">
+          <div class="te-proof-item__num js-te-counter" data-target="86">0</div>
+          <div style="text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-secondary); font-size: var(--font-caption);">Countries Reached</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- PART 9: VALUES WALL -->
+  <div class="te-values" id="TEValues">
+    <div class="te-value-word" id="VW1" style="transform: translateX(-10%);">Discovery</div>
+    <div class="te-value-word" id="VW2" style="transform: translateX(10%); text-align: right;">Creativity</div>
+    <div class="te-value-word" id="VW3" style="transform: translateX(-5%);">Expression</div>
+    <div class="te-value-word" id="VW4" style="transform: translateX(15%); text-align: right;">Innovation</div>
+  </div>
+
+</section>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  if(typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+    const isReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if(!isReducedMotion) {
+      // Values Wall Parallax
+      gsap.to("#VW1", { x: "10%", scrollTrigger: { trigger: "#TEValues", scrub: 1 } });
+      gsap.to("#VW2", { x: "-20%", scrollTrigger: { trigger: "#TEValues", scrub: 1.5 } });
+      gsap.to("#VW3", { x: "15%", scrollTrigger: { trigger: "#TEValues", scrub: 2 } });
+      gsap.to("#VW4", { x: "-10%", scrollTrigger: { trigger: "#TEValues", scrub: 1.2 } });
+
+      // Live Counters
+      const counters = document.querySelectorAll('.js-te-counter');
+      ScrollTrigger.create({
+        trigger: "#TEProof",
+        start: "top 80%",
+        once: true,
+        onEnter: () => {
+          counters.forEach(counter => {
+            const target = +counter.getAttribute('data-target');
+            gsap.to(counter, {
+              innerHTML: target,
+              duration: 2.5,
+              snap: { innerHTML: 1 },
+              ease: "power2.out",
+              onUpdate: function() {
+                counter.innerHTML = Math.round(this.targets()[0].innerHTML).toLocaleString();
+              }
+            });
+          });
+        }
+      });
+    }
+  }
+});
+</script>
+
+{% schema %}
+{
+  "name": "Trust Ecosystem",
+  "settings": [],
+  "presets": [
+    {
+      "name": "AERIDIAN Trust System"
+    }
+  ]
+}
+{% endschema %}

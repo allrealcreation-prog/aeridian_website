@@ -1,0 +1,160 @@
+<style>
+  .header-nav__list {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: var(--space-32);
+  }
+
+  .header-nav__item {
+    position: relative;
+  }
+
+  .header-nav__link {
+    color: var(--color-primary-pure-white);
+    font-size: var(--font-body-small);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 500;
+    padding: var(--space-8) 0;
+    position: relative;
+    cursor: pointer;
+    display: inline-block;
+    opacity: 0.65;
+    transition: opacity 200ms var(--ease-luxury);
+  }
+
+  /* Sweep Underline Effect */
+  .header-nav__link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background-color: var(--color-primary-pure-white);
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 200ms var(--ease-luxury);
+  }
+
+  .header-nav__item:hover .header-nav__link,
+  .header-nav__link:hover {
+    opacity: 1;
+  }
+
+  .header-nav__item:hover .header-nav__link::after,
+  .header-nav__link:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+
+  /* Toggle Indicator */
+  .header-nav__toggle {
+    background: none;
+    border: none;
+    color: var(--color-primary-pure-white);
+    padding: var(--space-4);
+    cursor: pointer;
+    opacity: 0.65;
+    transition: opacity var(--duration-fast) var(--ease-luxury), transform var(--duration-fast) var(--ease-luxury);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .header-nav__item:hover .header-nav__toggle,
+  .header-nav__toggle:hover {
+    opacity: 1;
+  }
+  .header-nav__toggle[aria-expanded="true"] {
+    transform: rotate(180deg);
+  }
+  
+  /* Link alignment wrapper */
+  .header-nav__link-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  
+  /* Desktop Hover Interactions */
+  @media (hover: hover) {
+    .header-nav__item:hover .header-nav__link,
+    .header-nav__link:hover {
+      opacity: 1;
+    }
+    
+    .header-nav__item:hover .header-nav__link::after,
+    .header-nav__link:hover::after {
+      transform: scaleX(1);
+      transform-origin: center;
+    }
+  }
+</style>
+
+<ul class="header-nav__list" role="navigation" aria-label="Primary">
+  {%- if menu != blank -%}
+    {%- assign half = menu.links.size | divided_by: 2 -%}
+    {%- for link in menu.links -%}
+      {%- assign is_left = false -%}
+      {%- if forloop.index0 < half -%}
+        {%- assign is_left = true -%}
+      {%- endif -%}
+      
+      {%- assign has_mega = false -%}
+      {%- if link.title == 'Shop' or link.title == 'Collections' -%}
+        {%- assign has_mega = true -%}
+      {%- endif -%}
+      
+      {%- if position == 'left' and is_left == true -%}
+        <li class="header-nav__item" data-has-mega="{{ has_mega }}">
+          <div class="header-nav__link-wrapper">
+            <a href="{{ link.url }}" class="header-nav__link">{{ link.title }}</a>
+            {%- if has_mega -%}
+              <button class="header-nav__toggle" aria-expanded="false" aria-label="Toggle {{ link.title }} Menu" onclick="toggleMegaMenu(event, '{{ link.title }}', this)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+              </button>
+            {%- endif -%}
+          </div>
+        </li>
+      {%- elsif position == 'right' and is_left == false -%}
+        <li class="header-nav__item" data-has-mega="{{ has_mega }}">
+          <div class="header-nav__link-wrapper">
+            <a href="{{ link.url }}" class="header-nav__link">{{ link.title }}</a>
+            {%- if has_mega -%}
+              <button class="header-nav__toggle" aria-expanded="false" aria-label="Toggle {{ link.title }} Menu" onclick="toggleMegaMenu(event, '{{ link.title }}', this)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+              </button>
+            {%- endif -%}
+          </div>
+        </li>
+      {%- endif -%}
+    {%- endfor -%}
+  {%- else -%}
+    <!-- Fallback if no menu selected -->
+    {%- if position == 'left' -%}
+      <li class="header-nav__item" data-has-mega="true">
+        <div class="header-nav__link-wrapper">
+          <a href="/collections/all" class="header-nav__link">Shop</a>
+          <button class="header-nav__toggle" aria-expanded="false" aria-label="Toggle Shop Menu" onclick="toggleMegaMenu(event, 'Shop', this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></button>
+        </div>
+      </li>
+      <li class="header-nav__item" data-has-mega="true">
+          <a href="/collections" class="header-nav__link">Collections</a>
+          <button class="header-nav__toggle" aria-expanded="false" aria-label="Toggle Collections Menu" onclick="toggleMegaMenu(event, 'Collections', this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></button>
+        </div>
+      </li>
+      <li class="header-nav__item">
+          <div class="header-nav__link-wrapper"><a href="{{ routes.all_products_collection_url }}" class="header-nav__link">Shop</a></div>
+      </li>
+    {%- elsif position == 'right' -%}
+      <li class="header-nav__item"><div class="header-nav__link-wrapper"><a href="/pages/about" class="header-nav__link">About</a></div></li>
+      <li class="header-nav__item"><div class="header-nav__link-wrapper"><a href="/blogs/journal" class="header-nav__link">Journal</a></div></li>
+    {%- endif -%}
+  {%- endif -%}
+</ul>
+
+<script>
+  // The handleNavClick is now completely removed as logic is handled by toggleMegaMenu in header-mega-menu.liquid
+</script>

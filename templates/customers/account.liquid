@@ -1,0 +1,269 @@
+<style>
+  .customer-dashboard {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    min-height: 100vh;
+    padding: var(--space-120) var(--space-24);
+  }
+
+  .cd-container {
+    max-width: var(--container-large);
+    margin: 0 auto;
+  }
+
+  /* Welcome Animation */
+  .cd-welcome-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100vh;
+    background: var(--bg-primary);
+    z-index: 9999;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+
+  .cd-welcome-overlay.is-active { display: flex; animation: welcomeFade 3s forwards; }
+
+  @keyframes welcomeFade {
+    0% { opacity: 1; }
+    80% { opacity: 1; }
+    100% { opacity: 0; visibility: hidden; }
+  }
+
+  .cd-welcome-pulse {
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--glow-color) 0%, transparent 70%);
+    position: absolute;
+    animation: pulseExpand 2s cubic-bezier(0.165, 0.84, 0.44, 1);
+  }
+
+  @keyframes pulseExpand {
+    0% { transform: scale(0.5); opacity: 1; }
+    100% { transform: scale(10); opacity: 0; }
+  }
+
+  .cd-welcome-text {
+    position: relative; z-index: 2;
+    font-size: var(--font-display-l);
+    animation: textRise 2s forwards;
+  }
+
+  @keyframes textRise {
+    0% { opacity: 0; transform: translateY(20px); }
+    30% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Grid Layout */
+  .cd-grid {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: var(--space-48);
+    margin-top: var(--space-64);
+  }
+
+  .cd-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-24);
+  }
+
+  .cd-panel {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    padding: var(--space-32);
+    transition: background-color var(--duration-base), border-color var(--duration-base);
+  }
+
+  .cd-panel-title {
+    font-size: var(--font-caption);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-24);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+
+  .cd-nav-link {
+    display: block;
+    color: var(--text-primary);
+    text-decoration: none;
+    padding: var(--space-12) 0;
+    border-bottom: 1px solid var(--border-subtle);
+    transition: color var(--duration-fast);
+  }
+  .cd-nav-link:hover { color: var(--accent-color); }
+
+  /* Orders Ecosystem */
+  .cd-order-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    padding: var(--space-24);
+    margin-bottom: var(--space-16);
+    display: flex; justify-content: space-between; align-items: center;
+    transition: border-color var(--duration-fast);
+  }
+  .cd-order-card:hover { border-color: var(--border-heavy); }
+
+  .cd-status-badge {
+    padding: 4px 12px;
+    border-radius: var(--radius-pill);
+    font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: bold;
+  }
+  .status-fulfilled { background: var(--glow-color); color: var(--accent-color); }
+  .status-unfulfilled { background: var(--border-subtle); color: var(--text-primary); }
+
+  /* Wishlist Grid */
+  .cd-wishlist-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-16);
+  }
+
+  @media screen and (max-width: 1024px) {
+    .cd-grid { grid-template-columns: 1fr; }
+    .cd-wishlist-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media screen and (max-width: 767px) {
+    .cd-order-card { flex-direction: column; align-items: flex-start; gap: var(--space-16); }
+    .cd-wishlist-grid { grid-template-columns: 1fr; }
+  }
+</style>
+
+<!-- Welcome Animation -->
+<div class="cd-welcome-overlay" id="CDWelcome">
+  <div class="cd-welcome-pulse"></div>
+  <div class="cd-welcome-text">
+    Welcome To AERIDIAN.<br>
+    <span style="font-size: var(--font-heading-3); color: var(--text-secondary);">Always New To The World.</span>
+  </div>
+</div>
+
+<div class="customer-dashboard">
+  <div class="cd-container">
+    
+    <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+      <div>
+        <div class="cd-panel-title" style="margin: 0;">AERIDIAN IDENTITY</div>
+        <h1 style="font-size: var(--font-heading-1); margin-top: var(--space-8);">Welcome Back, {{ customer.first_name }}</h1>
+      </div>
+      <a href="{{ routes.account_logout_url }}" class="btn-primary" style="background: transparent; color: var(--text-primary); border: 1px solid var(--text-secondary);">Disconnect</a>
+    </div>
+
+    <div class="cd-grid">
+      
+      <!-- LEFT SIDEBAR -->
+      <div class="cd-sidebar">
+        <!-- Membership Foundation -->
+        <div class="cd-panel" style="text-align: center;">
+          <div class="ar-monogram-auth" style="margin: 0 auto var(--space-16) auto; width: 64px; height: 64px; font-size: 24px; border: 2px solid var(--text-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center;">AR</div>
+          <h3 style="font-size: var(--font-heading-3);">{{ customer.name }}</h3>
+          <p style="color: var(--text-secondary); font-size: var(--font-caption);">{{ customer.email }}</p>
+          <div style="margin-top: var(--space-24); padding: var(--space-8); background: var(--glow-color); border-radius: var(--radius-pill); color: var(--accent-color); font-size: 10px; text-transform: uppercase; font-weight: bold; letter-spacing: 0.1em;">
+            AERIDIAN Explorer Tier
+          </div>
+        </div>
+
+        <div class="cd-panel">
+          <div class="cd-panel-title">Command Center</div>
+          <a href="#orders" class="cd-nav-link">Order Ecosystem</a>
+          <a href="#wishlist" class="cd-nav-link">Saved Artifacts</a>
+          <a href="{{ routes.account_addresses_url }}" class="cd-nav-link">Saved Addresses ({{ customer.addresses_count }})</a>
+          <a href="#security" class="cd-nav-link">Account Security</a>
+        </div>
+      </div>
+
+      <!-- RIGHT CONTENT -->
+      <div>
+        
+        <!-- Orders Ecosystem -->
+        <div class="cd-panel" id="orders" style="margin-bottom: var(--space-48);">
+          <div class="cd-panel-title">
+            Order Ecosystem
+            <span style="font-size: 10px;">{{ customer.orders.size }} Total</span>
+          </div>
+
+          {%- if customer.orders.size > 0 -%}
+            {%- for order in customer.orders limit: 5 -%}
+              <div class="cd-order-card">
+                <div>
+                  <h4 style="font-size: var(--font-body-large); margin-bottom: 4px;"><a href="{{ order.customer_url }}" style="color: inherit; text-decoration: none;">Order {{ order.name }}</a></h4>
+                  <p style="color: var(--text-secondary); font-size: var(--font-caption);">{{ order.created_at | date: format: 'date' }}</p>
+                </div>
+                <div style="display: flex; align-items: center; gap: var(--space-24);">
+                  <div style="text-align: right;">
+                    <div style="font-weight: bold; margin-bottom: 4px;">{{ order.total_price | money }}</div>
+                    <div class="cd-status-badge {% if order.fulfillment_status == 'fulfilled' %}status-fulfilled{% else %}status-unfulfilled{% endif %}">
+                      {{ order.fulfillment_status_label | default: 'Processing' }}
+                    </div>
+                  </div>
+                  <a href="{{ order.customer_url }}" style="color: var(--accent-color);">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M12 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </a>
+                </div>
+              </div>
+            {%- endfor -%}
+            <a href="#" style="display: inline-block; margin-top: var(--space-16); color: var(--text-secondary); font-size: var(--font-caption); text-decoration: underline;">View All History</a>
+          {%- else -%}
+            <div style="text-align: center; padding: var(--space-48) 0; color: var(--text-secondary);">
+              <p>No artifacts acquired yet.</p>
+              <a href="/collections/all" class="btn-primary" style="margin-top: var(--space-16);">Explore Collections</a>
+            </div>
+          {%- endif -%}
+        </div>
+
+        <!-- Wishlist Ecosystem (JS Rendered) -->
+        <div class="cd-panel" id="wishlist">
+          <div class="cd-panel-title">Saved Artifacts</div>
+          <div class="cd-wishlist-grid" id="CDWishlistRender">
+            <!-- Populated via JS -->
+          </div>
+          <div id="CDWishlistEmpty" style="display: none; text-align: center; padding: var(--space-48) 0; color: var(--text-secondary);">
+            <p>Your wishlist is empty.</p>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  // 1. Welcome Animation Logic
+  if(sessionStorage.getItem('aeridian_auth_success') === 'true') {
+    document.getElementById('CDWelcome').classList.add('is-active');
+    sessionStorage.removeItem('aeridian_auth_success'); // Fire once
+  }
+
+  // 2. Wishlist Render Logic
+  const storageKey = 'aeridian_wishlist';
+  const items = JSON.parse(localStorage.getItem(storageKey)) || [];
+  const renderTarget = document.getElementById('CDWishlistRender');
+  const emptyTarget = document.getElementById('CDWishlistEmpty');
+
+  if(items.length === 0) {
+    emptyTarget.style.display = 'block';
+  } else {
+    items.forEach(handle => {
+      const card = document.createElement('div');
+      card.className = 'cd-order-card';
+      card.style.flexDirection = 'column';
+      card.style.alignItems = 'flex-start';
+      card.innerHTML = `
+        <div style="width: 100%; aspect-ratio: 4/5; background: var(--bg-secondary); border-radius: 4px; margin-bottom: 16px;"></div>
+        <p style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase;">Product Handle</p>
+        <h4 style="font-size: 14px; margin-bottom: 16px;">${handle}</h4>
+        <a href="/products/${handle}" class="btn-primary" style="width: 100%; padding: 8px; font-size: 10px;">View Product</a>
+      `;
+      renderTarget.appendChild(card);
+    });
+  }
+});
+</script>

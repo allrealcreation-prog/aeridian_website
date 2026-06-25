@@ -1,0 +1,16 @@
+{% layout none %}
+<!doctype html>
+<html lang="{{ request.locale.iso_code }}">
+  <head>
+    <meta charset="utf-8">
+    <title>Gift Card</title>
+  </head>
+  <body>
+    <!-- Basic Gift Card Structure to prevent Shopify deletion errors -->
+    <div style="text-align: center; padding: 50px;">
+      <h1>AERIDIAN Gift Card</h1>
+      <p>Code: {{ gift_card.code }}</p>
+      <p>Balance: {{ gift_card.balance | money }}</p>
+    </div>
+  </body>
+</html>

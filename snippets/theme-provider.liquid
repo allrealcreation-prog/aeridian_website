@@ -1,0 +1,34 @@
+<!-- AERIDIAN Theme Provider (Inline execution to prevent FOUC) -->
+<script>
+  (function() {
+    try {
+      // 1. Fetch Merchant Settings
+      window.AeridianSettings = {
+        defaultTheme: {{ settings.default_theme | json }},
+        autoSwitch: {{ settings.enable_theme_auto_switch | json }}
+      };
+
+      // 2. Determine initial state
+      var storedTheme = localStorage.getItem('aeridian_theme');
+      var finalTheme = 'dark'; // Fallback baseline
+
+      if (storedTheme) {
+        // User has explicit preference
+        finalTheme = storedTheme;
+      } else if (window.AeridianSettings.autoSwitch) {
+        // Time-based auto switching (7AM - 7PM = Light)
+        var hour = new Date().getHours();
+        finalTheme = (hour >= 7 && hour < 19) ? 'light' : 'dark';
+      } else {
+        // OS Preference
+        var prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
+        finalTheme = prefersLight ? 'light' : 'dark';
+      }
+
+      // 3. Apply attribute immediately to <html> block before DOM paints
+      document.documentElement.setAttribute('data-theme', finalTheme);
+    } catch(e) {
+      console.warn('AERIDIAN Theme Provider Error:', e);
+    }
+  })();
+</script>

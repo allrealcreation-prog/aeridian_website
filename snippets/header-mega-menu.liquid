@@ -1,0 +1,205 @@
+<style>
+  .mega-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background-color: var(--color-primary-obsidian);
+    border-bottom: var(--border-subtle);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: opacity var(--duration-fast) var(--ease-entrance), transform var(--duration-fast) var(--ease-entrance), visibility var(--duration-fast);
+    z-index: 990;
+    pointer-events: none;
+  }
+
+  .mega-menu.is-open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  .mega-menu__container {
+    max-width: var(--container-large);
+    margin: 0 auto;
+    padding: var(--space-48) var(--space-24);
+    display: grid;
+    grid-template-columns: 1fr 1fr 1.5fr 1fr;
+    gap: var(--space-48);
+  }
+
+  .mega-menu__col-title {
+    font-size: var(--font-caption);
+    color: var(--color-secondary-steel);
+    letter-spacing: var(--tracking-caption);
+    margin-bottom: var(--space-24);
+    text-transform: uppercase;
+  }
+
+  .mega-menu__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-16);
+  }
+
+  .mega-menu__link {
+    color: var(--color-primary-pure-white);
+    font-size: var(--font-body-regular);
+    transition: color var(--duration-fast) var(--ease-luxury);
+  }
+
+  .mega-menu__link:hover {
+    color: var(--color-secondary-titanium);
+  }
+
+  /* Editorial Campaign Block */
+  .mega-menu__campaign {
+    display: block;
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 4/5;
+    background-color: var(--color-primary-carbon);
+    border-radius: var(--radius-sm);
+  }
+
+  .mega-menu__campaign img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--duration-slow) var(--ease-luxury);
+  }
+
+  .mega-menu__campaign:hover img {
+    transform: scale(1.05);
+  }
+
+  .mega-menu__campaign-text {
+    position: absolute;
+    bottom: var(--space-24);
+    left: var(--space-24);
+    font-size: var(--font-body-large);
+    font-family: var(--font-body);
+    color: var(--color-primary-pure-white);
+    text-shadow: 0 2px 12px rgba(0,0,0,0.5);
+  }
+</style>
+
+<div id="MegaMenu" class="mega-menu" data-context="">
+  <div class="mega-menu__container">
+    
+    <!-- Col 1: Featured Collections -->
+    <div>
+      <div class="mega-menu__col-title">Featured</div>
+      <ul class="mega-menu__list">
+        <li><a href="#" class="mega-menu__link">Essentials</a></li>
+        <li><a href="#" class="mega-menu__link">Outerwear</a></li>
+        <li><a href="#" class="mega-menu__link">Technical Pants</a></li>
+        <li><a href="#" class="mega-menu__link">Footwear</a></li>
+      </ul>
+    </div>
+
+    <!-- Col 2: Categories -->
+    <div>
+      <div class="mega-menu__col-title">Categories</div>
+      <ul class="mega-menu__list">
+        <li><a href="#" class="mega-menu__link">All Products</a></li>
+        <li><a href="#" class="mega-menu__link">Tees & Tanks</a></li>
+        <li><a href="#" class="mega-menu__link">Hoodies & Sweats</a></li>
+        <li><a href="#" class="mega-menu__link">Accessories</a></li>
+      </ul>
+    </div>
+
+    <!-- Col 3: Editorial Campaign -->
+    <div>
+      <div class="mega-menu__col-title">Campaign</div>
+      <a href="#" class="mega-menu__campaign">
+        <!-- Placeholder for Shopify Dynamic Image -->
+        <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #111 0%, #222 100%);"></div>
+        <div class="mega-menu__campaign-text">FW26 / OBSIDIAN</div>
+      </a>
+    </div>
+
+    <!-- Col 4: Quick Links / New Arrivals -->
+    <div>
+      <div class="mega-menu__col-title">New Arrivals</div>
+      <ul class="mega-menu__list">
+        <li><a href="#" class="mega-menu__link" style="opacity: 0.7;">Aeris Tech Jacket</a></li>
+        <li><a href="#" class="mega-menu__link" style="opacity: 0.7;">Strata Cargo</a></li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  let megaMenuTimeout;
+
+  function toggleMegaMenu(e, context, buttonEl) {
+    if (e) e.preventDefault();
+    
+    const menu = document.getElementById('MegaMenu');
+    const header = document.getElementById('GlobalHeader');
+    const isOpen = menu.classList.contains('is-open');
+    const currentContext = menu.getAttribute('data-context');
+    
+    // Close logic: if already open on the SAME context
+    if (isOpen && currentContext === context) {
+      closeMegaMenu();
+      return;
+    }
+    
+    // Open logic
+    clearTimeout(megaMenuTimeout);
+    
+    // Reset all buttons' aria-expanded
+    document.querySelectorAll('.header-nav__toggle').forEach(btn => btn.setAttribute('aria-expanded', 'false'));
+    if (buttonEl) buttonEl.setAttribute('aria-expanded', 'true');
+    
+    menu.setAttribute('data-context', context);
+    menu.classList.add('is-open');
+    header.style.backgroundColor = 'var(--color-primary-obsidian)'; // Force solid background
+  }
+
+  function closeMegaMenu() {
+    megaMenuTimeout = setTimeout(() => {
+      const menu = document.getElementById('MegaMenu');
+      const header = document.getElementById('GlobalHeader');
+      
+      menu.classList.remove('is-open');
+      menu.setAttribute('data-context', '');
+      
+      // Reset toggles
+      document.querySelectorAll('.header-nav__toggle').forEach(btn => btn.setAttribute('aria-expanded', 'false'));
+      
+      // Revert header background if at top
+      if(window.scrollY <= 50 && header.classList.contains('is-transparent')) {
+        header.style.backgroundColor = 'transparent';
+      } else {
+        header.style.backgroundColor = ''; // Revert to stylesheet default
+      }
+    }, 50); // slight delay to prevent jitter
+  }
+
+  // Handle outside click to close
+  document.addEventListener('click', (e) => {
+    const menu = document.getElementById('MegaMenu');
+    const header = document.getElementById('GlobalHeader');
+    if(menu.classList.contains('is-open') && !header.contains(e.target)) {
+      closeMegaMenu();
+    }
+  });
+
+  // Handle ESC key to close
+  document.addEventListener('keydown', (e) => {
+    const menu = document.getElementById('MegaMenu');
+    if(e.key === 'Escape' && menu.classList.contains('is-open')) {
+      closeMegaMenu();
+    }
+  });
+</script>

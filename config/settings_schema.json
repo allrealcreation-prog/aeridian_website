@@ -1,0 +1,203 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "AERIDIAN",
+    "theme_author": "AERIDIAN Team",
+    "theme_version": "1.0.0",
+    "theme_support_url": "https://aeridian.com/support",
+    "theme_documentation_url": "https://aeridian.com/docs"
+  },
+  {
+    "name": "Colors",
+    "settings": [
+      {
+        "type": "color",
+        "id": "color_primary_obsidian",
+        "label": "Primary Obsidian (Backgrounds)",
+        "default": "#050505"
+      },
+      {
+        "type": "color",
+        "id": "color_primary_carbon",
+        "label": "Primary Carbon (Elevated Surfaces)",
+        "default": "#111111"
+      },
+      {
+        "type": "color",
+        "id": "color_primary_pure_white",
+        "label": "Primary Pure White (High Emphasis Text)",
+        "default": "#FFFFFF"
+      },
+      {
+        "type": "color",
+        "id": "color_primary_soft_white",
+        "label": "Primary Soft White (Secondary Text)",
+        "default": "#F5F5F5"
+      },
+      {
+        "type": "color",
+        "id": "color_secondary_titanium",
+        "label": "Secondary Titanium (Borders)",
+        "default": "#BFC3C9"
+      },
+      {
+        "type": "color",
+        "id": "color_secondary_steel",
+        "label": "Secondary Steel (Disabled)",
+        "default": "#8B919B"
+      },
+      {
+        "type": "color",
+        "id": "color_accent_atmospheric",
+        "label": "Accent Atmospheric Blue (Max 5% Usage)",
+        "default": "#7FD9FF"
+      }
+    ]
+  },
+  {
+    "name": "Typography",
+    "settings": [
+      {
+        "type": "font_picker",
+        "id": "font_primary",
+        "label": "Primary Font",
+        "default": "space_grotesk_n4"
+      },
+      {
+        "type": "font_picker",
+        "id": "font_fallback",
+        "label": "Fallback Font",
+        "default": "inter_n4"
+      }
+    ]
+  },
+  {
+    "name": "Borders and Radius",
+    "settings": [
+      {
+        "type": "range",
+        "id": "radius_sm",
+        "min": 0,
+        "max": 24,
+        "step": 2,
+        "unit": "px",
+        "label": "Small Radius",
+        "default": 12
+      },
+      {
+        "type": "range",
+        "id": "radius_md",
+        "min": 0,
+        "max": 40,
+        "step": 2,
+        "unit": "px",
+        "label": "Medium Radius",
+        "default": 20
+      },
+      {
+        "type": "range",
+        "id": "radius_lg",
+        "min": 0,
+        "max": 64,
+        "step": 2,
+        "unit": "px",
+        "label": "Large Radius",
+        "default": 32
+      }
+    ]
+  },
+  {
+    "name": "AERIDIAN Theme Engine",
+    "settings": [
+      {
+        "type": "select",
+        "id": "default_theme",
+        "label": "Default Theme",
+        "info": "Used if Auto-Switch is disabled.",
+        "options": [
+          { "value": "dark", "label": "Dark Mode" },
+          { "value": "light", "label": "Light Mode" }
+        ],
+        "default": "dark"
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_theme_auto_switch",
+        "label": "Enable Time-Based Auto Switching",
+        "info": "Automatically switches to Light Mode between 7AM and 7PM local time. Overrides OS preference unless the user explicitly interacts with the header toggle.",
+        "default": false
+      }
+    ]
+  },
+  {
+    "name": "AERIDIAN Motion Engine",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "enable_page_transitions",
+        "label": "Enable Cinematic Page Transitions",
+        "info": "Intercepts internal links to provide a smooth, SPA-like GSAP fade transition.",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_custom_cursor",
+        "label": "Enable Premium Custom Cursor",
+        "info": "Replaces desktop cursor with a dynamic luxury ring.",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_magnetic_buttons",
+        "label": "Enable Magnetic Interactions",
+        "info": "Buttons subtly pull towards the user's cursor on hover.",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_scroll_progress",
+        "label": "Enable Global Scroll Indicator",
+        "info": "Displays a thin progress bar at the top of the viewport.",
+        "default": true
+      }
+    ]
+  },
+  {
+    "name": "AERIDIAN Collection System",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "enable_quick_view",
+        "label": "Enable Quick View",
+        "info": "Adds a Quick View button to product cards.",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_collection_badges",
+        "label": "Enable Product Badges",
+        "info": "Shows 'Archive' or 'Signal' badges on products.",
+        "default": true
+      }
+    ]
+  },
+  {
+    "name": "AERIDIAN PDP Experience",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "pdp_show_sticky_bar",
+        "label": "Enable Sticky Purchase Bar",
+        "info": "Displays a persistent purchase bar when scrolling past the main hero.",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "pdp_enable_recommendations",
+        "label": "Enable Hybrid Recommendations",
+        "info": "Shows 'Complete the Look' and 'Frequently Bought Together'.",
+        "default": true
+      }
+    ]
+  }
+]

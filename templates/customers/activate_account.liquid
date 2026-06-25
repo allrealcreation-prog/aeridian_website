@@ -1,0 +1,23 @@
+<div class="container container--narrow" style="padding-top: var(--space-120); padding-bottom: var(--space-120); text-align: center;">
+  <h1 style="margin-bottom: var(--space-24);">Activate Account</h1>
+  <p style="color: var(--text-secondary); margin-bottom: var(--space-64);">Create your password to activate your account.</p>
+  
+  <div style="max-width: 400px; margin: 0 auto; text-align: left;">
+    {% form 'activate_customer_password' %}
+      {{ form.errors | default_errors }}
+      
+      <div style="margin-bottom: var(--space-24);">
+        <input type="password" name="customer[password]" placeholder="Password" required style="width: 100%; padding: var(--space-16); background: transparent; border: 1px solid var(--border-subtle); color: var(--text-primary);">
+      </div>
+      
+      <div style="margin-bottom: var(--space-32);">
+        <input type="password" name="customer[password_confirmation]" placeholder="Confirm Password" required style="width: 100%; padding: var(--space-16); background: transparent; border: 1px solid var(--border-subtle); color: var(--text-primary);">
+      </div>
+      
+      <div style="display: flex; gap: var(--space-16);">
+        <button type="submit" class="btn-primary" style="flex: 1;">Activate Account</button>
+        <button type="submit" name="decline" class="btn-secondary" style="flex: 1;">Decline Invitation</button>
+      </div>
+    {% endform %}
+  </div>
+</div>

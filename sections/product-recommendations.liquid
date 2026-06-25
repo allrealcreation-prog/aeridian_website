@@ -1,0 +1,108 @@
+<style>
+  .pdp-recommendations {
+    background-color: var(--bg-primary);
+    padding: var(--space-80) var(--space-24);
+  }
+  
+  .pdp-rec-container {
+    max-width: var(--container-large);
+    margin: 0 auto;
+  }
+
+  .pdp-rec-header {
+    text-align: center;
+    margin-bottom: var(--space-48);
+  }
+
+  .pdp-rec-title {
+    font-size: var(--font-heading-1);
+    margin-bottom: var(--space-12);
+  }
+  .pdp-rec-subtitle {
+    font-size: var(--font-caption);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-secondary);
+  }
+
+  .pdp-rec-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-32);
+  }
+
+  @media screen and (max-width: 1024px) {
+    .pdp-rec-grid { grid-template-columns: repeat(2, 1fr); gap: var(--space-16); }
+  }
+</style>
+
+<section class="pdp-recommendations" data-section-id="{{ section.id }}">
+  <div class="pdp-rec-container">
+    
+    <!-- HYBRID MODULE 1: COMPLETE THE LOOK (Curated Metafields) -->
+    {%- assign complete_look = product.metafields.aeridian.complete_the_look.value -%}
+    {%- if complete_look != blank -%}
+      <div style="margin-bottom: var(--space-80);" data-scroll-reveal>
+        <div class="pdp-rec-header">
+          <div class="pdp-rec-subtitle">Styled by AERIDIAN</div>
+          <h2 class="pdp-rec-title">Complete The Look</h2>
+        </div>
+        <div class="pdp-rec-grid">
+          {%- for rec_product in complete_look limit: 4 -%}
+            {% render 'product-card', product: rec_product %}
+          {%- endfor -%}
+        </div>
+      </div>
+    {%- endif -%}
+
+    <!-- HYBRID MODULE 2: FREQUENTLY BOUGHT TOGETHER (Shopify AI API) -->
+    <div class="product-recommendations" data-url="{{ routes.product_recommendations_url }}?section_id={{ section.id }}&product_id={{ product.id }}&limit=4" data-scroll-reveal>
+      {%- if recommendations.performed and recommendations.products_count > 0 -%}
+        <div class="pdp-rec-header">
+          <div class="pdp-rec-subtitle">Chosen By The Community</div>
+          <h2 class="pdp-rec-title">Frequently Bought Together</h2>
+        </div>
+        <div class="pdp-rec-grid">
+          {%- for rec_product in recommendations.products -%}
+            {% render 'product-card', product: rec_product %}
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+    </div>
+
+  </div>
+</section>
+
+<!-- Fetch Native Shopify Recommendations via AJAX -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const container = document.querySelector('.product-recommendations');
+  if (!container) return;
+
+  const url = container.dataset.url;
+
+  fetch(url)
+    .then(response => response.text())
+    .then(html => {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'text/html');
+      const newContent = doc.querySelector('.product-recommendations');
+      
+      if (newContent && newContent.innerHTML.trim().length > 0) {
+        container.innerHTML = newContent.innerHTML;
+        // Re-initialize hover states/magnetic logic if needed
+        if(window.MotionEngine) {
+          window.MotionEngine.initMagneticElements();
+        }
+      }
+    })
+    .catch(err => console.error('AERIDIAN Recommendations Error:', err));
+});
+</script>
+
+{% schema %}
+{
+  "name": "Recommendations",
+  "settings": []
+}
+{% endschema %}

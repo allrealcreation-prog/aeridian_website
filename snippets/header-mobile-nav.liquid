@@ -1,0 +1,145 @@
+<style>
+  .mobile-nav-drawer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    height: 100dvh;
+    background-color: var(--color-primary-obsidian);
+    z-index: 1100;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-100%); /* Drops down from top or slides from left */
+    transition: opacity var(--duration-base) var(--ease-luxury), transform var(--duration-base) var(--ease-luxury), visibility var(--duration-base);
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Slide from left for architectural feel */
+  .mobile-nav-drawer {
+    transform: translateX(-100%);
+  }
+
+  .mobile-nav-drawer.is-open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(0);
+  }
+
+  .mobile-nav-drawer__header {
+    height: 64px; /* Matches mobile header height */
+    padding: 0 var(--space-16);
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    border-bottom: var(--border-subtle);
+  }
+
+  .mobile-nav-drawer__close {
+    background: none;
+    border: none;
+    color: var(--color-primary-pure-white);
+    padding: var(--space-8);
+  }
+
+  .mobile-nav-drawer__content {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--space-48) var(--space-24);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-32);
+  }
+
+  /* Left-aligned architectural style */
+  .mobile-nav-drawer__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-24);
+  }
+
+  .mobile-nav-drawer__link {
+    font-family: var(--font-body);
+    font-size: var(--font-display-l); /* Massive typography */
+    color: var(--color-primary-pure-white);
+    text-transform: uppercase;
+    line-height: 1;
+    letter-spacing: -0.01em;
+    opacity: 0;
+    transform: translateX(-20px);
+    transition: opacity var(--duration-base) var(--ease-luxury), transform var(--duration-base) var(--ease-luxury);
+  }
+
+  .mobile-nav-drawer.is-open .mobile-nav-drawer__link {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  /* Stagger delays */
+  .mobile-nav-drawer.is-open .mobile-nav-drawer__item:nth-child(1) .mobile-nav-drawer__link { transition-delay: 100ms; }
+  .mobile-nav-drawer.is-open .mobile-nav-drawer__item:nth-child(2) .mobile-nav-drawer__link { transition-delay: 150ms; }
+  .mobile-nav-drawer.is-open .mobile-nav-drawer__item:nth-child(3) .mobile-nav-drawer__link { transition-delay: 200ms; }
+  .mobile-nav-drawer.is-open .mobile-nav-drawer__item:nth-child(4) .mobile-nav-drawer__link { transition-delay: 250ms; }
+  .mobile-nav-drawer.is-open .mobile-nav-drawer__item:nth-child(5) .mobile-nav-drawer__link { transition-delay: 300ms; }
+
+  /* Bottom Utility Area */
+  .mobile-nav-drawer__footer {
+    padding: var(--space-24);
+    border-top: var(--border-subtle);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-16);
+  }
+
+  .mobile-nav-drawer__utility-link {
+    font-size: var(--font-body-regular);
+    color: var(--color-secondary-titanium);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+</style>
+
+<div id="MobileNavDrawer" class="mobile-nav-drawer" role="dialog" aria-modal="true">
+  <div class="mobile-nav-drawer__header">
+    <button class="mobile-nav-drawer__close" aria-label="Close Navigation" onclick="closeMobileNav()">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M18 6L6 18M6 6L18 18" stroke-linecap="round"/>
+      </svg>
+    </button>
+  </div>
+
+  <div class="mobile-nav-drawer__content">
+    <ul class="mobile-nav-drawer__list">
+      {%- if menu != blank -%}
+        {%- for link in menu.links -%}
+          <li class="mobile-nav-drawer__item">
+            <a href="{{ link.url }}" class="mobile-nav-drawer__link">{{ link.title }}</a>
+          </li>
+        {%- endfor -%}
+      {%- else -%}
+          <li class="mobile-nav-drawer__item"><a href="{{ routes.all_products_collection_url }}" class="mobile-nav-drawer__link">Shop</a></li>
+          <li class="mobile-nav-drawer__item"><a href="{{ routes.all_products_collection_url }}?sort_by=created-descending" class="mobile-nav-drawer__link">New</a></li>
+          <li class="mobile-nav-drawer__item"><a href="{{ routes.collections_url }}" class="mobile-nav-drawer__link">Collections</a></li>
+        <li class="mobile-nav-drawer__item"><a href="/pages/about" class="mobile-nav-drawer__link">About</a></li>
+        <li class="mobile-nav-drawer__item"><a href="/blogs/journal" class="mobile-nav-drawer__link">Journal</a></li>
+      {%- endif -%}
+    </ul>
+  </div>
+
+  <div class="mobile-nav-drawer__footer">
+    <a href="{{ routes.account_url }}" class="mobile-nav-drawer__utility-link">Account</a>
+    <a href="#" class="mobile-nav-drawer__utility-link" onclick="closeMobileNav(); toggleWishlist();">Wishlist</a>
+    <a href="#" class="mobile-nav-drawer__utility-link" onclick="toggleTheme(); return false;">Theme Toggle</a>
+  </div>
+</div>
+
+<script>
+  function closeMobileNav() {
+    document.getElementById('MobileNavDrawer').classList.remove('is-open');
+    document.body.style.overflow = '';
+  }
+</script>

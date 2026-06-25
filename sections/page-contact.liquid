@@ -1,0 +1,47 @@
+<div class="container container--narrow" style="padding-top: var(--space-120); padding-bottom: var(--space-120);">
+  <h1 style="text-align: center; margin-bottom: var(--space-64);">Contact Us</h1>
+  
+  <div class="grid grid--2-col" style="gap: var(--space-64);">
+    <div class="contact-form-wrapper">
+      <h2 style="margin-bottom: var(--space-24);">Send a Message</h2>
+      {% form 'contact' %}
+        {%- if form.posted_successfully? -%}
+          <p style="color: var(--accent-color); margin-bottom: var(--space-24);">Your message has been received. We will respond shortly.</p>
+        {%- endif -%}
+        
+        <div style="margin-bottom: var(--space-24);">
+          <input type="text" name="contact[name]" placeholder="Name" style="width: 100%; padding: var(--space-16); background: transparent; border: 1px solid var(--border-subtle); color: var(--text-primary);">
+        </div>
+        <div style="margin-bottom: var(--space-24);">
+          <input type="email" name="contact[email]" placeholder="Email" required style="width: 100%; padding: var(--space-16); background: transparent; border: 1px solid var(--border-subtle); color: var(--text-primary);">
+        </div>
+        <div style="margin-bottom: var(--space-24);">
+          <textarea name="contact[body]" placeholder="Message" rows="5" required style="width: 100%; padding: var(--space-16); background: transparent; border: 1px solid var(--border-subtle); color: var(--text-primary);"></textarea>
+        </div>
+        <button type="submit" class="btn-primary" style="width: 100%;">Submit</button>
+      {% endform %}
+    </div>
+
+    <div class="contact-info">
+      <h2 style="margin-bottom: var(--space-24);">Studio Address</h2>
+      <p style="color: var(--text-secondary); margin-bottom: var(--space-32); line-height: 1.6;">
+        AERIDIAN Core Studio<br>
+        100 Future Way, Suite 300<br>
+        Neo-Tokyo, NT 10001
+      </p>
+
+      <h2 style="margin-bottom: var(--space-24);">Business Hours</h2>
+      <p style="color: var(--text-secondary); line-height: 1.6;">
+        Monday - Friday: 9AM - 6PM EST<br>
+        Saturday - Sunday: Closed
+      </p>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Contact Content",
+  "settings": []
+}
+{% endschema %}

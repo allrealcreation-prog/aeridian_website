@@ -1,0 +1,60 @@
+{
+  "sections": {
+    "hero": {
+      "type": "hero-cinematic",
+      "settings": {
+      }
+    },
+    "discovery": {
+      "type": "collection-discovery",
+      "settings": {
+      }
+    },
+    "featured": {
+      "type": "featured-products",
+      "settings": {
+      }
+    },
+    "bestsellers": {
+      "type": "best-sellers",
+      "settings": {
+      }
+    },
+    "spotlight": {
+      "type": "product-spotlight",
+      "settings": {
+      }
+    },
+    "trending": {
+      "type": "trending-carousel",
+      "settings": {
+      }
+    },
+    "story": {
+      "type": "brand-story",
+      "settings": {
+      }
+    },
+    "contact": {
+      "type": "contact-hub",
+      "settings": {
+      }
+    },
+    "trust": {
+      "type": "trust-ecosystem",
+      "settings": {
+      }
+    }
+  },
+  "order": [
+    "hero",
+    "discovery",
+    "featured",
+    "bestsellers",
+    "spotlight",
+    "trending",
+    "story",
+    "contact",
+    "trust"
+  ]
+}

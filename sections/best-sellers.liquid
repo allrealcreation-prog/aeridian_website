@@ -1,0 +1,180 @@
+<style>
+  .best-sellers {
+    position: relative;
+    background-color: var(--color-primary-obsidian);
+    color: var(--color-primary-pure-white);
+    padding: var(--space-120) var(--space-24);
+    min-height: 120vh;
+  }
+
+  .bs-container {
+    max-width: var(--container-large);
+    margin: 0 auto;
+    display: flex;
+    gap: var(--space-64);
+    height: 100%;
+  }
+
+  /* Left: Featured Massive Product */
+  .bs-featured {
+    width: 60%;
+    position: sticky;
+    top: 10vh;
+    height: 80vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .bs-featured__image-wrap {
+    flex: 1;
+    position: relative;
+    background: radial-gradient(circle at center, rgba(127, 217, 255, 0.1) 0%, transparent 70%);
+    border-radius: var(--radius-sm);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  .bs-featured__image {
+    max-height: 90%;
+    max-width: 90%;
+    object-fit: contain;
+    /* Rotation handled by GSAP */
+  }
+
+  .bs-featured__content {
+    margin-top: var(--space-32);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+
+  /* Right: Supporting Masonry */
+  .bs-supporting {
+    width: 40%;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-48);
+    padding-top: 20vh; /* Offset to create masonry feel */
+  }
+
+  .bs-card {
+    background: rgba(17, 17, 17, 0.4);
+    border: var(--border-subtle);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  html[data-theme="light"] .bs-card {
+    background: rgba(255, 255, 255, 0.6);
+  }
+
+  .bs-card__image {
+    width: 100%;
+    aspect-ratio: 1/1;
+    object-fit: cover;
+  }
+
+  .bs-card__content {
+    padding: var(--space-24);
+  }
+
+  /* Responsive */
+  @media screen and (max-width: 1024px) {
+    .bs-container { flex-direction: column; }
+    .bs-featured { width: 100%; position: relative; top: 0; height: 60vh; }
+    .bs-supporting { width: 100%; padding-top: 0; }
+  }
+</style>
+
+<section class="best-sellers" data-section-id="{{ section.id }}">
+  <div style="text-align: center; margin-bottom: var(--space-80);">
+    <div class="fp-intro__label">High Demand</div>
+    <h2 class="fp-intro__headline" style="font-size: var(--font-heading-1);">Best Sellers Experience</h2>
+  </div>
+
+  <div class="bs-container">
+    <!-- LEFT: Featured Best Seller -->
+    <div class="bs-featured" id="BS-Featured">
+      <div class="bs-featured__image-wrap">
+        {%- if section.settings.main_product != blank -%}
+          {%- assign main_product = all_products[section.settings.main_product] -%}
+          <img src="{{ main_product.featured_image | image_url: width: 1000 }}" alt="{{ main_product.title }}" class="bs-featured__image" id="BS-MainImage">
+        {%- else -%}
+          {{ 'product-1' | placeholder_svg_tag: 'bs-featured__image' }}
+        {%- endif -%}
+      </div>
+      <div class="bs-featured__content">
+        <div>
+          <div class="fp-intro__label">No. 1 Worldwide</div>
+          <h3 style="font-size: var(--font-heading-2); margin-bottom: var(--space-8);">{{ main_product.title | default: 'AERIDIAN Core Jacket' }}</h3>
+          <p style="color: var(--color-secondary-titanium);">{{ main_product.price | default: 45000 | money }}</p>
+        </div>
+        <a href="{{ main_product.url | default: '#' }}" class="btn-primary">Shop Now</a>
+      </div>
+    </div>
+
+    <!-- RIGHT: Supporting Best Sellers -->
+    <div class="bs-supporting">
+      {%- for i in (1..3) -%}
+        <!-- Example statically loop to represent block setup -->
+        <div class="bs-card">
+          {{ 'product-' | append: i | placeholder_svg_tag: 'bs-card__image' }}
+          <div class="bs-card__content">
+            <h4 style="font-size: var(--font-heading-3); margin-bottom: var(--space-8);">Tech Cargo Pant 0{{ i }}</h4>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <p style="color: var(--color-secondary-titanium);">$220.00</p>
+              <a href="{{ product.url | default: routes.all_products_collection_url }}" style="text-transform: uppercase; font-size: var(--font-caption); font-weight: 500;">View Product</a>
+            </div>
+          </div>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  if(typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+    const isReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if(!isReducedMotion) {
+      // Rotate the featured image on scroll
+      const bsImage = document.querySelector("#BS-MainImage");
+      if (bsImage) {
+        gsap.to(bsImage, {
+          rotation: 15,
+          scale: 1.05,
+          ease: "none",
+          scrollTrigger: {
+            trigger: "#BS-Featured",
+            start: "top center",
+            end: "bottom top",
+            scrub: true
+          }
+        });
+      }
+    }
+  }
+});
+</script>
+
+{% schema %}
+{
+  "name": "Best Sellers",
+  "settings": [
+    {
+      "type": "product",
+      "id": "main_product",
+      "label": "Main Featured Product"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Best Sellers Experience"
+    }
+  ]
+}
+{% endschema %}

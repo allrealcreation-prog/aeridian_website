@@ -1,0 +1,60 @@
+<div class="container" style="padding-top: var(--space-120); padding-bottom: var(--space-120);">
+  <h1 style="text-align: center; margin-bottom: var(--space-64);">{{ blog.title }}</h1>
+  
+  <div class="grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: var(--space-48);">
+    {%- if blog.articles.size > 0 -%}
+      {%- for article in blog.articles -%}
+        <article class="article-card">
+          <div class="article-card__image" style="aspect-ratio: 16/9; overflow: hidden; margin-bottom: var(--space-24);">
+            {%- if article.image -%}
+              <img src="{{ article.image | image_url: width: 800 }}" alt="{{ article.title | escape }}" style="width: 100%; height: 100%; object-fit: cover;">
+            {%- else -%}
+              {{ 'lifestyle-1' | placeholder_svg_tag: 'placeholder-svg' }}
+            {%- endif -%}
+          </div>
+          <div class="article-card__meta" style="font-size: var(--font-caption); color: var(--text-secondary); margin-bottom: var(--space-8); text-transform: uppercase;">
+            {{ article.published_at | date: "%B %d, %Y" }}
+          </div>
+          <h2 style="font-size: var(--font-heading-3); margin-bottom: var(--space-16);">
+            <a href="{{ article.url }}" style="color: inherit; text-decoration: none;">{{ article.title }}</a>
+          </h2>
+          <p style="color: var(--text-secondary); margin-bottom: var(--space-24);">
+            {%- if article.excerpt.size > 0 -%}
+              {{ article.excerpt }}
+            {%- else -%}
+              {{ article.content | strip_html | truncatewords: 30 }}
+            {%- endif -%}
+          </p>
+          <a href="{{ article.url }}" class="btn-secondary">Read More</a>
+        </article>
+      {%- endfor -%}
+    {%- else -%}
+      <!-- Luxury Placeholders -->
+      {% assign dummy_titles = "Future Materials,FW26 Collection Preview,Inside AERIDIAN Design,Technical Layering Guide,The Future Of Streetwear" | split: "," %}
+      {%- for dummy_title in dummy_titles -%}
+        <article class="article-card">
+          <div class="article-card__image" style="aspect-ratio: 16/9; overflow: hidden; margin-bottom: var(--space-24);">
+            {{ 'lifestyle-' | append: forloop.index | placeholder_svg_tag: 'placeholder-svg' }}
+          </div>
+          <div class="article-card__meta" style="font-size: var(--font-caption); color: var(--text-secondary); margin-bottom: var(--space-8); text-transform: uppercase;">
+            {{ 'now' | date: "%B %d, %Y" }}
+          </div>
+          <h2 style="font-size: var(--font-heading-3); margin-bottom: var(--space-16);">
+            <a href="#" style="color: inherit; text-decoration: none;">{{ dummy_title }}</a>
+          </h2>
+          <p style="color: var(--text-secondary); margin-bottom: var(--space-24);">
+            An exclusive look into the technical innovations and design philosophy behind the upcoming AERIDIAN collection.
+          </p>
+          <a href="#" class="btn-secondary">Read More</a>
+        </article>
+      {%- endfor -%}
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Blog Journal",
+  "settings": []
+}
+{% endschema %}

@@ -1,0 +1,473 @@
+<style>
+  .contact-hub {
+    position: relative;
+    background-color: var(--color-primary-obsidian);
+    color: var(--color-primary-pure-white);
+  }
+
+  html[data-theme="light"] .contact-hub {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+  }
+
+  .ch-container {
+    max-width: var(--container-large);
+    margin: 0 auto;
+    padding: 0 var(--space-24);
+  }
+
+  .ch-section-title {
+    font-size: var(--font-caption);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-secondary-titanium);
+    margin-bottom: var(--space-24);
+  }
+
+  /* PART 1: Intro Signal */
+  .ch-intro {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .ch-intro__signal {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    border: 1px solid var(--color-accent-atmospheric);
+    opacity: 0.2;
+    animation: signalExpand 4s infinite linear;
+    pointer-events: none;
+  }
+
+  .ch-intro__signal:nth-child(2) { animation-delay: 1.3s; }
+  .ch-intro__signal:nth-child(3) { animation-delay: 2.6s; }
+
+  @keyframes signalExpand {
+    0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0.8; }
+    100% { transform: translate(-50%, -50%) scale(4); opacity: 0; }
+  }
+
+  /* PART 2: Contact Form Split */
+  .ch-contact {
+    min-height: 120vh;
+    display: flex;
+    align-items: center;
+  }
+
+  .ch-contact-split {
+    display: flex;
+    gap: var(--space-64);
+    width: 100%;
+  }
+
+  .ch-contact__left, .ch-contact__right {
+    flex: 1;
+  }
+
+  .ch-form-group {
+    margin-bottom: var(--space-24);
+    position: relative;
+  }
+
+  .ch-form-input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+    padding: var(--space-12) 0;
+    color: inherit;
+    font-family: inherit;
+    font-size: var(--font-body-regular);
+    transition: border-color var(--duration-fast);
+  }
+
+  html[data-theme="light"] .ch-form-input {
+    border-bottom-color: rgba(0,0,0,0.2);
+  }
+
+  .ch-form-input:focus {
+    outline: none;
+    border-bottom-color: var(--color-accent-atmospheric);
+  }
+
+  /* PART 3: Support Accordions */
+  .ch-support {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .ch-accordion {
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+
+  html[data-theme="light"] .ch-accordion { border-bottom-color: rgba(0,0,0,0.1); }
+
+  .ch-accordion__header {
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: inherit;
+    text-align: left;
+    padding: var(--space-24) 0;
+    font-size: var(--font-heading-3);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .ch-accordion__content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height var(--duration-slow) var(--ease-luxury);
+  }
+
+  .ch-accordion.is-open .ch-accordion__content {
+    max-height: 500px;
+  }
+
+  .ch-accordion__inner {
+    padding-bottom: var(--space-24);
+    color: var(--color-secondary-titanium);
+  }
+
+  /* PART 4 & 7: Glass Cards (Live Comms & Socials) */
+  .ch-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-24);
+  }
+
+  .ch-card {
+    background: rgba(17, 17, 17, 0.4);
+    backdrop-filter: blur(12px);
+    border: var(--border-subtle);
+    border-radius: var(--radius-sm);
+    padding: var(--space-32);
+    text-align: center;
+    transition: transform var(--duration-base), border-color var(--duration-base);
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 1/1;
+  }
+
+  html[data-theme="light"] .ch-card { background: rgba(255, 255, 255, 0.6); }
+
+  .ch-card:hover {
+    transform: translateY(-10px);
+    border-color: var(--color-accent-atmospheric);
+  }
+
+  /* PART 6: Newsletter */
+  .ch-newsletter {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: radial-gradient(circle at center, rgba(127, 217, 255, 0.1) 0%, transparent 50%);
+  }
+
+  /* PART 8: Global Map (Three.js) */
+  .ch-map {
+    height: 100vh;
+    position: relative;
+    overflow: hidden;
+  }
+
+  #GlobeCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+  }
+
+  @media screen and (max-width: 1024px) {
+    .ch-contact-split { flex-direction: column; }
+    .ch-cards-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media screen and (max-width: 767px) {
+    .ch-cards-grid { grid-template-columns: 1fr; }
+    .ch-accordion__header { font-size: var(--font-body-large); }
+  }
+</style>
+
+<section class="contact-hub" data-section-id="{{ section.id }}">
+  
+  <!-- PART 1: SIGNAL INTRO -->
+  <div class="ch-intro">
+    <div class="ch-intro__signal"></div>
+    <div class="ch-intro__signal"></div>
+    <div class="ch-intro__signal"></div>
+    <div style="position: relative; z-index: 2;">
+      <div class="ch-section-title">Connect</div>
+      <h2 style="font-size: var(--font-display-l); margin-bottom: var(--space-16);">Let's Build The<br>Future Together</h2>
+      <p style="color: var(--color-secondary-titanium);">Questions, ideas, collaborations or support.<br>The signal is always open.</p>
+    </div>
+  </div>
+
+  <div class="ch-container">
+    <!-- PART 2: CONTACT FORM -->
+    <div class="ch-contact">
+      <div class="ch-contact-split">
+        <div class="ch-contact__left">
+          <h3 style="font-size: var(--font-heading-2); margin-bottom: var(--space-48);">Transmission</h3>
+          {%- form 'contact', id: 'AeridianContact' -%}
+            {%- if form.posted_successfully? -%}
+              <div style="padding: var(--space-16); background: rgba(127, 217, 255, 0.1); border: 1px solid var(--color-accent-atmospheric); border-radius: var(--radius-sm); margin-bottom: var(--space-24);">
+                <p style="margin:0; color: var(--color-accent-atmospheric);">Signal Received. We'll get back to you soon.</p>
+              </div>
+            {%- endif -%}
+            
+            <div class="ch-form-group">
+              <input type="text" id="ContactFormName" name="contact[name]" class="ch-form-input" placeholder="Full Name" required>
+            </div>
+            <div class="ch-form-group">
+              <input type="email" id="ContactFormEmail" name="contact[email]" class="ch-form-input" placeholder="Email Address" required>
+            </div>
+            <div class="ch-form-group">
+              <select id="ContactFormSubject" name="contact[subject]" class="ch-form-input" style="background: transparent;">
+                <option value="General">General Inquiry</option>
+                <option value="Order">Order Support</option>
+                <option value="Collab">Collaborations</option>
+              </select>
+            </div>
+            <div class="ch-form-group">
+              <textarea id="ContactFormMessage" name="contact[body]" class="ch-form-input" rows="4" placeholder="Message" required></textarea>
+            </div>
+            <button type="submit" class="btn-primary" style="margin-top: var(--space-24);">Send Message</button>
+          {%- endform -%}
+        </div>
+        <div class="ch-contact__right">
+          <!-- Office details or aesthetic imagery -->
+          <div style="height: 100%; min-height: 400px; background: rgba(17, 17, 17, 0.4); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center;">
+            <p style="color: var(--color-secondary-titanium); text-align: center;">GLOBAL HQ<br>AERIDIAN NETWORK</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PART 3: SUPPORT ACCORDIONS -->
+    <div class="ch-support">
+      <div class="ch-section-title">Support Center</div>
+      
+      <div class="ch-accordion">
+        <button class="ch-accordion__header" onclick="toggleAccordion(this)">
+          Shipping Information
+          <span style="font-size: 24px;">+</span>
+        </button>
+        <div class="ch-accordion__content">
+          <div class="ch-accordion__inner">Global tracked shipping is available on all AERIDIAN artifacts. Delivery times vary by region.</div>
+        </div>
+      </div>
+
+      <div class="ch-accordion">
+        <button class="ch-accordion__header" onclick="toggleAccordion(this)">
+          Returns Policy
+          <span style="font-size: 24px;">+</span>
+        </button>
+        <div class="ch-accordion__content">
+          <div class="ch-accordion__inner">We accept returns within 14 days of delivery, provided the garment is unworn and tags remain intact.</div>
+        </div>
+      </div>
+      
+      <div class="ch-accordion">
+        <button class="ch-accordion__header" onclick="toggleAccordion(this)">
+          Frequently Asked Questions
+          <span style="font-size: 24px;">+</span>
+        </button>
+        <div class="ch-accordion__content">
+          <div class="ch-accordion__inner">How do I track my order? What is the sizing like? Access our full FAQ database in your account portal.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PART 4 & 7: LIVE COMMS / SOCIAL CARDS -->
+    <div style="padding: var(--space-120) 0;">
+      <div class="ch-section-title">Social Universe</div>
+      <div class="ch-cards-grid">
+        <a href="{{ settings.social_instagram_link | default: routes.root_url }}" class="ch-card">
+          <h3 style="margin-bottom: var(--space-8);">Instagram</h3>
+          <p style="font-size: var(--font-caption); color: var(--color-secondary-titanium);">@aeridian</p>
+        </a>
+        <a href="{{ settings.social_twitter_link | default: routes.root_url }}" class="ch-card">
+          <h3 style="margin-bottom: var(--space-8);">X (Twitter)</h3>
+          <p style="font-size: var(--font-caption); color: var(--color-secondary-titanium);">@aeridian_world</p>
+        </a>
+        <a href="{{ settings.social_youtube_link | default: routes.root_url }}" class="ch-card">
+          <h3 style="margin-bottom: var(--space-8);">Email</h3>
+          <p style="font-size: var(--font-caption); color: var(--color-secondary-titanium);">comms@aeridian.com</p>
+        </a>
+        <a href="{{ settings.social_tiktok_link | default: routes.root_url }}" class="ch-card">
+          <h3 style="margin-bottom: var(--space-8);">WhatsApp</h3>
+          <p style="font-size: var(--font-caption); color: var(--color-secondary-titanium);">Live Chat</p>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- PART 6: NEWSLETTER -->
+  <div class="ch-newsletter">
+    <div class="ch-container" style="max-width: 600px;">
+      <h2 style="font-size: var(--font-heading-1); margin-bottom: var(--space-16);">Stay Ahead Of What's Next</h2>
+      <p style="color: var(--color-secondary-titanium); margin-bottom: var(--space-48);">Receive collection launches, limited releases and future discoveries.</p>
+      
+      {% form 'customer' %}
+        <input type="hidden" name="contact[tags]" value="newsletter">
+        <div style="display: flex; gap: var(--space-16);">
+          <input type="email" name="contact[email]" class="ch-form-input" placeholder="Email Address" required>
+          <button type="submit" class="btn-primary" style="white-space: nowrap;">Join The Signal</button>
+        </div>
+      {% endform %}
+    </div>
+  </div>
+
+  <!-- PART 8: GLOBAL MAP (Three.js) -->
+  <div class="ch-map" id="CHMap">
+    <div style="position: absolute; bottom: var(--space-64); width: 100%; text-align: center; z-index: 2; pointer-events: none;">
+      <p style="font-size: var(--font-caption); letter-spacing: 0.1em; color: var(--color-accent-atmospheric);">GLOBAL PRESENCE</p>
+    </div>
+  </div>
+
+</section>
+
+<script>
+// Accordion Logic
+function toggleAccordion(button) {
+  const accordion = button.parentElement;
+  accordion.classList.toggle('is-open');
+  const span = button.querySelector('span');
+  span.innerText = accordion.classList.contains('is-open') ? '-' : '+';
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  // Three.js Wireframe Globe
+  const isReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(!isReducedMotion) {
+    let hasInitialized = false;
+    const observer = new IntersectionObserver((entries) => {
+      if(entries[0].isIntersecting && !hasInitialized) {
+        hasInitialized = true;
+        const checkThree = setInterval(() => {
+          if(window.THREE) {
+            clearInterval(checkThree);
+            initGlobe();
+          }
+        }, 100);
+      }
+    });
+    const container = document.getElementById('CHMap');
+    if (container) observer.observe(container);
+  }
+
+  function initGlobe() {
+    const container = document.getElementById('CHMap');
+    const canvas = document.createElement('canvas');
+    canvas.id = 'GlobeCanvas';
+    container.insertBefore(canvas, container.firstChild);
+    
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 1, 1000);
+    camera.position.z = 250;
+
+    const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+    renderer.setSize(container.clientWidth, container.clientHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+    const colorHex = isLight ? 0x00D9FF : 0x7FD9FF;
+
+    // Create a wireframe sphere (Globe)
+    const geometry = new THREE.SphereGeometry(80, 32, 32);
+    const material = new THREE.MeshBasicMaterial({ 
+      color: colorHex, 
+      wireframe: true,
+      transparent: true,
+      opacity: 0.15
+    });
+    const globe = new THREE.Mesh(geometry, material);
+    scene.add(globe);
+
+    // Create a points cloud overlay
+    const pointsMaterial = new THREE.PointsMaterial({
+      color: colorHex,
+      size: 1.5,
+      transparent: true,
+      opacity: 0.8
+    });
+    const points = new THREE.Points(geometry, pointsMaterial);
+    scene.add(points);
+
+    // Theme Observer
+    const observer = new MutationObserver(() => {
+      const light = document.documentElement.getAttribute('data-theme') === 'light';
+      const c = light ? 0x00D9FF : 0x7FD9FF;
+      material.color.setHex(c);
+      pointsMaterial.color.setHex(c);
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+    // Intersection Observer to pause rendering
+    let isVisible = false;
+    const io = new IntersectionObserver(entries => {
+      isVisible = entries[0].isIntersecting;
+    });
+    io.observe(container);
+
+    function animate() {
+      requestAnimationFrame(animate);
+      if(!isVisible || document.hidden) return;
+
+      globe.rotation.y += 0.002;
+      points.rotation.y += 0.002;
+      globe.rotation.x += 0.001;
+      points.rotation.x += 0.001;
+
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        camera.aspect = container.clientWidth / container.clientHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(container.clientWidth, container.clientHeight);
+      }, 250);
+    });
+  }
+});
+</script>
+
+{% schema %}
+{
+  "name": "Contact Hub",
+  "settings": [],
+  "presets": [
+    {
+      "name": "AERIDIAN Contact Hub"
+    }
+  ]
+}
+{% endschema %}

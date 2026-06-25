@@ -1,0 +1,23 @@
+{
+  "sections": {
+    "hero": {
+      "type": "main-collection-hero",
+      "settings": {
+        "show_collection_image": true,
+        "show_collection_description": true
+      }
+    },
+    "grid": {
+      "type": "main-collection-grid",
+      "settings": {
+        "columns_desktop": 3,
+        "columns_mobile": "2",
+        "products_per_page": 24
+      }
+    }
+  },
+  "order": [
+    "hero",
+    "grid"
+  ]
+}

@@ -1,0 +1,336 @@
+{%- if section.settings.enable_loading_screen -%}
+  <style>
+    /* Premium Loading Screen Foundation */
+    .aeridian-loader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      height: 100dvh;
+      background-color: var(--bg-primary);
+      z-index: 99999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.8s var(--ease-luxury), transform 0.8s var(--ease-luxury), visibility 0.8s;
+      overflow: hidden;
+    }
+
+    /* Prevent interaction when fading out */
+    .aeridian-loader.is-leaving {
+      opacity: 0;
+      pointer-events: none;
+      visibility: hidden;
+    }
+
+    /* Stage 1: Atmospheric Glow */
+    .aeridian-loader::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 150vw;
+      height: 150vw;
+      background: radial-gradient(circle, rgba(127, 217, 255, 0.04) 0%, rgba(5, 5, 5, 0) 60%);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* Stage 2 & 3: Logo Emergence and Precision Assembly */
+    .aeridian-loader__logo-wrapper {
+      position: relative;
+      opacity: 0;
+      transform: translateY(10px) scale(1.015);
+      will-change: transform, opacity;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .aeridian-loader__sequence {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      height: 120px;
+    }
+
+    .aeridian-loader__stage-1,
+    .aeridian-loader__stage-2 {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      width: 100%;
+    }
+
+    .aeridian-loader__nametag {
+      width: 100px;
+      height: auto;
+      color: var(--text-primary);
+    }
+
+    .aeridian-loader__wordmark {
+      width: 240px;
+      height: auto;
+      color: var(--text-primary);
+    }
+
+    .aeridian-loader__logo-image {
+      max-width: 280px;
+      height: auto;
+      object-fit: contain;
+    }
+
+    /* Stage 4: Silver Light Sweep */
+    .aeridian-loader__sweep {
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 50%;
+      height: 100%;
+      background: linear-gradient(
+        to right,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(191, 195, 201, 0.15) 50%,
+        rgba(255, 255, 255, 0) 100%
+      );
+      transform: skewX(-20deg);
+      pointer-events: none;
+    }
+
+    /* Option B: Micro Pulse Indicator */
+    .aeridian-loader__pulse {
+      position: absolute;
+      bottom: -40px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background-color: var(--color-accent-atmospheric);
+      opacity: 0;
+    }
+
+    /* ==========================================================================
+       ANIMATION SEQUENCES
+       ========================================================================== */
+
+    .aeridian-loader.is-animating::before {
+      animation: ambient-glow 3s var(--ease-luxury) forwards;
+    }
+
+    .aeridian-loader.is-animating .aeridian-loader__logo-wrapper {
+      animation: logo-emerge 0.6s var(--ease-luxury) forwards;
+    }
+    
+    .aeridian-loader.is-animating .aeridian-loader__stage-1 {
+      animation: sequence-nametag 2s var(--ease-luxury) forwards;
+    }
+
+    .aeridian-loader.is-animating .aeridian-loader__stage-2 {
+      animation: sequence-wordmark 1s var(--ease-luxury) 2s forwards;
+    }
+
+    .aeridian-loader.is-animating .aeridian-loader__sweep {
+      animation: silver-sweep 0.7s var(--ease-luxury) 2.5s forwards;
+    }
+
+    /* Keyframes */
+    @keyframes ambient-glow {
+      0% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+
+    @keyframes logo-emerge {
+      0% { opacity: 0; transform: translateY(10px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes sequence-nametag {
+      0% { opacity: 0; transform: scale(0.98); }
+      20% { opacity: 1; transform: scale(1); }
+      80% { opacity: 1; transform: scale(1); }
+      100% { opacity: 0; transform: scale(1.02); }
+    }
+
+    @keyframes sequence-wordmark {
+      0% { opacity: 0; transform: scale(0.98); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes silver-sweep {
+      0% { left: -100%; }
+      100% { left: 200%; }
+    }
+
+    /* Leaving Sequence (triggered by JS) */
+    .aeridian-loader.is-leaving .aeridian-loader__logo-wrapper {
+      transform: translateY(-20px) scale(1);
+      opacity: 0;
+      transition: transform 0.6s var(--ease-exit), opacity 0.5s var(--ease-exit);
+    }
+
+    /* Accessibility / Reduced Motion */
+    @media (prefers-reduced-motion: reduce) {
+      .aeridian-loader * {
+        animation: none !important;
+        transition: none !important;
+      }
+      .aeridian-loader__logo-wrapper {
+        opacity: 1;
+        transform: none;
+      }
+    }
+  </style>
+
+  <div id="AeridianLoader" class="aeridian-loader" aria-hidden="false" role="dialog" aria-modal="true" aria-label="Loading {{ shop.name }}">
+    <div class="aeridian-loader__logo-wrapper">
+      {%- if section.settings.custom_logo != blank -%}
+        <img 
+          src="{{ section.settings.custom_logo | image_url: width: 600 }}" 
+          alt="{{ shop.name }}"
+          class="aeridian-loader__logo-image"
+          width="{{ section.settings.custom_logo.width }}"
+          height="{{ section.settings.custom_logo.height }}"
+          loading="eager"
+        >
+      {%- else -%}
+        <div class="aeridian-loader__sequence">
+          <div class="aeridian-loader__stage-1">
+            {% render 'icon-ar', class: 'aeridian-loader__nametag' %}
+          </div>
+          <div class="aeridian-loader__stage-2">
+            <div class="brand-lockup">
+              <div class="brand-lockup__wordmark">
+                {% render 'icon-wordmark', class: 'aeridian-loader__wordmark' %}
+              </div>
+              <div class="brand-lockup__tagline">ALWAYS NEW TO THE WORLD</div>
+            </div>
+            <div class="aeridian-loader__sweep"></div>
+          </div>
+        </div>
+      {%- endif -%}
+
+      <div class="aeridian-loader__pulse"></div>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      const loader = document.getElementById('AeridianLoader');
+      const minDuration = {{ section.settings.minimum_duration | times: 1000 }};
+      const isFirstVisitOnly = {{ section.settings.first_visit_only | json }};
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      // 1. Check Session Storage if first-visit-only is true
+      if (isFirstVisitOnly) {
+        const hasVisited = sessionStorage.getItem('aeridian_visited');
+        if (hasVisited) {
+          // Instantly remove loading state for subsequent visits
+          document.body.classList.remove('is-loading');
+          loader.style.display = 'none';
+          return;
+        }
+      }
+
+      // Mark as visited for this session
+      sessionStorage.setItem('aeridian_visited', 'true');
+
+      // 2. Start animation sequences unless reduced motion
+      const startTime = Date.now();
+      
+      if (!reducedMotion) {
+        loader.classList.add('is-animating');
+      }
+
+      // 3. Coordinate exit
+      function removeLoader() {
+        const elapsed = Date.now() - startTime;
+        const remaining = Math.max(0, minDuration - elapsed);
+
+        // Wait for the minimum cinematic duration (e.g. 2.6s) before exiting
+        setTimeout(() => {
+          loader.classList.add('is-leaving');
+          loader.setAttribute('aria-hidden', 'true');
+          
+          // Re-enable scroll
+          document.body.classList.remove('is-loading');
+          
+          // Focus main content for screen readers
+          const mainContent = document.getElementById('MainContent');
+          if (mainContent) {
+            mainContent.focus({ preventScroll: true });
+          }
+
+          // Fully remove from DOM tree after fade transition
+          setTimeout(() => {
+            loader.remove();
+          }, 800); // matches CSS opacity transition
+        }, reducedMotion ? 0 : remaining);
+      }
+
+      // Ensure we only trigger once
+      let hasLoaded = false;
+      const onReady = () => {
+        if (hasLoaded) return;
+        hasLoaded = true;
+        removeLoader();
+      };
+
+      // Listen for window load
+      if (document.readyState === 'complete') {
+        onReady();
+      } else {
+        window.addEventListener('load', onReady);
+      }
+
+      // Failsafe: if 'load' event hangs, remove loader after a max duration
+      setTimeout(onReady, minDuration + 2000); 
+    })();
+  </script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Entry Experience",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "enable_loading_screen",
+      "label": "Enable Loading Screen",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "first_visit_only",
+      "label": "Trigger on First Visit Only",
+      "info": "If checked, users will only see this once per browsing session.",
+      "default": true
+    },
+    {
+      "type": "image_picker",
+      "id": "custom_logo",
+      "label": "Custom Logo",
+      "info": "Leave blank to use the AERIDIAN text wordmark. Transparent SVG/PNG recommended."
+    },
+    {
+      "type": "range",
+      "id": "minimum_duration",
+      "min": 1.0,
+      "max": 4.0,
+      "step": 0.1,
+      "unit": "s",
+      "label": "Minimum Display Duration",
+      "info": "Ensures the cinematic sequence completes even if the page loads instantly.",
+      "default": 2.6
+    }
+  ]
+}
+{% endschema %}

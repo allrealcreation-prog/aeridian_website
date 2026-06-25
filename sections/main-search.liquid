@@ -1,0 +1,35 @@
+<div class="container" style="padding-top: var(--space-120); padding-bottom: var(--space-120);">
+  <div style="max-width: 800px; margin: 0 auto; text-align: center;">
+    <h1 style="margin-bottom: var(--space-24);">Search</h1>
+    <form action="{{ routes.search_url }}" method="get" role="search" style="display: flex; gap: var(--space-16); margin-bottom: var(--space-64);">
+      <input type="search" name="q" value="{{ search.terms | escape }}" placeholder="Search AERIDIAN..." style="flex: 1; padding: var(--space-16); background: transparent; border: none; border-bottom: 1px solid var(--border-subtle); color: var(--text-primary); font-size: var(--font-body-large);">
+      <button type="submit" class="btn-primary">Search</button>
+    </form>
+    
+    {%- if search.performed -%}
+      {%- if search.results_count == 0 -%}
+        <p style="color: var(--text-secondary);">No coordinates found for "{{ search.terms }}". Please adjust your frequency.</p>
+      {%- else -%}
+        <div class="grid grid--3-col">
+          {%- for item in search.results -%}
+            {%- if item.object_type == 'product' -%}
+              {% render 'product-card', product: item %}
+            {%- else -%}
+              <div class="search-result-item" style="text-align: left; margin-bottom: var(--space-24);">
+                <h3><a href="{{ item.url }}" style="color: var(--text-primary); text-decoration: none;">{{ item.title }}</a></h3>
+                <p style="color: var(--text-secondary);">{{ item.content | strip_html | truncatewords: 30 }}</p>
+              </div>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Search Results",
+  "settings": []
+}
+{% endschema %}

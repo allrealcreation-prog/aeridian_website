@@ -1,0 +1,23 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-product",
+      "settings": {
+        "show_sticky_bar": true
+      }
+    },
+    "storytelling": {
+      "type": "product-storytelling",
+      "settings": {}
+    },
+    "recommendations": {
+      "type": "product-recommendations",
+      "settings": {}
+    }
+  },
+  "order": [
+    "main",
+    "storytelling",
+    "recommendations"
+  ]
+}

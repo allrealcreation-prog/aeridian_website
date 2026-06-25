@@ -1,0 +1,333 @@
+<style>
+  .site-footer {
+    position: relative;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    padding-top: var(--space-80);
+    overflow: hidden;
+  }
+
+  .footer-container {
+    max-width: var(--container-large);
+    margin: 0 auto;
+    padding: 0 var(--space-24);
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Newsletter & Payments Grid */
+  .footer-top-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-64);
+    margin-bottom: var(--space-120);
+    padding-bottom: var(--space-80);
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .ft-box {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    padding: var(--space-48);
+  }
+
+  .payment-icons {
+    display: flex;
+    gap: var(--space-12);
+    flex-wrap: wrap;
+    margin-top: var(--space-24);
+  }
+  .payment-icon {
+    width: 48px; height: 32px;
+    background: var(--card-bg);
+    border-radius: 4px;
+    border: 1px solid var(--border-subtle);
+    display: flex; justify-content: center; align-items: center;
+    font-size: 10px; color: var(--text-secondary);
+  }
+
+  /* Top Typography */
+  .footer-brand {
+    text-align: center;
+    padding: var(--space-64) 0;
+    border-bottom: 1px solid var(--border-subtle);
+    margin-bottom: var(--space-64);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .footer-brand__wordmark-svg {
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto var(--space-16);
+    color: var(--text-primary);
+  }
+  
+  .footer-brand__wordmark-svg svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .footer-brand__tagline {
+    font-family: var(--font-body);
+    font-size: var(--font-body-regular);
+    color: var(--text-secondary);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-top: var(--space-16);
+  }
+
+  /* Middle Nav Grid */
+  .footer-nav {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-64);
+    margin-bottom: var(--space-120);
+  }
+  .footer-nav__col h4 {
+    font-size: var(--font-caption);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-24);
+  }
+  .footer-nav__list { list-style: none; padding: 0; margin: 0; }
+  .footer-nav__link {
+    display: block; color: inherit; text-decoration: none;
+    font-size: var(--font-body-regular); margin-bottom: var(--space-12);
+    transition: color var(--duration-fast);
+  }
+  .footer-nav__link:hover { color: var(--accent-color); }
+
+  /* Bottom Legal Area */
+  .footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: var(--space-120);
+    border-top: 1px solid var(--border-subtle);
+    padding-top: var(--space-32);
+  }
+  .footer-bottom__links { display: flex; gap: var(--space-24); }
+  .footer-bottom__link {
+    color: var(--text-secondary); font-size: var(--font-caption);
+    text-decoration: none; text-transform: uppercase;
+  }
+  .footer-bottom__link:hover { color: var(--text-primary); }
+
+  /* PART 15: Final Closing Sequence */
+  .footer-closing-scene {
+    text-align: center;
+    padding: var(--space-120) 0;
+    position: relative;
+  }
+  
+  .footer-closing-ar {
+    width: 64px; 
+    height: auto;
+    margin: 0 auto var(--space-24) auto;
+    position: relative;
+    z-index: 2;
+    color: var(--text-primary);
+  }
+
+  .closing-msg {
+    font-size: var(--font-caption);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    position: relative; z-index: 2;
+  }
+
+  /* The Energy Loop */
+  .footer-pulse-container {
+    position: absolute;
+    bottom: 50%; left: 50%;
+    transform: translate(-50%, 50%);
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, var(--glow-color) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 1;
+    animation: corePulseFinal 6s ease-in-out infinite alternate;
+  }
+
+  .footer-wave {
+    position: absolute;
+    bottom: 50%; left: 50%;
+    width: 100px; height: 100px;
+    border-radius: 50%;
+    border: 1px solid var(--accent-color);
+    transform: translate(-50%, 50%) scale(1);
+    opacity: 0.8;
+    animation: waveExpand 4s infinite cubic-bezier(0.165, 0.84, 0.44, 1);
+  }
+
+  @keyframes corePulseFinal {
+    0% { transform: translate(-50%, 50%) scale(0.8); opacity: 0.5; }
+    100% { transform: translate(-50%, 50%) scale(1.2); opacity: 1; }
+  }
+  @keyframes waveExpand {
+    0% { transform: translate(-50%, 50%) scale(1); opacity: 0.8; }
+    100% { transform: translate(-50%, 50%) scale(6); opacity: 0; }
+  }
+
+  @media screen and (max-width: 1024px) {
+    .footer-top-grid { grid-template-columns: 1fr; }
+    .footer-nav { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media screen and (max-width: 767px) {
+    .footer-nav { grid-template-columns: 1fr; gap: var(--space-48); }
+    .footer-bottom { flex-direction: column; gap: var(--space-24); text-align: center; }
+  }
+</style>
+
+<footer class="site-footer" data-section-id="{{ section.id }}">
+  <div class="footer-container">
+
+    <!-- Newsletter & Security Grid -->
+    <div class="footer-top-grid">
+      <!-- PART 11: Newsletter -->
+      <div class="ft-box" data-scroll-reveal>
+        <h3 style="font-size: var(--font-heading-2); margin-bottom: var(--space-16);">Stay Connected To What's Next</h3>
+        <p style="color: var(--text-secondary); margin-bottom: var(--space-32);">Be the first to discover new collections, releases and future explorations.</p>
+        {% form 'customer' %}
+          <input type="hidden" name="contact[tags]" value="newsletter">
+          <div style="display: flex; gap: var(--space-16);">
+            <input type="email" name="contact[email]" placeholder="Email Address" required style="flex:1; background:transparent; border:none; border-bottom:1px solid var(--border-subtle); color:inherit;">
+            <button type="submit" class="btn-primary js-magnetic" data-magnetic-intensity="0.2" style="white-space: nowrap;">Join The Signal</button>
+          </div>
+          {%- if form.posted_successfully? -%}
+            <p style="color: var(--accent-color); margin-top: var(--space-16); font-size: var(--font-caption);">Signal Connected. Welcome Back To The Future.</p>
+          {%- endif -%}
+        {% endform %}
+      </div>
+
+      <!-- PART 6: Security Center -->
+      <div class="ft-box" data-scroll-reveal>
+        <h3 style="font-size: var(--font-heading-2); margin-bottom: var(--space-16);">Secure Global Checkout</h3>
+        <p style="color: var(--text-secondary); margin-bottom: var(--space-24);">All transactions are protected by 256-bit SSL encryption and advanced fraud protection systems.</p>
+        <div style="display: flex; align-items: center; gap: var(--space-8); color: var(--accent-color); font-size: var(--font-caption); text-transform: uppercase; margin-bottom: var(--space-24);">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+          Encrypted Connection
+        </div>
+        <div class="payment-icons">
+          <div class="payment-icon">VISA</div>
+          <div class="payment-icon">MC</div>
+          <div class="payment-icon">AMEX</div>
+          <div class="payment-icon">PAYPAL</div>
+          <div class="payment-icon">APPLE</div>
+          <div class="payment-icon">GOOGLE</div>
+          <div class="payment-icon">UPI</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="brand-lockup" style="margin: var(--space-64) auto;">
+      <div class="brand-lockup__wordmark">
+        {% render 'icon-wordmark' %}
+      </div>
+      <div class="brand-lockup__tagline">ALWAYS NEW TO THE WORLD.</div>
+    </div>
+
+    <!-- PART 10: Global Nav -->
+    <div class="footer-nav">
+      <div class="footer-nav__col">
+        <h4>Shop</h4>
+        <ul class="footer-nav__list">
+              <li><a href="{{ routes.all_products_collection_url }}" class="footer-nav__link">Collections</a></li>
+              <li><a href="{{ routes.all_products_collection_url }}" class="footer-nav__link">Products</a></li>
+              <li><a href="{{ routes.all_products_collection_url }}?sort_by=created-descending" class="footer-nav__link">New Releases</a></li>
+              <li><a href="{{ routes.all_products_collection_url }}?sort_by=best-selling" class="footer-nav__link">Best Sellers</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-nav__col">
+        <h4>Company</h4>
+        <ul class="footer-nav__list">
+          <li><a href="/pages/about" class="footer-nav__link">About</a></li>
+          <li><a href="/pages/story" class="footer-nav__link">Our Story</a></li>
+          <li><a href="/pages/contact" class="footer-nav__link">Contact</a></li>
+          <li><a href="/pages/community" class="footer-nav__link">Community</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-nav__col">
+        <h4>Support</h4>
+        <ul class="footer-nav__list">
+          <li><a href="/pages/faq" class="footer-nav__link">FAQ</a></li>
+          <li><a href="/pages/shipping" class="footer-nav__link">Shipping</a></li>
+          <li><a href="/pages/returns" class="footer-nav__link">Returns</a></li>
+          <li><a href="/pages/track" class="footer-nav__link">Track Order</a></li>
+        </ul>
+      </div>
+
+      <!-- PART 5: Account Hub -->
+      <div class="footer-nav__col">
+        <h4>Account</h4>
+        <ul class="footer-nav__list">
+          {%- if customer -%}
+            <li><a href="{{ routes.account_url }}" class="footer-nav__link">Profile Dashboard</a></li>
+            <li><a href="{{ routes.account_url }}#orders" class="footer-nav__link">Order History</a></li>
+            <li><a href="{{ routes.account_addresses_url }}" class="footer-nav__link">Saved Addresses</a></li>
+            <li><a href="/pages/wishlist" class="footer-nav__link">Wishlist</a></li>
+            <li><a href="{{ routes.account_logout_url }}" class="footer-nav__link">Logout</a></li>
+          {%- else -%}
+            <li><a href="{{ routes.account_login_url }}" class="footer-nav__link">Login to Account</a></li>
+            <li><a href="{{ routes.account_register_url }}" class="footer-nav__link">Create Account</a></li>
+            <li><a href="/pages/wishlist" class="footer-nav__link">Saved Wishlist</a></li>
+          {%- endif -%}
+        </ul>
+      </div>
+    </div>
+
+    <!-- Bottom Legal -->
+    <div class="footer-bottom">
+      <div class="footer-bottom__links" style="gap: var(--space-16);">
+        <a href="{{ settings.social_instagram_link | default: routes.root_url }}" class="footer-bottom__link">Instagram</a>
+        <a href="{{ settings.social_twitter_link | default: routes.root_url }}" class="footer-bottom__link">X</a>
+        <a href="{{ settings.social_youtube_link | default: routes.root_url }}" class="footer-bottom__link">YouTube</a>
+        <a href="{{ settings.social_tiktok_link | default: routes.root_url }}" class="footer-bottom__link">TikTok</a>
+      </div>
+      
+      <div class="footer-bottom__links">
+        <a href="/policies/privacy-policy" class="footer-bottom__link">Privacy Policy</a>
+        <a href="/policies/terms-of-service" class="footer-bottom__link">Terms of Service</a>
+        <a href="/policies/refund-policy" class="footer-bottom__link">Refund Policy</a>
+      </div>
+
+      <div class="footer-bottom__links">
+        <span class="footer-bottom__link" style="color: var(--text-primary);">&copy; {{ 'now' | date: "%Y" }} AERIDIAN.</span>
+      </div>
+    </div>
+
+    <!-- PART 15: FINAL CLOSING EXPERIENCE -->
+    <div class="footer-closing-scene">
+      <div class="footer-pulse-container"></div>
+      <div class="footer-wave"></div>
+      <div class="footer-closing-ar">
+        {% render 'icon-ar' %}
+      </div>
+      <div class="closing-msg">
+        Thank You For Exploring.<br>
+        Always New To The World.
+      </div>
+    </div>
+
+  </div>
+</footer>
+
+{% schema %}
+{
+  "name": "Global Footer",
+  "settings": [],
+  "presets": [
+    {
+      "name": "AERIDIAN Footer"
+    }
+  ]
+}
+{% endschema %}

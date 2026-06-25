@@ -1,0 +1,799 @@
+<style>
+  /* ==========================================
+     GLOBAL DISCOVERY STYLES
+     ========================================== */
+  .collection-discovery {
+    position: relative;
+    width: 100%;
+    background-color: var(--color-primary-obsidian);
+    color: var(--color-primary-pure-white);
+    overflow: hidden;
+  }
+
+  /* ==========================================
+     PART 1: INTRO (120vh)
+     ========================================== */
+  .cd-intro {
+    height: 120vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    padding: 0 var(--space-24);
+  }
+
+  .cd-intro__label {
+    font-size: var(--font-caption);
+    letter-spacing: var(--tracking-caption);
+    text-transform: uppercase;
+    color: var(--color-secondary-titanium);
+    margin-bottom: var(--space-24);
+  }
+
+  .cd-intro__headline {
+    font-size: var(--font-display-l);
+    line-height: 1.1;
+    margin-bottom: var(--space-32);
+    max-width: 800px;
+  }
+
+  .cd-intro__sub {
+    font-size: var(--font-body-large);
+    color: var(--color-primary-soft-white);
+    max-width: 500px;
+  }
+
+  /* ==========================================
+     PART 2: ORBITAL UNIVERSE (140vh)
+     ========================================== */
+  .cd-universe {
+    height: 140vh;
+    position: relative;
+    width: 100%;
+  }
+
+  .cd-universe__sticky {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  #UniverseCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    pointer-events: none; /* Let HTML layers take clicks */
+  }
+
+  .cd-nodes-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    pointer-events: none; /* Only nodes are interactive */
+  }
+
+  /* HTML Projection Nodes */
+  .cd-node {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: translate(-50%, -50%); /* Center on 3D coordinate */
+    background: rgba(17, 17, 17, 0.4);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-pill);
+    padding: var(--space-8) var(--space-16);
+    color: var(--color-primary-pure-white);
+    font-size: var(--font-body-small);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    pointer-events: auto;
+    transition: background-color var(--duration-fast), border-color var(--duration-fast), padding var(--duration-base);
+    display: flex;
+    align-items: center;
+    gap: var(--space-12);
+    will-change: transform;
+  }
+
+  html[data-theme="light"] .cd-node {
+    background: rgba(255, 255, 255, 0.6);
+    border-color: rgba(0, 0, 0, 0.1);
+    color: var(--color-primary-obsidian);
+  }
+
+  .cd-node:hover {
+    background: var(--color-primary-carbon);
+    border-color: var(--color-accent-atmospheric);
+    padding: var(--space-8) var(--space-24) var(--space-8) var(--space-12);
+  }
+
+  html[data-theme="light"] .cd-node:hover {
+    background: var(--bg-primary);
+  }
+
+  .cd-node__img {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    object-fit: cover;
+    opacity: 0;
+    transform: scale(0.5);
+    transition: opacity var(--duration-fast), transform var(--duration-base) var(--ease-luxury);
+    display: none;
+  }
+
+  .cd-node:hover .cd-node__img {
+    display: block;
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  /* ==========================================
+     PART 3: EXPLORER PANEL
+     ========================================== */
+  .cd-explorer {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 500px;
+    height: 100vh;
+    height: 100dvh;
+    background: rgba(5, 5, 5, 0.85);
+    backdrop-filter: blur(20px);
+    border-left: var(--border-subtle);
+    z-index: 2000;
+    visibility: hidden;
+    opacity: 0;
+    transform: translateX(100%);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.8s var(--ease-luxury), opacity 0.4s ease, visibility 0.4s ease;
+  }
+
+  html[data-theme="light"] .cd-explorer {
+    background: rgba(247, 247, 245, 0.85);
+  }
+
+  .cd-explorer.is-open {
+    transform: translateX(0);
+    visibility: visible;
+    opacity: 1;
+  }
+
+  .cd-explorer__header {
+    padding: var(--space-32);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: var(--border-subtle);
+  }
+
+  .cd-explorer__content {
+    padding: var(--space-32);
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  .cd-explorer__img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    border-radius: var(--radius-sm);
+    margin-bottom: var(--space-24);
+  }
+
+  /* ==========================================
+     PART 4: FEATURED SPOTLIGHT
+     ========================================== */
+  .cd-spotlight {
+    height: 100vh;
+    display: flex;
+  }
+
+  .cd-spotlight__left {
+    width: 50%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cd-spotlight__img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 120%; /* for parallax */
+    object-fit: cover;
+    transform-origin: center;
+  }
+
+  .cd-spotlight__right {
+    width: 50%;
+    padding: var(--space-64);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  /* ==========================================
+     PART 5: NAVIGATION GRID
+     ========================================== */
+  .cd-nav-grid {
+    padding: var(--space-120) var(--space-24);
+    max-width: var(--container-large);
+    margin: 0 auto;
+  }
+
+  .cd-grid-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-24);
+  }
+
+  .cd-grid-card {
+    position: relative;
+    aspect-ratio: 3/4;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    cursor: pointer;
+    background-color: var(--color-primary-carbon);
+  }
+
+  .cd-grid-card__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--duration-slow) var(--ease-luxury);
+  }
+
+  .cd-grid-card:hover .cd-grid-card__img {
+    transform: scale(1.05);
+  }
+
+  .cd-grid-card__overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: var(--space-24);
+    background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+
+  .cd-grid-card__title {
+    font-size: var(--font-heading-3);
+    margin-bottom: var(--space-4);
+  }
+
+  .cd-grid-card__desc {
+    font-size: var(--font-caption);
+    color: var(--color-secondary-titanium);
+  }
+
+  /* ==========================================
+     PART 6: STORY STRIP (HORIZONTAL SCROLL)
+     ========================================== */
+  .cd-story-wrapper {
+    height: 400vh; /* Determines duration of pin */
+    position: relative;
+  }
+
+  .cd-story-pin {
+    height: 100vh;
+    position: sticky;
+    top: 0;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+  }
+
+  .cd-story-container {
+    display: flex;
+    width: fit-content;
+    height: 100%;
+    padding: 0 var(--space-120);
+    gap: 30vw;
+  }
+
+  .cd-story-panel {
+    width: 60vw;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .cd-story-panel__content {
+    font-size: var(--font-display-l);
+    line-height: 1.1;
+    max-width: 800px;
+  }
+
+  /* ==========================================
+     MOBILE RESPONSIVENESS
+     ========================================== */
+  @media screen and (max-width: 1024px) {
+    .cd-explorer { width: 100%; }
+    .cd-spotlight { flex-direction: column; height: auto; }
+    .cd-spotlight__left, .cd-spotlight__right { width: 100%; }
+    .cd-spotlight__left { height: 50vh; }
+    .cd-grid-container {
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      padding-bottom: var(--space-24);
+    }
+    .cd-grid-card {
+      min-width: 80vw;
+      scroll-snap-align: center;
+    }
+    .cd-story-panel { width: 85vw; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cd-story-wrapper { height: auto; }
+    .cd-story-pin { position: static; height: auto; }
+    .cd-story-container { flex-direction: column; padding: var(--space-64) var(--space-24); gap: var(--space-64); width: 100%; }
+    .cd-story-panel { width: 100%; }
+  }
+</style>
+
+<section class="collection-discovery" data-section-id="{{ section.id }}">
+  
+  <!-- PART 1: INTRO -->
+  <div class="cd-intro" id="CD-Intro">
+    <div class="cd-intro__label">Explore</div>
+    <h2 class="cd-intro__headline">Designed For Every Expression</h2>
+    <p class="cd-intro__sub">A curated universe of graphics, stories, cultures and identities.</p>
+  </div>
+
+  <!-- PART 2: ORBITAL UNIVERSE -->
+  <!-- Metaobject Data Injection for JS -->
+  <script id="CategoryData" type="application/json">
+    [
+      {%- if shop.metaobjects.collection_category.values != blank -%}
+        {%- for category in shop.metaobjects.collection_category.values -%}
+          {
+            "id": "node-{{ forloop.index }}",
+            "title": {{ category.name | json }},
+            "desc": {{ category.description | json }},
+            "img": {{ category.hero_image | image_url: width: 400 | json }},
+            "url": {{ category.collection_link | json }}
+          }{%- unless forloop.last -%},{%- endunless -%}
+        {%- endfor -%}
+      {%- else -%}
+        {%- for block in section.blocks -%}
+          {
+            "id": "node-{{ forloop.index }}",
+            "title": {{ block.settings.title | json }},
+            "desc": {{ block.settings.desc | json }},
+            "img": {{ block.settings.image | image_url: width: 400 | json }},
+            "url": {{ block.settings.url | json }}
+          }{%- unless forloop.last -%},{%- endunless -%}
+        {%- endfor -%}
+      {%- endif -%}
+    ]
+  </script>
+
+  <div class="cd-universe" id="CD-Universe">
+    <div class="cd-universe__sticky">
+      <div class="cd-nodes-container" id="NodesContainer">
+        <!-- Nodes injected via JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- PART 3: EXPLORER PANEL -->
+  <dialog class="cd-explorer" id="CD-Explorer" aria-hidden="true" style="visibility: hidden; opacity: 0; transform: translateX(100%);">
+    <div class="cd-explorer__header">
+      <h3 class="drawer__title" id="ExplorerTitle">Category</h3>
+      <button class="drawer__close" onclick="closeExplorer()">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 6L6 18M6 6L18 18" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="cd-explorer__content">
+      <img src="" alt="" class="cd-explorer__img" id="ExplorerImg" style="display:none;">
+      <p id="ExplorerDesc" style="font-size: var(--font-body-large); margin-bottom: var(--space-48);"></p>
+      <a href="{{ routes.all_products_collection_url }}" class="btn-primary" id="ExplorerLink" style="width: 100%;">Explore Collection</a>
+    </div>
+  </dialog>
+
+  <!-- PART 4: FEATURED SPOTLIGHT -->
+  <div class="cd-spotlight" id="CD-Spotlight">
+    <div class="cd-spotlight__left">
+      <img src="{{ section.settings.featured_image | image_url: width: 1400 }}" alt="Featured" class="cd-spotlight__img" id="SpotlightImg">
+    </div>
+    <div class="cd-spotlight__right">
+      <div class="cd-intro__label">Featured Collection</div>
+      <h2 style="font-size: var(--font-heading-1); margin-bottom: var(--space-24);">{{ section.settings.featured_title }}</h2>
+      <p style="color: var(--color-secondary-titanium); margin-bottom: var(--space-48);">{{ section.settings.featured_desc }}</p>
+      <div style="display: flex; gap: var(--space-16);">
+        <a href="{{ routes.all_products_collection_url }}" class="btn-primary">Shop Collection</a>
+        <a href="{{ routes.all_products_collection_url }}" class="btn-secondary">View Lookbook</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- PART 5: NAVIGATION GRID -->
+  <div class="cd-nav-grid">
+    <h2 style="font-size: var(--font-heading-2); margin-bottom: var(--space-48);">All Categories</h2>
+    <div class="cd-grid-container" id="GridContainer">
+      <!-- Generated via JS/Liquid based on Metaobjects -->
+    </div>
+  </div>
+
+  <!-- PART 6: STORY STRIP -->
+  <div class="cd-story-wrapper" id="CD-StoryWrapper">
+    <div class="cd-story-pin" id="CD-StoryPin">
+      <div class="cd-story-container" id="CD-StoryContainer">
+        <div class="cd-story-panel">
+          <div class="cd-story-panel__content">Culture shapes design. Design shapes the future.</div>
+        </div>
+        <div class="cd-story-panel">
+          <div class="cd-story-panel__content">Innovation is not a feature, it is our foundation.</div>
+        </div>
+        <div class="cd-story-panel">
+          <div class="cd-story-panel__content">Always New To The World.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PART 7: AI RECOMMENDATIONS (UI Shell) -->
+  <div style="padding: var(--space-120) var(--space-24); text-align: center;" id="CD-Recommendations">
+    <div class="cd-intro__label">Curated For You</div>
+    <div style="display:flex; justify-content:center; gap: var(--space-16); margin-top: var(--space-24);" id="RecommendationsList">
+      <!-- Dynamically populated -->
+    </div>
+  </div>
+
+</section>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const isReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  
+  // Parse Data
+  const rawData = document.getElementById('CategoryData').textContent;
+  let categoryData = [];
+  try {
+    categoryData = JSON.parse(rawData);
+  } catch(e) { console.error("Error parsing category data", e); }
+
+  // 1. GSAP Timelines
+  if(typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+    gsap.registerPlugin(ScrollTrigger);
+
+    if(!isReducedMotion) {
+      // Intro Fade
+      gsap.to("#CD-Intro", {
+        opacity: 0,
+        y: -100,
+        scrollTrigger: {
+          trigger: "#CD-Universe",
+          start: "top bottom",
+          end: "top top",
+          scrub: 1
+        }
+      });
+
+      // Spotlight Parallax
+      gsap.to("#SpotlightImg", {
+        yPercent: -20,
+        ease: "none",
+        scrollTrigger: {
+          trigger: "#CD-Spotlight",
+          start: "top bottom",
+          end: "bottom top",
+          scrub: true
+        }
+      });
+
+      // Story Strip Horizontal Scroll
+      const storyContainer = document.getElementById("CD-StoryContainer");
+      const scrollDist = storyContainer.scrollWidth - window.innerWidth;
+      
+      gsap.to(storyContainer, {
+        x: -scrollDist,
+        ease: "none",
+        scrollTrigger: {
+          trigger: "#CD-StoryWrapper",
+          start: "top top",
+          end: "bottom bottom",
+          scrub: 1
+        }
+      });
+    }
+  }
+
+  // 2. Three.js Orbital Engine (if not reduced motion)
+  if(!isReducedMotion) {
+    let hasInitialized = false;
+    const observer = new IntersectionObserver((entries) => {
+      if(entries[0].isIntersecting && !hasInitialized) {
+        hasInitialized = true;
+        const checkThree = setInterval(() => {
+          if(window.THREE) {
+            clearInterval(checkThree);
+            initOrbitalUniverse();
+          }
+        }, 100);
+      }
+    });
+    const container = document.getElementById('CD-Universe');
+    if (container) observer.observe(container);
+  } else {
+    // Fallback: Just render the grid in place of universe
+    populateGridFallback();
+  }
+
+  function populateGridFallback() {
+    const grid = document.getElementById('GridContainer');
+    categoryData.forEach(cat => {
+      grid.innerHTML += `
+        <div class="cd-grid-card" onclick="window.location.href='${cat.url}'">
+          ${cat.img ? `<img src="${cat.img}" class="cd-grid-card__img">` : '<div style="width:100%;height:100%;background:var(--bg-secondary);"></div>'}
+          <div class="cd-grid-card__overlay">
+            <div>
+              <div class="cd-grid-card__title">${cat.title}</div>
+              <div class="cd-grid-card__desc">Explore</div>
+            </div>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12H19M19 12L12 5M19 12L12 19" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+      `;
+    });
+  }
+
+  // Fallback population for Grid section (Part 5)
+  populateGridFallback();
+
+  function initOrbitalUniverse() {
+    const container = document.querySelector('.cd-universe__sticky');
+    const canvas = document.createElement('canvas');
+    canvas.id = 'UniverseCanvas';
+    container.insertBefore(canvas, container.firstChild);
+    
+    const nodesContainer = document.getElementById('NodesContainer');
+    
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+    camera.position.z = 25;
+    camera.position.y = 5;
+    camera.lookAt(0,0,0);
+
+    const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+    renderer.setSize(container.clientWidth, container.clientHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    // Monogram Core (AR)
+    const coreGeo = new THREE.TorusKnotGeometry(1.5, 0.5, 100, 16);
+    const coreMat = new THREE.MeshPhysicalMaterial({
+      color: 0x111111, metalness: 0.9, roughness: 0.1, clearcoat: 1.0
+    });
+    const coreMesh = new THREE.Mesh(coreGeo, coreMat);
+    scene.add(coreMesh);
+
+    const coreLight = new THREE.PointLight(0x7FD9FF, 3, 30);
+    scene.add(coreLight);
+    scene.add(new THREE.AmbientLight(0xffffff, 0.4));
+
+    // Orbital Nodes Logic
+    const nodeObjects = [];
+    const orbitRadiusBase = 6;
+    
+    categoryData.forEach((cat, i) => {
+      // Create 3D invisible pivot
+      const pivot = new THREE.Object3D();
+      const radius = orbitRadiusBase + (Math.random() * 4);
+      const angle = (i / categoryData.length) * Math.PI * 2;
+      const height = (Math.random() - 0.5) * 6;
+      
+      pivot.position.set(Math.cos(angle) * radius, height, Math.sin(angle) * radius);
+      
+      // Store data
+      nodeObjects.push({
+        pivot: pivot,
+        angle: angle,
+        radius: radius,
+        speed: 0.002 + (Math.random() * 0.003),
+        id: cat.id
+      });
+      scene.add(pivot);
+
+      // Create HTML Element
+      const el = document.createElement('button');
+      el.className = 'cd-node';
+      el.id = cat.id;
+      el.innerHTML = `
+        ${cat.img ? `<img src="${cat.img}" class="cd-node__img">` : ''}
+        <span>${cat.title}</span>
+      `;
+      
+      // Interactions
+      el.addEventListener('mouseenter', () => { window.orbitalSpeedMult = 0.2; coreLight.intensity = 6; });
+      el.addEventListener('mouseleave', () => { window.orbitalSpeedMult = 1.0; coreLight.intensity = 3; });
+      el.addEventListener('click', () => openExplorer(cat));
+
+      nodesContainer.appendChild(el);
+    });
+
+    window.orbitalSpeedMult = 1.0;
+
+    // Scroll GSAP for Camera
+    if(typeof gsap !== 'undefined') {
+      gsap.to(camera.position, {
+        y: -10,
+        z: 15,
+        scrollTrigger: {
+          trigger: "#CD-Universe",
+          start: "top top",
+          end: "bottom bottom",
+          scrub: true
+        }
+      });
+    }
+
+    // Cache dimensions to prevent Layout Thrashing
+    let cachedWidth = container.clientWidth;
+    let cachedHeight = container.clientHeight;
+
+    // Animation Loop
+    const tempV = new THREE.Vector3();
+    function animate() {
+      if(document.hidden) {
+        requestAnimationFrame(animate);
+        return;
+      }
+
+      coreMesh.rotation.y += 0.005;
+      coreMesh.rotation.x += 0.002;
+
+      // Update Orbits
+      nodeObjects.forEach(node => {
+        node.angle += node.speed * window.orbitalSpeedMult;
+        node.pivot.position.x = Math.cos(node.angle) * node.radius;
+        node.pivot.position.z = Math.sin(node.angle) * node.radius;
+
+        // Project 3D to 2D Screen Space
+        tempV.copy(node.pivot.position);
+        tempV.project(camera);
+        
+        const x = (tempV.x *  .5 + .5) * cachedWidth;
+        const y = (tempV.y * -.5 + .5) * cachedHeight;
+        
+        const el = document.getElementById(node.id);
+        if(el) {
+          // Hide if behind camera
+          if(tempV.z > 1) {
+            el.style.display = 'none';
+          } else {
+            el.style.display = 'flex';
+            el.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px)`;
+            
+            // Scale based on depth (Z)
+            const scale = Math.max(0.4, 1 - (tempV.z * 0.5));
+            el.style.opacity = scale;
+            el.style.zIndex = Math.floor(scale * 100);
+          }
+        }
+      });
+
+      renderer.render(scene, camera);
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        cachedWidth = container.clientWidth;
+        cachedHeight = container.clientHeight;
+        camera.aspect = cachedWidth / cachedHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(cachedWidth, cachedHeight);
+      }, 250);
+    });
+  }
+
+  // 3. Explorer Panel Logic
+  window.openExplorer = function(cat) {
+    const explorer = document.getElementById('CD-Explorer');
+    document.getElementById('ExplorerTitle').innerText = cat.title;
+    document.getElementById('ExplorerDesc').innerText = cat.desc;
+    document.getElementById('ExplorerLink').href = cat.url;
+    
+    const img = document.getElementById('ExplorerImg');
+    if(cat.img) {
+      img.src = cat.img;
+      img.style.display = 'block';
+    } else {
+      img.style.display = 'none';
+    }
+
+    explorer.classList.add('is-open');
+    document.body.style.overflow = 'hidden'; // Lock background
+    
+    // Store for AI Recommendations
+    let history = JSON.parse(sessionStorage.getItem('aeridian_history') || '[]');
+    if(!history.includes(cat.title)) history.push(cat.title);
+    sessionStorage.setItem('aeridian_history', JSON.stringify(history));
+    updateRecommendations();
+  }
+
+  window.closeExplorer = function() {
+    document.getElementById('CD-Explorer').classList.remove('is-open');
+    document.body.style.overflow = '';
+  }
+
+  function updateRecommendations() {
+    const list = document.getElementById('RecommendationsList');
+    const history = JSON.parse(sessionStorage.getItem('aeridian_history') || '[]');
+    if(history.length === 0) return;
+    
+    // Simple mock logic: show the last 2 interacted categories as "Tags"
+    list.innerHTML = history.slice(-2).map(t => `<span style="padding: 8px 16px; border: 1px solid var(--color-secondary-titanium); border-radius: 20px;">${t}</span>`).join('');
+  }
+});
+</script>
+
+{% schema %}
+{
+  "name": "Collection Discovery",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "featured_image",
+      "label": "Featured Spotlight Image"
+    },
+    {
+      "type": "text",
+      "id": "featured_title",
+      "label": "Featured Title",
+      "default": "THE FW26 CAPSULE"
+    },
+    {
+      "type": "textarea",
+      "id": "featured_desc",
+      "label": "Featured Description"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "category",
+      "name": "Category Fallback",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Title" },
+        { "type": "textarea", "id": "desc", "label": "Description" },
+        { "type": "image_picker", "id": "image", "label": "Image" },
+        { "type": "url", "id": "url", "label": "Link" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collection Discovery",
+      "blocks": [
+        { "type": "category", "settings": { "title": "Retro & Vintage" } },
+        { "type": "category", "settings": { "title": "Pop Culture" } },
+        { "type": "category", "settings": { "title": "Art & Design" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,61 @@
+<dialog class="cd-explorer" id="FilterPanel" style="z-index: 2500; visibility: hidden; opacity: 0; transform: translateX(100%); transition: transform 0.4s ease, opacity 0.4s ease, visibility 0.4s ease;" aria-hidden="true">
+  <div class="cd-explorer__header">
+    <h3 class="drawer__title">Filter Products</h3>
+    <button class="drawer__close" onclick="closeFilterPanel()" aria-label="Close Filters">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 6L6 18M6 6L18 18" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+  <div class="cd-explorer__content">
+    <div style="margin-bottom: var(--space-32);">
+      <h4 style="font-size: var(--font-caption); text-transform: uppercase; color: var(--color-secondary-titanium); margin-bottom: var(--space-16);">Category</h4>
+      <div style="display: flex; flex-direction: column; gap: var(--space-12);">
+        <label style="display: flex; align-items: center; gap: var(--space-12); cursor: pointer;">
+          <input type="checkbox" style="accent-color: var(--color-accent-atmospheric);"> Outerwear
+        </label>
+        <label style="display: flex; align-items: center; gap: var(--space-12); cursor: pointer;">
+          <input type="checkbox" style="accent-color: var(--color-accent-atmospheric);"> Tops
+        </label>
+        <label style="display: flex; align-items: center; gap: var(--space-12); cursor: pointer;">
+          <input type="checkbox" style="accent-color: var(--color-accent-atmospheric);"> Bottoms
+        </label>
+      </div>
+    </div>
+    
+    <div style="margin-bottom: var(--space-32);">
+      <h4 style="font-size: var(--font-caption); text-transform: uppercase; color: var(--color-secondary-titanium); margin-bottom: var(--space-16);">Color</h4>
+      <div style="display: flex; gap: var(--space-12);">
+        <div style="width: 24px; height: 24px; background: #050505; border-radius: 50%; border: 1px solid rgba(255,255,255,0.2); cursor: pointer;"></div>
+        <div style="width: 24px; height: 24px; background: #EEEEEE; border-radius: 50%; border: 1px solid rgba(0,0,0,0.2); cursor: pointer;"></div>
+        <div style="width: 24px; height: 24px; background: #7FD9FF; border-radius: 50%; cursor: pointer;"></div>
+      </div>
+    </div>
+  </div>
+  <div style="padding: var(--space-24); border-top: var(--border-subtle);">
+    <button class="btn-primary" style="width: 100%;" onclick="closeFilterPanel()">Apply Filters</button>
+  </div>
+</dialog>
+
+<script>
+  window.openFilterPanel = function() {
+    const panel = document.getElementById('FilterPanel');
+    if (panel) {
+      panel.classList.add('is-open');
+      panel.style.visibility = 'visible';
+      panel.style.opacity = '1';
+      panel.style.transform = 'translateX(0)';
+      panel.setAttribute('aria-hidden', 'false');
+    }
+    document.body.style.overflow = 'hidden';
+  }
+  window.closeFilterPanel = function() {
+    const panel = document.getElementById('FilterPanel');
+    if (panel) {
+      panel.classList.remove('is-open');
+      panel.style.visibility = 'hidden';
+      panel.style.opacity = '0';
+      panel.style.transform = 'translateX(100%)';
+      panel.setAttribute('aria-hidden', 'true');
+    }
+    document.body.style.overflow = '';
+  }
+</script>

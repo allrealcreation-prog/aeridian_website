@@ -1,0 +1,478 @@
+<style>
+  .pdp-main {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    min-height: 100vh;
+    padding-top: var(--space-80);
+    padding-bottom: var(--space-80);
+  }
+
+  .pdp-container {
+    max-width: var(--container-large);
+    margin: 0 auto;
+    padding: 0 var(--space-24);
+  }
+
+  /* Desktop Layout */
+  .pdp-layout {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: var(--space-64);
+    align-items: start;
+  }
+
+  /* --- 1. MEDIA GALLERY --- */
+  .pdp-gallery-container {
+    position: sticky;
+    top: 100px; /* Offset for header */
+    height: calc(100vh - 120px);
+    display: flex;
+    gap: var(--space-16);
+  }
+
+  .pdp-thumbnails {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-12);
+    width: 80px;
+    overflow-y: auto;
+    scrollbar-width: none; /* Firefox */
+  }
+  .pdp-thumbnails::-webkit-scrollbar { display: none; } /* Chrome */
+
+  .pdp-thumb {
+    width: 80px; height: 100px;
+    object-fit: cover;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-subtle);
+    cursor: pointer;
+    opacity: 0.5;
+    transition: opacity var(--duration-fast), border-color var(--duration-fast);
+  }
+  .pdp-thumb.is-active, .pdp-thumb:hover {
+    opacity: 1;
+    border-color: var(--text-primary);
+  }
+
+  .pdp-main-gallery {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scroll-snap-type: y mandatory;
+    scrollbar-width: none;
+    border-radius: var(--radius-md);
+    background: var(--bg-secondary);
+  }
+  .pdp-main-gallery::-webkit-scrollbar { display: none; }
+
+  .pdp-media-item {
+    width: 100%;
+    height: 100%;
+    scroll-snap-align: start;
+    position: relative;
+    cursor: zoom-in;
+  }
+  .pdp-media-item img {
+    width: 100%; height: 100%;
+    object-fit: contain; /* Luxury platforms prefer contain to avoid cropping garments */
+  }
+
+  /* --- 2. PURCHASE MODULE --- */
+  .pdp-info {
+    display: flex;
+    flex-direction: column;
+    padding-top: var(--space-24);
+  }
+
+  .pdp-badges {
+    display: flex; gap: var(--space-8); margin-bottom: var(--space-16);
+  }
+  .badge {
+    background: var(--glass-bg); backdrop-filter: blur(8px);
+    border: 1px solid var(--border-subtle); padding: 4px 8px;
+    font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em;
+    border-radius: 2px;
+  }
+  .badge--signal { background: var(--glow-color); color: var(--accent-color); border-color: var(--accent-color); }
+
+  .pdp-vendor { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-secondary); margin-bottom: 8px; }
+  .pdp-title { font-size: var(--font-display-s); margin-bottom: var(--space-16); line-height: 1.1; }
+  
+  .pdp-price-wrap { display: flex; align-items: center; gap: var(--space-12); margin-bottom: var(--space-32); font-size: var(--font-body-large); }
+  .pdp-price--sale { color: var(--accent-color); font-weight: bold; }
+  .pdp-price--compare { text-decoration: line-through; color: var(--text-secondary); opacity: 0.7; }
+
+  /* Variants */
+  .pdp-variants { margin-bottom: var(--space-32); }
+  .variant-group { margin-bottom: var(--space-24); }
+  .variant-label { font-size: var(--font-caption); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: var(--space-12); display: flex; justify-content: space-between; }
+  .variant-options { display: flex; flex-wrap: wrap; gap: var(--space-8); }
+
+  /* Swatch (Color) */
+  .variant-swatch {
+    width: 32px; height: 32px; border-radius: 50%;
+    border: 1px solid var(--border-heavy);
+    cursor: pointer;
+    background-size: cover; background-position: center;
+    transition: transform var(--duration-fast);
+  }
+  input[type="radio"]:checked + .variant-swatch { border: 2px solid var(--text-primary); transform: scale(1.1); box-shadow: 0 0 10px var(--text-primary); }
+  
+  /* Segmented Control (Size) */
+  .variant-pill {
+    padding: var(--space-12) var(--space-24);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-caption); text-transform: uppercase;
+    cursor: pointer; transition: all var(--duration-fast);
+    background: transparent; color: var(--text-primary);
+  }
+  input[type="radio"]:checked + .variant-pill { background: var(--text-primary); color: var(--bg-primary); border-color: var(--text-primary); }
+  input[type="radio"]:disabled + .variant-pill { opacity: 0.3; text-decoration: line-through; cursor: not-allowed; }
+
+  /* Add to Cart */
+  .pdp-add-to-cart {
+    width: 100%;
+    padding: var(--space-24);
+    font-size: var(--font-body-small);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: var(--space-48);
+    display: flex; justify-content: center; align-items: center; gap: var(--space-8);
+  }
+  .pdp-add-to-cart.is-loading { color: transparent; position: relative; }
+  .pdp-add-to-cart.is-loading::after {
+    content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 20px; height: 20px; border: 2px solid var(--bg-primary); border-top-color: transparent;
+    border-radius: 50%; animation: spin 1s linear infinite;
+  }
+
+  /* Accordions (Technical / Specs) */
+  .pdp-accordion { border-top: 1px solid var(--border-subtle); }
+  .pdp-accordion:last-child { border-bottom: 1px solid var(--border-subtle); }
+  .pdp-accordion-header {
+    width: 100%; text-align: left; background: transparent; border: none;
+    padding: var(--space-24) 0; color: var(--text-primary);
+    font-size: var(--font-caption); text-transform: uppercase; letter-spacing: 0.1em;
+    display: flex; justify-content: space-between; align-items: center; cursor: pointer;
+  }
+  .pdp-accordion-content {
+    max-height: 0; overflow: hidden; transition: max-height var(--duration-base) var(--ease-premium);
+    color: var(--text-secondary); font-size: var(--font-body-small); line-height: 1.6;
+  }
+  .pdp-accordion.is-open .pdp-accordion-content { max-height: 500px; padding-bottom: var(--space-24); }
+
+  /* --- 3. STICKY PURCHASE BAR --- */
+  .pdp-sticky-bar {
+    position: fixed;
+    bottom: 0; left: 0; width: 100%;
+    background: var(--glass-bg);
+    backdrop-filter: blur(16px);
+    border-top: 1px solid var(--border-subtle);
+    padding: var(--space-16) var(--space-24);
+    z-index: 9999;
+    transform: translateY(100%);
+    transition: transform var(--duration-base) var(--ease-premium);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .pdp-sticky-bar.is-visible { transform: translateY(0); }
+
+  @media screen and (max-width: 1024px) {
+    .pdp-layout { grid-template-columns: 1fr; gap: var(--space-32); }
+    .pdp-gallery-container { position: relative; top: 0; height: 60vh; flex-direction: column-reverse; }
+    .pdp-thumbnails { flex-direction: row; width: 100%; overflow-x: auto; height: 80px; }
+    .pdp-thumb { width: 60px; height: 80px; flex-shrink: 0; }
+    .pdp-main-gallery { scroll-snap-type: x mandatory; display: flex; flex-direction: row; }
+    .pdp-media-item { flex-shrink: 0; }
+    .pdp-sticky-bar { padding: var(--space-12); }
+  }
+</style>
+
+<section class="pdp-main" data-section-id="{{ section.id }}">
+  <div class="pdp-container">
+    <div class="pdp-layout">
+      
+      <!-- LEFT: MEDIA GALLERY -->
+      <div class="pdp-gallery-container" id="PDPGallery">
+        <div class="pdp-thumbnails">
+          {%- for image in product.images -%}
+            <img src="{{ image | image_url: width: 150 }}" alt="{{ product.title }}" class="pdp-thumb {% if forloop.first %}is-active{% endif %}" data-index="{{ forloop.index0 }}" loading="lazy">
+          {%- endfor -%}
+        </div>
+        
+        <div class="pdp-main-gallery" id="PDPMainScroll">
+          {%- for image in product.images -%}
+            <div class="pdp-media-item" data-index="{{ forloop.index0 }}">
+              <!-- Phase 15: Eager LCP loading for first image, lazy for rest + Srcset -->
+              <img src="{{ image | image_url: width: 1500 }}" 
+                   srcset="{{ image | image_url: width: 800 }} 800w, 
+                           {{ image | image_url: width: 1200 }} 1200w, 
+                           {{ image | image_url: width: 1600 }} 1600w, 
+                           {{ image | image_url: width: 2000 }} 2000w"
+                   sizes="(min-width: 1024px) 60vw, 100vw"
+                   alt="{{ product.title | escape }}" 
+                   loading="{% if forloop.first %}eager{% else %}lazy{% endif %}">
+            </div>
+          {%- endfor -%}
+        </div>
+      </div>
+
+      <!-- RIGHT: PURCHASE MODULE -->
+      <div class="pdp-info" id="PDPInfo" data-scroll-reveal>
+        <div class="pdp-badges">
+          {%- if product.available == false -%}
+            <span class="badge" style="background: rgba(255,0,0,0.1); color: #ff4444; border-color: rgba(255,0,0,0.2);">Archive</span>
+          {%- elsif product.compare_at_price > product.price -%}
+            <span class="badge badge--signal">Signal</span>
+          {%- endif -%}
+          {%- for tag in product.tags -%}
+            {%- if tag contains 'badge:' -%}
+              <span class="badge">{{ tag | remove: 'badge:' }}</span>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+
+        <div class="pdp-vendor">{{ product.vendor | default: 'AERIDIAN' }}</div>
+        <h1 class="pdp-title">{{ product.title }}</h1>
+        
+        <div class="pdp-price-wrap" id="PDPPrice">
+          {%- if product.compare_at_price > product.price -%}
+            <span class="pdp-price--compare">{{ product.compare_at_price | money }}</span>
+            <span class="pdp-price--sale">{{ product.price | money }}</span>
+          {%- else -%}
+            <span>{{ product.price | money }}</span>
+          {%- endif -%}
+        </div>
+
+        <!-- FORM -->
+        {% form 'product', product, id: 'ProductForm', class: 'pdp-form' %}
+          <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}" id="VariantIdInput">
+
+          <div class="pdp-variants">
+            {%- unless product.has_only_default_variant -%}
+              {%- for option in product.options_with_values -%}
+                <div class="variant-group">
+                  <div class="variant-label">
+                    <span>{{ option.name }}</span>
+                    {%- if option.name == 'Size' -%}
+                      <button type="button" style="background:none; border:none; color:var(--text-secondary); cursor:pointer; text-decoration:underline;">Size Guide</button>
+                    {%- endif -%}
+                  </div>
+                  
+                  <div class="variant-options">
+                    {%- for value in option.values -%}
+                      <div style="position: relative;">
+                        <input type="radio" name="options[{{ option.name }}]" value="{{ value | escape }}" id="Option-{{ option.position }}-{{ forloop.index0 }}" class="visually-hidden js-variant-radio" {% if option.selected_value == value %}checked{% endif %}>
+                        
+                        {%- if option.name == 'Color' or option.name == 'Colour' -%}
+                          <!-- Swatch -->
+                          <label for="Option-{{ option.position }}-{{ forloop.index0 }}" class="variant-swatch" style="background-color: {{ value | downcase }};" title="{{ value }}"></label>
+                        {%- else -%}
+                          <!-- Pill -->
+                          <label for="Option-{{ option.position }}-{{ forloop.index0 }}" class="variant-pill js-magnetic" data-magnetic-intensity="0.1">{{ value }}</label>
+                        {%- endif -%}
+                      </div>
+                    {%- endfor -%}
+                  </div>
+                </div>
+              {%- endfor -%}
+            {%- endunless -%}
+          </div>
+
+          <div class="pdp-quantity" style="margin-bottom: var(--space-32);">
+            <div class="variant-label" style="margin-bottom: var(--space-8); font-size: var(--font-caption); text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-secondary);">Quantity</div>
+            <div class="quantity-selector" style="display: inline-flex; border: 1px solid var(--border-subtle); align-items: center; border-radius: var(--radius-sm);">
+              <button type="button" class="js-qty-btn" data-action="minus" style="padding: 12px 16px; background: none; border: none; color: inherit; cursor: pointer; font-size: 16px;">&minus;</button>
+              <input type="number" name="quantity" value="1" min="1" id="QuantityInput" style="width: 40px; text-align: center; background: transparent; border: none; color: inherit; font-size: var(--font-body-small); -moz-appearance: textfield;" aria-label="Quantity">
+              <button type="button" class="js-qty-btn" data-action="plus" style="padding: 12px 16px; background: none; border: none; color: inherit; cursor: pointer; font-size: 16px;">&plus;</button>
+            </div>
+          </div>
+
+          <button type="submit" name="add" class="btn-primary pdp-add-to-cart js-magnetic" id="AddToCartBtn" data-magnetic-intensity="0.2" {% if product.available == false %}disabled{% endif %}>
+            {%- if product.available -%}
+              Acquire Artifact
+            {%- else -%}
+              Archived
+            {%- endif -%}
+          </button>
+        {% endform %}
+
+        <div class="pdp-description" style="color: var(--text-secondary); margin-bottom: var(--space-48); line-height: 1.6;">
+          {{ product.description }}
+        </div>
+
+        <!-- Accordions -->
+        {%- for block in section.blocks -%}
+          {%- case block.type -%}
+            {%- when 'accordion' -%}
+              <div class="pdp-accordion" {{ block.shopify_attributes }}>
+                <button class="pdp-accordion-header js-accordion-toggle">
+                  {{ block.settings.title }}
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 9l6 6 6-6"/></svg>
+                </button>
+                <div class="pdp-accordion-content">
+                  {{ block.settings.content }}
+                </div>
+              </div>
+          {%- endcase -%}
+        {%- endfor -%}
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STICKY PURCHASE BAR -->
+{%- if section.settings.show_sticky_bar -%}
+<div class="pdp-sticky-bar" id="PDPStickyBar">
+  <div style="display: flex; gap: var(--space-16); align-items: center;">
+    <img src="{{ product.featured_image | image_url: width: 60 }}" alt="" style="width: 40px; height: 50px; object-fit: cover; border-radius: 2px;">
+    <div>
+      <div style="font-size: var(--font-caption); font-weight: bold;">{{ product.title }}</div>
+      <div style="font-size: 10px; color: var(--text-secondary);" id="StickyPrice">{{ product.price | money }}</div>
+    </div>
+  </div>
+  <button class="btn-primary" onclick="document.getElementById('AddToCartBtn').click();" style="padding: 8px 16px; font-size: 10px;">Acquire</button>
+</div>
+{%- endif -%}
+
+<!-- PDP Logic -->
+<script src="{{ 'product-form.js' | asset_url }}" defer></script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  // 1. Accordions
+  document.querySelectorAll('.js-accordion-toggle').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const parent = btn.parentElement;
+      parent.classList.toggle('is-open');
+      const icon = btn.querySelector('svg');
+      if(parent.classList.contains('is-open')) {
+        icon.style.transform = 'rotate(180deg)';
+      } else {
+        icon.style.transform = 'rotate(0deg)';
+      }
+      icon.style.transition = 'transform 0.3s ease';
+    });
+  });
+
+  // 2. Gallery Scroll Sync
+  const mainScroll = document.getElementById('PDPMainScroll');
+  const thumbs = document.querySelectorAll('.pdp-thumb');
+  
+  if(mainScroll && thumbs.length > 0) {
+    // Click thumb to scroll
+    thumbs.forEach(thumb => {
+      thumb.addEventListener('click', () => {
+        const index = thumb.getAttribute('data-index');
+        const target = document.querySelector(`.pdp-media-item[data-index="${index}"]`);
+        if(target) {
+          mainScroll.scrollTo({
+            top: window.innerWidth > 1024 ? target.offsetTop : 0,
+            left: window.innerWidth <= 1024 ? target.offsetLeft : 0,
+            behavior: 'smooth'
+          });
+        }
+      });
+    });
+
+    // Scroll updates active thumb
+    mainScroll.addEventListener('scroll', () => {
+      let activeIndex = 0;
+      const items = document.querySelectorAll('.pdp-media-item');
+      items.forEach(item => {
+        const rect = item.getBoundingClientRect();
+        const containerRect = mainScroll.getBoundingClientRect();
+        if(window.innerWidth > 1024) {
+          if (rect.top >= containerRect.top - 10 && rect.top <= containerRect.bottom) {
+            activeIndex = item.getAttribute('data-index');
+          }
+        } else {
+          if (rect.left >= containerRect.left - 10 && rect.left <= containerRect.right) {
+            activeIndex = item.getAttribute('data-index');
+          }
+        }
+      });
+      
+      thumbs.forEach(t => t.classList.remove('is-active'));
+      const activeThumb = document.querySelector(`.pdp-thumb[data-index="${activeIndex}"]`);
+      if(activeThumb) activeThumb.classList.add('is-active');
+    });
+  }
+
+  // 3. Sticky Bar Reveal (GSAP ScrollTrigger)
+  if(window.gsap && window.ScrollTrigger) {
+    const stickyBar = document.getElementById('PDPStickyBar');
+    const addToCartBtn = document.getElementById('AddToCartBtn');
+    
+    if(stickyBar && addToCartBtn) {
+      ScrollTrigger.create({
+        trigger: addToCartBtn,
+        start: "bottom top", // Trigger when the original button leaves the top of viewport
+        onEnter: () => stickyBar.classList.add('is-visible'),
+        onLeaveBack: () => stickyBar.classList.remove('is-visible')
+      });
+    }
+  }
+
+  // 4. Variant Data Object for JS
+  window.AERIDIAN_PRODUCT = {{ product | json }};
+});
+</script>
+
+{% schema %}
+{
+  "name": "Product Hero",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_sticky_bar",
+      "label": "Enable Sticky Purchase Bar",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "accordion",
+      "name": "Accordion",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Heading",
+          "default": "Details"
+        },
+        {
+          "type": "richtext",
+          "id": "content",
+          "label": "Content"
+        }
+      ]
+    }
+  ],
+  "default": {
+    "blocks": [
+      {
+        "type": "accordion",
+        "settings": {
+          "title": "Materials & Technology",
+          "content": "<p>Engineered with 3-Layer GORE-TEX Pro membrane. Ultrasonic-welded seams ensure absolute hydrostatic resistance. The integrated kinetic paneling system allows unrestricted movement during high-stress scenarios.</p>"
+        }
+      },
+      {
+        "type": "accordion",
+        "settings": {
+          "title": "Sizing & Fit",
+          "content": "<p>Anatomical block. Designed to function as an outer shell, naturally accommodating mid-layers. Select your standard size. Model is 6'2\" (188cm) and wears a size Large.</p>"
+        }
+      },
+      {
+        "type": "accordion",
+        "settings": {
+          "title": "Global Logistics",
+          "content": "<p>Orders are dispatched from our centralized facility within 24 hours. Enjoy complimentary expedited shipping globally on orders exceeding $400 USD. Artifacts may be returned in their pristine original state within 14 days.</p>"
+        }
+      }
+    ]
+  }
+}
+{% endschema %}

@@ -1,0 +1,126 @@
+<!-- AERIDIAN Authentication & Wishlist Architecture -->
+<!--
+  NOTE: Shopify OS 2.0 requires App Integration (e.g., Oxi Social Login or Multipass for Plus) 
+  for native Google/Facebook/Apple auth.
+  This snippet establishes the frontend UI architecture and LocalStorage Wishlist engine 
+  that will hook into whichever Auth app is installed.
+-->
+
+<style>
+  /* Toast Notification */
+  .aeridian-toast {
+    position: fixed;
+    bottom: var(--space-24);
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--color-primary-pure-white);
+    color: var(--color-primary-obsidian);
+    padding: var(--space-12) var(--space-24);
+    border-radius: var(--radius-pill);
+    font-size: var(--font-caption);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    z-index: 9999;
+    opacity: 0;
+    transition: transform var(--duration-base) var(--ease-luxury), opacity var(--duration-base);
+    box-shadow: var(--elevation-1);
+    display: flex;
+    align-items: center;
+    gap: var(--space-8);
+  }
+
+  html[data-theme="light"] .aeridian-toast {
+    background: var(--color-primary-obsidian);
+    color: var(--color-primary-pure-white);
+  }
+
+  .aeridian-toast.is-visible {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+
+  /* Wishlist Icon Active State */
+  .js-wishlist-toggle.is-active svg {
+    fill: var(--color-accent-atmospheric);
+    stroke: var(--color-accent-atmospheric);
+  }
+  
+  .js-wishlist-toggle {
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  
+  .js-wishlist-toggle:active {
+    transform: scale(0.8);
+  }
+</style>
+
+<div class="aeridian-toast" id="AeridianToast">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--color-accent-atmospheric)" stroke="none"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+  <span id="AeridianToastMessage">Added to Wishlist</span>
+</div>
+
+<script>
+class AeridianWishlist {
+  constructor() {
+    this.storageKey = 'aeridian_wishlist';
+    this.items = JSON.parse(localStorage.getItem(this.storageKey)) || [];
+    this.init();
+  }
+
+  init() {
+    // Bind buttons
+    document.querySelectorAll('.js-wishlist-toggle').forEach(btn => {
+      const handle = btn.getAttribute('data-handle');
+      
+      // Initial state
+      if(this.items.includes(handle)) {
+        btn.classList.add('is-active');
+      }
+
+      // Click event
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        this.toggle(handle, btn);
+      });
+    });
+  }
+
+  toggle(handle, button) {
+    const index = this.items.indexOf(handle);
+    if(index > -1) {
+      this.items.splice(index, 1);
+      button.classList.remove('is-active');
+      this.showToast('Removed from Wishlist');
+    } else {
+      this.items.push(handle);
+      button.classList.add('is-active');
+      this.showToast('Added to Wishlist');
+    }
+    this.save();
+    
+    // Future App Hook Example:
+    // window.OxiSocialLogin.syncWishlist(this.items);
+  }
+
+  save() {
+    localStorage.setItem(this.storageKey, JSON.stringify(this.items));
+  }
+
+  showToast(message) {
+    const toast = document.getElementById('AeridianToast');
+    document.getElementById('AeridianToastMessage').innerText = message;
+    toast.classList.add('is-visible');
+    
+    clearTimeout(this.toastTimer);
+    this.toastTimer = setTimeout(() => {
+      toast.classList.remove('is-visible');
+    }, 3000);
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  window.AeridianWishlistEngine = new AeridianWishlist();
+});
+</script>

@@ -1,0 +1,206 @@
+<style>
+  .trending-carousel {
+    position: relative;
+    background-color: var(--color-primary-obsidian);
+    color: var(--color-primary-pure-white);
+    padding: var(--space-120) 0; /* No horizontal padding to allow edge bleed */
+    overflow: hidden;
+  }
+
+  .tc-header {
+    padding: 0 var(--space-24);
+    max-width: var(--container-large);
+    margin: 0 auto var(--space-64) auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+
+  /* Native CSS Momentum Scroll */
+  .tc-slider {
+    display: flex;
+    gap: var(--space-24);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    padding: 0 var(--space-24) var(--space-48) var(--space-24);
+    scrollbar-width: none; /* Firefox */
+  }
+
+  .tc-slider::-webkit-scrollbar {
+    display: none; /* Safari/Chrome */
+  }
+
+  /* Slider Card */
+  .tc-card {
+    flex: 0 0 calc(25% - var(--space-24));
+    min-width: 280px;
+    scroll-snap-align: start;
+    position: relative;
+    background: var(--color-primary-carbon);
+    border: var(--border-subtle);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    transition: border-color var(--duration-fast);
+  }
+
+  html[data-theme="light"] .tc-card {
+    background: var(--bg-primary);
+  }
+
+  .tc-card:hover {
+    border-color: var(--color-accent-atmospheric);
+  }
+
+  .tc-card__image {
+    width: 100%;
+    aspect-ratio: 4/5;
+    object-fit: cover;
+    transition: transform var(--duration-slow) var(--ease-luxury);
+  }
+
+  .tc-card:hover .tc-card__image {
+    transform: scale(1.05);
+  }
+
+  .tc-card__content {
+    padding: var(--space-16);
+  }
+
+  .tc-card__badge {
+    position: absolute;
+    top: var(--space-16);
+    left: var(--space-16);
+    background: var(--color-primary-pure-white);
+    color: var(--color-primary-obsidian);
+    padding: 2px 8px;
+    border-radius: var(--radius-pill);
+    font-size: 10px;
+    font-weight: bold;
+    text-transform: uppercase;
+  }
+
+  /* Custom Drag Cursor (JS) */
+  .tc-slider.is-dragging {
+    scroll-snap-type: none;
+    cursor: grabbing;
+  }
+  .tc-slider.is-dragging .tc-card {
+    pointer-events: none; /* Prevent accidental clicks while dragging */
+  }
+
+  @media screen and (max-width: 1024px) {
+    .tc-card { flex: 0 0 calc(40% - var(--space-24)); }
+  }
+
+  @media screen and (max-width: 767px) {
+    .tc-card { flex: 0 0 calc(80% - var(--space-24)); }
+    .tc-header { flex-direction: column; align-items: flex-start; gap: var(--space-16); }
+  }
+</style>
+
+<section class="trending-carousel" data-section-id="{{ section.id }}">
+  <div class="tc-header">
+    <div>
+      <div class="fp-intro__label">Trending Now</div>
+      <h2 style="font-size: var(--font-heading-2);">High Velocity Drops</h2>
+    </div>
+    <div style="display: flex; gap: var(--space-8);">
+      <button class="btn-icon-action" onclick="document.getElementById('TCSlider').scrollBy({left: -300, behavior: 'smooth'})" aria-label="Scroll Left">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 18l-6-6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <button class="btn-icon-action" onclick="document.getElementById('TCSlider').scrollBy({left: 300, behavior: 'smooth'})" aria-label="Scroll Right">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 18l6-6-6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="tc-slider" id="TCSlider">
+    {%- assign collection = collections[section.settings.collection] -%}
+    {%- if collection != blank and collection.products_count > 0 -%}
+      {%- for product in collection.products limit: 12 -%}
+        <a href="{{ product.url }}" class="tc-card">
+          <div class="tc-card__badge">Popular</div>
+          <div style="overflow: hidden;">
+            {%- if product.featured_image -%}
+              <img src="{{ product.featured_image | image_url: width: 600 }}" alt="{{ product.title }}" class="tc-card__image" loading="lazy">
+            {%- else -%}
+              {{ 'product-1' | placeholder_svg_tag: 'tc-card__image' }}
+            {%- endif -%}
+          </div>
+          <div class="tc-card__content">
+            <h3 style="font-size: var(--font-body-regular); margin-bottom: var(--space-4);">{{ product.title }}</h3>
+            <p style="color: var(--color-secondary-titanium);">{{ product.price | money }}</p>
+          </div>
+        </a>
+      {%- endfor -%}
+    {%- else -%}
+      {%- for i in (1..8) -%}
+        <div class="tc-card">
+          <div class="tc-card__badge">Trending</div>
+          <div style="overflow: hidden;">
+            {{ 'product-' | append: i | placeholder_svg_tag: 'tc-card__image' }}
+          </div>
+          <div class="tc-card__content">
+            <h3 style="font-size: var(--font-body-regular); margin-bottom: var(--space-4);">AERIDIAN Artifact 0{{ i }}</h3>
+            <p style="color: var(--color-secondary-titanium);">$250.00</p>
+          </div>
+        </div>
+      {%- endfor -%}
+    {%- endif -%}
+  </div>
+</section>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const slider = document.getElementById('TCSlider');
+  let isDown = false;
+  let startX;
+  let scrollLeft;
+
+  // Desktop Drag to Scroll (Momentum Simulation)
+  slider.addEventListener('mousedown', (e) => {
+    isDown = true;
+    slider.classList.add('is-dragging');
+    startX = e.pageX - slider.offsetLeft;
+    scrollLeft = slider.scrollLeft;
+  });
+  
+  slider.addEventListener('mouseleave', () => {
+    isDown = false;
+    slider.classList.remove('is-dragging');
+  });
+  
+  slider.addEventListener('mouseup', () => {
+    isDown = false;
+    slider.classList.remove('is-dragging');
+  });
+  
+  slider.addEventListener('mousemove', (e) => {
+    if (!isDown) return;
+    e.preventDefault();
+    const x = e.pageX - slider.offsetLeft;
+    const walk = (x - startX) * 2; // Scroll speed multiplier
+    slider.scrollLeft = scrollLeft - walk;
+  });
+});
+</script>
+
+{% schema %}
+{
+  "name": "Trending Carousel",
+  "settings": [
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Select Collection"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Trending Products Carousel"
+    }
+  ]
+}
+{% endschema %}

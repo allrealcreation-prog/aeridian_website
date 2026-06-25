@@ -1,0 +1,253 @@
+<style>
+  .search-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    height: 100dvh;
+    background-color: rgba(5, 5, 5, 0.98);
+    backdrop-filter: blur(20px);
+    z-index: 1200;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity var(--duration-base) var(--ease-luxury), visibility var(--duration-base);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .search-overlay.is-open {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .search-overlay__header {
+    padding: var(--space-32) var(--space-48);
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .search-overlay__close {
+    background: none;
+    border: none;
+    color: var(--color-primary-pure-white);
+    padding: var(--space-8);
+    cursor: pointer;
+  }
+
+  .search-overlay__content {
+    flex: 1;
+    max-width: var(--container-standard);
+    width: 100%;
+    margin: 0 auto;
+    padding: var(--space-64) var(--space-24);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .search-overlay__form {
+    position: relative;
+    width: 100%;
+    margin-bottom: var(--space-48);
+  }
+
+  .search-overlay__input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid var(--color-primary-carbon);
+    color: var(--color-primary-pure-white);
+    font-size: var(--font-heading-2);
+    font-family: var(--font-body);
+    padding: var(--space-16) 0;
+    outline: none;
+    transition: border-color var(--duration-fast);
+  }
+
+  .search-overlay__input:focus {
+    border-bottom-color: var(--color-accent-atmospheric);
+  }
+
+  .search-overlay__input::placeholder {
+    color: var(--color-secondary-steel);
+  }
+
+  .search-overlay__submit {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--color-primary-pure-white);
+    cursor: pointer;
+  }
+
+  .search-overlay__suggestions {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: var(--space-64);
+  }
+
+  .search-overlay__title {
+    font-size: var(--font-caption);
+    color: var(--color-secondary-steel);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-caption);
+    margin-bottom: var(--space-24);
+  }
+
+  .search-overlay__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-16);
+  }
+
+  .search-overlay__link {
+    color: var(--color-primary-soft-white);
+    font-size: var(--font-body-large);
+    transition: color var(--duration-fast);
+  }
+
+  .search-overlay__link:hover {
+    color: var(--color-primary-pure-white);
+  }
+
+  @media screen and (max-width: 768px) {
+    .search-overlay__header {
+      padding: var(--space-16) var(--space-16);
+    }
+    .search-overlay__suggestions {
+      grid-template-columns: 1fr;
+    }
+    .search-overlay__input {
+      font-size: var(--font-heading-3);
+    }
+  }
+</style>
+
+<div id="SearchOverlay" class="search-overlay" role="dialog" aria-modal="true">
+  <div class="search-overlay__header">
+    <button class="search-overlay__close" aria-label="Close Search" onclick="closeSearch()">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M18 6L6 18M6 6L18 18" stroke-linecap="round"/>
+      </svg>
+    </button>
+  </div>
+
+  <div class="search-overlay__content">
+    <form action="{{ routes.search_url }}" method="get" class="search-overlay__form" role="search">
+      <input type="hidden" name="type" value="product">
+      <input 
+        id="SearchInput"
+        type="search" 
+        name="q" 
+        class="search-overlay__input" 
+        placeholder="SEARCH AERIDIAN..."
+        autocomplete="off"
+      >
+      <button type="submit" class="search-overlay__submit" aria-label="Submit Search">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 21L16.65 16.65" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </form>
+
+    <div class="search-overlay__suggestions">
+      <div>
+        <div class="search-overlay__title">Suggested Searches</div>
+        <ul class="search-overlay__list">
+          <li><a href="/search?q=jacket" class="search-overlay__link">Technical Jackets</a></li>
+          <li><a href="/search?q=cargo" class="search-overlay__link">Cargo Pants</a></li>
+          <li><a href="/search?q=essentials" class="search-overlay__link">Essentials</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function closeSearch() {
+    document.getElementById('SearchOverlay').classList.remove('is-open');
+    document.body.style.overflow = '';
+  }
+
+  // Predictive Search API Integration
+  document.addEventListener('DOMContentLoaded', () => {
+    let debounceTimer;
+    const searchInput = document.getElementById('SearchInput');
+    const suggestionsContainer = document.querySelector('.search-overlay__suggestions');
+    
+    // Cache the default state html
+    const defaultStateHTML = suggestionsContainer ? suggestionsContainer.innerHTML : '';
+
+    if (searchInput && suggestionsContainer) {
+      searchInput.addEventListener('input', (e) => {
+        clearTimeout(debounceTimer);
+        const query = e.target.value.trim();
+        
+        if (query.length === 0) {
+          suggestionsContainer.innerHTML = defaultStateHTML;
+          return;
+        }
+
+        suggestionsContainer.innerHTML = '<div class="search-overlay__title" style="color: var(--accent-color);">Detecting Signals...</div>';
+
+        debounceTimer = setTimeout(() => {
+          fetch(`/search/suggest.json?q=${encodeURIComponent(query)}&resources[type]=product,article,collection&resources[options][unavailable_products]=last`)
+            .then(res => res.json())
+            .then(data => {
+              const products = data.resources.results.products || [];
+              const articles = data.resources.results.articles || [];
+              const collections = data.resources.results.collections || [];
+
+              let html = '';
+
+              if (products.length === 0 && articles.length === 0 && collections.length === 0) {
+                html = `<div class="search-overlay__title">No coordinates found for "${query}".</div>`;
+              } else {
+                // Products
+                if (products.length > 0) {
+                  html += `<div><div class="search-overlay__title">Artifacts</div><ul class="search-overlay__list">`;
+                  products.slice(0, 4).forEach(p => {
+                    html += `<li><a href="${p.url}" class="search-overlay__link" style="display:flex; align-items:center; gap:16px;">
+                      ${p.image ? `<img src="${p.image}" width="40" height="50" style="object-fit:cover; border-radius:2px;">` : ''}
+                      <span>${p.title} <br><span style="font-size:10px; color:var(--text-secondary);">${p.price}</span></span>
+                    </a></li>`;
+                  });
+                  html += `</ul></div>`;
+                }
+                
+                // Collections & Articles
+                if (collections.length > 0 || articles.length > 0) {
+                  html += `<div>`;
+                  if(collections.length > 0) {
+                    html += `<div class="search-overlay__title">Categories</div><ul class="search-overlay__list" style="margin-bottom:32px;">`;
+                    collections.slice(0, 2).forEach(c => {
+                      html += `<li><a href="${c.url}" class="search-overlay__link">${c.title}</a></li>`;
+                    });
+                    html += `</ul>`;
+                  }
+                  if(articles.length > 0) {
+                    html += `<div class="search-overlay__title">Journal</div><ul class="search-overlay__list">`;
+                    articles.slice(0, 2).forEach(a => {
+                      html += `<li><a href="${a.url}" class="search-overlay__link">${a.title}</a></li>`;
+                    });
+                    html += `</ul>`;
+                  }
+                  html += `</div>`;
+                }
+              }
+
+              suggestionsContainer.innerHTML = `<div style="display: grid; grid-template-columns: 1fr 2fr; gap: var(--space-64); width: 100%;">${html}</div>`;
+            })
+            .catch(err => {
+              console.error('Search error:', err);
+              suggestionsContainer.innerHTML = `<div class="search-overlay__title">Error establishing signal.</div>`;
+            });
+        }, 300); // 300ms debounce
+      });
+    }
+  });
+</script>

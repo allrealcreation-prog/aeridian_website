@@ -1,0 +1,273 @@
+<style>
+  .auth-portal {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    background-color: var(--color-primary-obsidian);
+    color: var(--color-primary-pure-white);
+    overflow: hidden;
+    padding: var(--space-120) var(--space-24);
+  }
+
+  html[data-theme="light"] .auth-portal {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+  }
+
+  /* Environment Effects */
+  .auth-pulse {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 800px; height: 800px;
+    background: radial-gradient(circle, rgba(127, 217, 255, 0.1) 0%, transparent 60%);
+    z-index: 1;
+    pointer-events: none;
+    animation: corePulseAuth 6s infinite alternate ease-in-out;
+  }
+
+  html[data-theme="light"] .auth-pulse {
+    background: radial-gradient(circle, rgba(0, 217, 255, 0.15) 0%, transparent 60%);
+  }
+
+  @keyframes corePulseAuth {
+    0% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.5; }
+    100% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
+  }
+
+  .ar-monogram-auth {
+    width: 48px; height: 48px;
+    border: 2px solid var(--color-primary-pure-white);
+    border-radius: 50%;
+    display: flex; justify-content: center; align-items: center;
+    font-weight: bold; font-size: 18px;
+    margin: 0 auto var(--space-32) auto;
+  }
+  html[data-theme="light"] .ar-monogram-auth { border-color: var(--color-primary-obsidian); }
+
+  /* Auth Card */
+  .auth-card {
+    position: relative;
+    z-index: 2;
+    background: rgba(17, 17, 17, 0.6);
+    backdrop-filter: blur(20px);
+    border: var(--border-subtle);
+    border-radius: var(--radius-sm);
+    padding: var(--space-48);
+    width: 100%;
+    max-width: 480px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  }
+
+  html[data-theme="light"] .auth-card {
+    background: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.05);
+  }
+
+  /* State Management */
+  .auth-state {
+    display: none;
+    animation: authFadeIn var(--duration-base) var(--ease-luxury) forwards;
+  }
+  .auth-state.is-active { display: block; }
+
+  @keyframes authFadeIn {
+    0% { opacity: 0; transform: translateY(10px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Forms & Inputs */
+  .auth-form-group { margin-bottom: var(--space-24); }
+  
+  .auth-input {
+    width: 100%;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: var(--color-primary-pure-white);
+    padding: var(--space-16);
+    border-radius: var(--radius-sm);
+    font-family: inherit;
+    transition: border-color var(--duration-fast);
+  }
+  html[data-theme="light"] .auth-input {
+    background: rgba(0,0,0,0.02);
+    border-color: rgba(0,0,0,0.1);
+    color: var(--color-primary-obsidian);
+  }
+  .auth-input:focus { outline: none; border-color: var(--color-accent-atmospheric); }
+
+  /* Social Auth Hooks */
+  .auth-social-btn {
+    width: 100%;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.1);
+    color: var(--color-primary-pure-white);
+    padding: var(--space-16);
+    border-radius: var(--radius-sm);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--space-12);
+    margin-bottom: var(--space-12);
+    cursor: pointer;
+    transition: all var(--duration-fast);
+    font-weight: 500;
+  }
+  html[data-theme="light"] .auth-social-btn {
+    border-color: rgba(0,0,0,0.1);
+    color: var(--color-primary-obsidian);
+  }
+  .auth-social-btn:hover {
+    border-color: var(--color-accent-atmospheric);
+    background: rgba(127, 217, 255, 0.05);
+  }
+
+  .auth-divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: var(--space-32) 0;
+    color: var(--color-secondary-titanium);
+    font-size: var(--font-caption);
+    text-transform: uppercase;
+  }
+  .auth-divider::before, .auth-divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  html[data-theme="light"] .auth-divider::before, html[data-theme="light"] .auth-divider::after { border-bottom-color: rgba(0,0,0,0.1); }
+  .auth-divider:not(:empty)::before { margin-right: .25em; }
+  .auth-divider:not(:empty)::after { margin-left: .25em; }
+
+  /* Links */
+  .auth-link {
+    color: var(--color-secondary-titanium);
+    font-size: var(--font-caption);
+    text-decoration: underline;
+    cursor: pointer;
+    transition: color var(--duration-fast);
+  }
+  .auth-link:hover { color: var(--color-accent-atmospheric); }
+</style>
+
+<div class="auth-portal">
+  <div class="auth-pulse"></div>
+
+  <div class="auth-card">
+    <div class="ar-monogram-auth">AR</div>
+    <div style="text-align: center; margin-bottom: var(--space-48);">
+      <h1 style="font-size: var(--font-heading-2); margin-bottom: var(--space-8);">AERIDIAN Identity</h1>
+      <p style="color: var(--color-secondary-titanium); font-size: var(--font-caption); text-transform: uppercase;">Access the Universe</p>
+    </div>
+
+    <!-- STATE 1: LOGIN -->
+    <div id="StateLogin" class="auth-state is-active">
+      {% form 'customer_login' %}
+        {{ form.errors | default_errors }}
+        
+        <div class="auth-form-group">
+          <input type="email" name="customer[email]" class="auth-input" placeholder="Email Address" required>
+        </div>
+        
+        {% if form.password_needed %}
+          <div class="auth-form-group">
+            <input type="password" name="customer[password]" class="auth-input" placeholder="Password" required>
+          </div>
+        {% endif %}
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-24);">
+          <label style="font-size: var(--font-caption); color: var(--color-secondary-titanium); display: flex; align-items: center; gap: 8px;">
+            <input type="checkbox" style="accent-color: var(--color-accent-atmospheric);"> Remember Me
+          </label>
+          <a class="auth-link" onclick="switchAuthState('StateRecover')">Forgot Password?</a>
+        </div>
+
+        <button type="submit" class="btn-primary" style="width: 100%;" onclick="sessionStorage.setItem('aeridian_auth_success', 'true')">Continue</button>
+      {% endform %}
+
+      <div class="auth-divider">Or</div>
+
+      <!-- Future App Integration Hooks -->
+      <button class="auth-social-btn" onclick="alert('Requires Social Auth App Integration (e.g. Oxi Social Login)')">
+        Continue With Google
+      </button>
+      <button class="auth-social-btn" onclick="alert('Requires OTP App Integration')">
+        Continue With Phone (OTP)
+      </button>
+      
+      <div style="text-align: center; margin-top: var(--space-32);">
+        <span style="color: var(--color-secondary-titanium); font-size: var(--font-caption);">No identity found?</span> 
+        <a class="auth-link" onclick="switchAuthState('StateRegister')">Create Account</a>
+      </div>
+    </div>
+
+    <!-- STATE 2: REGISTER -->
+    <div id="StateRegister" class="auth-state">
+      {% form 'create_customer' %}
+        {{ form.errors | default_errors }}
+        
+        <div style="display: flex; gap: var(--space-16);">
+          <div class="auth-form-group" style="flex:1;">
+            <input type="text" name="customer[first_name]" class="auth-input" placeholder="First Name" required>
+          </div>
+          <div class="auth-form-group" style="flex:1;">
+            <input type="text" name="customer[last_name]" class="auth-input" placeholder="Last Name" required>
+          </div>
+        </div>
+
+        <div class="auth-form-group">
+          <input type="email" name="customer[email]" class="auth-input" placeholder="Email Address" required>
+        </div>
+        
+        <div class="auth-form-group">
+          <input type="password" name="customer[password]" class="auth-input" placeholder="Password" required>
+        </div>
+
+        <button type="submit" class="btn-primary" style="width: 100%; margin-top: var(--space-16);" onclick="sessionStorage.setItem('aeridian_auth_success', 'true')">Initialize Identity</button>
+      {% endform %}
+
+      <div style="text-align: center; margin-top: var(--space-32);">
+        <span style="color: var(--color-secondary-titanium); font-size: var(--font-caption);">Already connected?</span> 
+        <a class="auth-link" onclick="switchAuthState('StateLogin')">Return to Login</a>
+      </div>
+    </div>
+
+    <!-- STATE 3: RECOVER PASSWORD -->
+    <div id="StateRecover" class="auth-state">
+      <p style="color: var(--color-secondary-titanium); margin-bottom: var(--space-24); text-align: center;">Enter your email to receive recovery instructions.</p>
+      {% form 'recover_customer_password' %}
+        {{ form.errors | default_errors }}
+        
+        <div class="auth-form-group">
+          <input type="email" name="email" class="auth-input" placeholder="Email Address" required>
+        </div>
+
+        <button type="submit" class="btn-primary" style="width: 100%; margin-top: var(--space-16);">Send Recovery Signal</button>
+      {% endform %}
+
+      <div style="text-align: center; margin-top: var(--space-32);">
+        <a class="auth-link" onclick="switchAuthState('StateLogin')">Cancel & Return</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  function switchAuthState(stateId) {
+    document.querySelectorAll('.auth-state').forEach(el => el.classList.remove('is-active'));
+    document.getElementById(stateId).classList.add('is-active');
+  }
+
+  // If page loads with #register hash
+  if(window.location.hash === '#register') {
+    switchAuthState('StateRegister');
+  }
+  // If page loads with #recover hash
+  if(window.location.hash === '#recover') {
+    switchAuthState('StateRecover');
+  }
+</script>

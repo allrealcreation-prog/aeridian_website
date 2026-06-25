@@ -1,0 +1,126 @@
+<dialog class="quick-view-modal" id="QuickViewModal">
+  <div class="quick-view__overlay" onclick="closeQuickView()"></div>
+  <div class="quick-view__container">
+    <button class="drawer__close" onclick="closeQuickView()" aria-label="Close Quick View" style="position: absolute; top: var(--space-24); right: var(--space-24); z-index: 10;">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 6L6 18M6 6L18 18" stroke-linecap="round"/></svg>
+    </button>
+    <div class="quick-view__content" id="QuickViewContent">
+      <!-- Loading State -->
+      <div class="quick-view__loading" id="QuickViewLoading">
+        <div class="spinner"></div>
+      </div>
+      <!-- Fetched Product HTML injected here -->
+      <div id="QuickViewRendered"></div>
+    </div>
+  </div>
+</dialog>
+
+<style>
+  .quick-view-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    z-index: 3000;
+    background: transparent;
+    border: none;
+    padding: 0;
+    display: none;
+    justify-content: center;
+    align-items: center;
+  }
+  .quick-view-modal.is-open {
+    display: flex;
+  }
+  .quick-view__overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(5, 5, 5, 0.7);
+    backdrop-filter: blur(10px);
+    opacity: 0;
+    transition: opacity var(--duration-base);
+  }
+  .quick-view-modal.is-open .quick-view__overlay {
+    opacity: 1;
+  }
+  .quick-view__container {
+    position: relative;
+    width: 90vw;
+    max-width: 1200px;
+    height: 80vh;
+    background: var(--color-primary-obsidian);
+    border: var(--border-subtle);
+    border-radius: var(--radius-sm);
+    z-index: 2;
+    transform: translateY(50px);
+    opacity: 0;
+    transition: transform var(--duration-slow) var(--ease-luxury), opacity var(--duration-base);
+    overflow: hidden;
+  }
+  html[data-theme="light"] .quick-view__container {
+    background: var(--bg-primary);
+  }
+  .quick-view-modal.is-open .quick-view__container {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  .quick-view__content {
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+  }
+  .quick-view__loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+  }
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(255,255,255,0.1);
+    border-top-color: var(--color-accent-atmospheric);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  @keyframes spin { 100% { transform: rotate(360deg); } }
+</style>
+
+<script>
+  window.openQuickView = function(handle) {
+    const modal = document.getElementById('QuickViewModal');
+    const loading = document.getElementById('QuickViewLoading');
+    const rendered = document.getElementById('QuickViewRendered');
+    
+    modal.classList.add('is-open');
+    document.body.style.overflow = 'hidden';
+    loading.style.display = 'flex';
+    rendered.innerHTML = '';
+
+    // Shopify Section Rendering API
+    // If no product template exists yet, this will fetch the full page and extract the main content.
+    fetch('/products/' + handle)
+      .then(response => response.text())
+      .then(text => {
+        const parser = new DOMParser();
+        const htmlDocument = parser.parseFromString(text, 'text/html');
+        // Fallback extraction
+        const productHtml = htmlDocument.querySelector('main') ? htmlDocument.querySelector('main').innerHTML : '<h2>Product Placeholder</h2>';
+        loading.style.display = 'none';
+        rendered.innerHTML = `<div style="padding: 48px;">${productHtml}</div>`;
+      })
+      .catch(e => {
+        loading.style.display = 'none';
+        rendered.innerHTML = '<div style="padding: 48px;">Error loading product.</div>';
+      });
+  }
+
+  window.closeQuickView = function() {
+    document.getElementById('QuickViewModal').classList.remove('is-open');
+    document.body.style.overflow = '';
+  }
+</script>

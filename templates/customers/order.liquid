@@ -1,0 +1,190 @@
+<style>
+  .cd-order-view {
+    background-color: var(--color-primary-obsidian);
+    color: var(--color-primary-pure-white);
+    min-height: 100vh;
+    padding: var(--space-120) var(--space-24);
+  }
+
+  html[data-theme="light"] .cd-order-view {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+  }
+
+  .cdo-container {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .cdo-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: var(--space-48);
+  }
+
+  .cdo-panel {
+    background: rgba(17, 17, 17, 0.4);
+    backdrop-filter: blur(12px);
+    border: var(--border-subtle);
+    border-radius: var(--radius-sm);
+    padding: var(--space-48);
+    margin-bottom: var(--space-32);
+  }
+
+  html[data-theme="light"] .cdo-panel {
+    background: rgba(255, 255, 255, 0.6);
+  }
+
+  .cdo-table { width: 100%; border-collapse: collapse; }
+  .cdo-table th {
+    text-align: left;
+    font-size: var(--font-caption);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-secondary-titanium);
+    padding-bottom: var(--space-16);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  html[data-theme="light"] .cdo-table th { border-bottom-color: rgba(0,0,0,0.1); }
+  
+  .cdo-table td {
+    padding: var(--space-24) 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  html[data-theme="light"] .cdo-table td { border-bottom-color: rgba(0,0,0,0.05); }
+
+  .cdo-timeline {
+    display: flex;
+    justify-content: space-between;
+    margin-top: var(--space-48);
+    position: relative;
+  }
+  .cdo-timeline::before {
+    content: ''; position: absolute;
+    top: 15px; left: 0; width: 100%; height: 2px;
+    background: rgba(255,255,255,0.1);
+    z-index: 1;
+  }
+  html[data-theme="light"] .cdo-timeline::before { background: rgba(0,0,0,0.1); }
+
+  .cdo-step {
+    position: relative; z-index: 2;
+    text-align: center; width: 80px;
+  }
+  .cdo-dot {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--color-primary-carbon);
+    border: 2px solid rgba(255,255,255,0.2);
+    margin: 0 auto var(--space-12) auto;
+    display: flex; justify-content: center; align-items: center;
+  }
+  html[data-theme="light"] .cdo-dot { background: #fff; border-color: rgba(0,0,0,0.2); }
+  
+  .cdo-step.is-active .cdo-dot {
+    background: var(--color-accent-atmospheric);
+    border-color: var(--color-accent-atmospheric);
+    box-shadow: 0 0 15px var(--color-accent-atmospheric);
+  }
+  .cdo-step-label {
+    font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--color-secondary-titanium);
+  }
+  .cdo-step.is-active .cdo-step-label { color: inherit; font-weight: bold; }
+</style>
+
+<div class="cd-order-view">
+  <div class="cdo-container">
+    
+    <a href="{{ routes.account_url }}" style="color: var(--color-secondary-titanium); font-size: var(--font-caption); text-transform: uppercase; letter-spacing: 0.1em; text-decoration: none; display: inline-block; margin-bottom: var(--space-24);">← Back to Dashboard</a>
+
+    <div class="cdo-header">
+      <div>
+        <h1 style="font-size: var(--font-heading-1); margin-bottom: var(--space-8);">Order {{ order.name }}</h1>
+        <p style="color: var(--color-secondary-titanium);">Placed on {{ order.created_at | date: "%B %d, %Y" }}</p>
+      </div>
+      <div>
+        <a href="#" class="btn-primary" style="background: transparent; border: 1px solid var(--color-secondary-titanium);">Download Invoice</a>
+      </div>
+    </div>
+
+    <!-- Timeline -->
+    <div class="cdo-panel" style="padding-bottom: var(--space-64);">
+      <h3 style="font-size: var(--font-heading-3); margin-bottom: var(--space-8);">Fulfillment Status</h3>
+      
+      <div class="cdo-timeline">
+        <div class="cdo-step is-active">
+          <div class="cdo-dot"></div>
+          <div class="cdo-step-label">Processing</div>
+        </div>
+        <div class="cdo-step {% if order.fulfillment_status == 'fulfilled' %}is-active{% endif %}">
+          <div class="cdo-dot"></div>
+          <div class="cdo-step-label">Packed</div>
+        </div>
+        <div class="cdo-step {% if order.fulfillment_status == 'fulfilled' %}is-active{% endif %}">
+          <div class="cdo-dot"></div>
+          <div class="cdo-step-label">Shipped</div>
+        </div>
+        <div class="cdo-step">
+          <div class="cdo-dot"></div>
+          <div class="cdo-step-label">Delivered</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Order Items -->
+    <div class="cdo-panel">
+      <table class="cdo-table">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>SKU</th>
+            <th style="text-align: right;">Price</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for line_item in order.line_items %}
+            <tr>
+              <td>
+                <div style="display: flex; gap: var(--space-16); align-items: center;">
+                  {% if line_item.image %}
+                    <img src="{{ line_item.image | img_url: '100x' }}" alt="{{ line_item.title }}" style="width: 60px; border-radius: 4px;">
+                  {% endif %}
+                  <div>
+                    <a href="{{ line_item.product.url }}" style="color: inherit; text-decoration: none; font-weight: bold;">{{ line_item.title }}</a>
+                    <div style="color: var(--color-secondary-titanium); font-size: var(--font-caption); margin-top: 4px;">Quantity: {{ line_item.quantity }}</div>
+                  </div>
+                </div>
+              </td>
+              <td style="color: var(--color-secondary-titanium);">{{ line_item.sku | default: 'N/A' }}</td>
+              <td style="text-align: right;">{{ line_item.final_line_price | money }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <div style="margin-top: var(--space-32); border-top: 1px solid rgba(255,255,255,0.1); padding-top: var(--space-32); display: flex; justify-content: flex-end;">
+        <div style="width: 300px;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 8px; color: var(--color-secondary-titanium);">
+            <span>Subtotal</span>
+            <span>{{ order.line_items_subtotal_price | money }}</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 8px; color: var(--color-secondary-titanium);">
+            <span>Shipping</span>
+            <span>{{ order.shipping_price | money }}</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 16px; color: var(--color-secondary-titanium);">
+            <span>Tax</span>
+            <span>{{ order.tax_price | money }}</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: var(--font-heading-3); padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.1);">
+            <span>Total</span>
+            <span>{{ order.total_price | money }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
