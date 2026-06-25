@@ -1,0 +1,35 @@
+name: AERIDIAN Enterprise CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  quality_gates:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Use Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version-file: '.nvmrc'
+        cache: 'npm'
+        
+    - name: Install Dependencies
+      run: npm ci
+
+    - name: ESLint Check
+      run: npm run lint
+      
+    - name: Prettier Format Check
+      run: npx prettier --check "**/*.{js,css,json}"
+      
+    - name: Install Shopify CLI
+      run: npm install -g @shopify/cli @shopify/theme
+
+    - name: Theme Check Validation
+      run: shopify theme check

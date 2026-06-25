@@ -31,12 +31,14 @@
     </div>
   </div>
   <div style="padding: var(--space-24); border-top: var(--border-subtle);">
-    <button class="btn-primary" style="width: 100%;" onclick="closeFilterPanel()">Apply Filters</button>
+    <button class="btn-primary" style="width: 100%;" onclick="window.AERIDIAN.Modules.FilterPanel.close()">Apply Filters</button>
   </div>
 </dialog>
 
 <script>
-  window.openFilterPanel = function() {
+  window.AERIDIAN.Modules.FilterPanel = window.AERIDIAN.Modules.FilterPanel || {};
+  
+  window.AERIDIAN.Modules.FilterPanel.open = function() {
     const panel = document.getElementById('FilterPanel');
     if (panel) {
       panel.classList.add('is-open');
@@ -47,7 +49,8 @@
     }
     document.body.style.overflow = 'hidden';
   }
-  window.closeFilterPanel = function() {
+  
+  window.AERIDIAN.Modules.FilterPanel.close = function() {
     const panel = document.getElementById('FilterPanel');
     if (panel) {
       panel.classList.remove('is-open');

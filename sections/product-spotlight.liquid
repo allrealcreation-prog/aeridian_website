@@ -152,9 +152,9 @@
       <div class="ps-garment-container" id="PSGarment">
         <!-- 2.5D Parallax Layers -->
         {%- if section.settings.image != blank -%}
-          <img src="{{ section.settings.image | image_url: width: 1000 }}" class="ps-garment-layer" style="z-index: 2; transform: translateZ(50px);" id="PSLayerFront">
+          <img src="{{ section.settings.image | image_url: width: 1000 }}" class="ps-garment-layer" style="z-index: 2; transform: translateZ(50px);" id="PSLayerFront" width="{{ section.settings.image.width }}" height="{{ section.settings.image.height }}">
           <!-- Fake back layer for depth -->
-          <img src="{{ section.settings.image | image_url: width: 1000 }}" class="ps-garment-layer" style="z-index: 1; filter: brightness(0.2) blur(4px); transform: translateZ(-50px) scale(0.95);" id="PSLayerBack">
+          <img src="{{ section.settings.image | image_url: width: 1000 }}" class="ps-garment-layer" style="z-index: 1; filter: brightness(0.2) blur(4px); transform: translateZ(-50px) scale(0.95);" id="PSLayerBack" width="{{ section.settings.image.width }}" height="{{ section.settings.image.height }}">
         {%- else -%}
           {{ 'product-2' | placeholder_svg_tag: 'ps-garment-layer' }}
         {%- endif -%}

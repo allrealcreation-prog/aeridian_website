@@ -2,48 +2,39 @@
   "sections": {
     "hero": {
       "type": "hero-cinematic",
-      "settings": {
-      }
+      "settings": {}
     },
     "discovery": {
       "type": "collection-discovery",
-      "settings": {
-      }
+      "settings": {}
     },
     "featured": {
       "type": "featured-products",
-      "settings": {
-      }
+      "settings": {}
     },
     "bestsellers": {
       "type": "best-sellers",
-      "settings": {
-      }
+      "settings": {}
     },
     "spotlight": {
       "type": "product-spotlight",
-      "settings": {
-      }
+      "settings": {}
     },
     "trending": {
       "type": "trending-carousel",
-      "settings": {
-      }
+      "settings": {}
     },
     "story": {
       "type": "brand-story",
-      "settings": {
-      }
+      "settings": {}
     },
     "contact": {
       "type": "contact-hub",
-      "settings": {
-      }
+      "settings": {}
     },
     "trust": {
       "type": "trust-ecosystem",
-      "settings": {
-      }
+      "settings": {}
     }
   },
   "order": [

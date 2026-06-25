@@ -272,7 +272,7 @@
   // Global Toggle Functions
   function toggleMobileNav(btn) { document.getElementById('MobileNavDrawer').classList.add('is-open'); document.body.style.overflow = 'hidden'; if(btn) btn.setAttribute('aria-expanded', 'true'); }
   function toggleSearch() { document.getElementById('SearchOverlay').classList.add('is-open'); document.body.style.overflow = 'hidden'; document.getElementById('SearchInput').focus(); }
-  function toggleCart(btn) { if(window.AeridianCartDrawerInstance) window.AeridianCartDrawerInstance.open(); }
+  function toggleCart(btn) { if(window.AERIDIAN && window.AERIDIAN.Modules.CartDrawer) window.AERIDIAN.Modules.CartDrawer.open(); }
   function toggleWishlist() { document.getElementById('WishlistDrawer').classList.add('is-open'); document.body.style.overflow = 'hidden'; }
 
   // Theme Toggle Function

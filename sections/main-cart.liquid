@@ -8,7 +8,7 @@
           <div class="cart-item" style="display: flex; gap: var(--space-24); margin-bottom: var(--space-32); padding-bottom: var(--space-32); border-bottom: 1px solid var(--border-subtle);">
             <div class="cart-item__media" style="width: 120px;">
               {%- if item.image -%}
-                <img src="{{ item.image | image_url: width: 300 }}" alt="{{ item.title | escape }}" style="width: 100%; height: auto; object-fit: cover;">
+                <img src="{{ item.image | image_url: width: 300 }}" alt="{{ item.title | escape }}" style="width: 100%; height: auto; object-fit: cover;" width="{{ item.image.width }}" height="{{ item.image.height }}">
               {%- endif -%}
             </div>
             <div class="cart-item__details" style="flex: 1;">

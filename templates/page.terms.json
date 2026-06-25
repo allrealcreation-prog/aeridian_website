@@ -4,7 +4,5 @@
       "type": "main-policy"
     }
   },
-  "order": [
-    "main"
-  ]
+  "order": ["main"]
 }

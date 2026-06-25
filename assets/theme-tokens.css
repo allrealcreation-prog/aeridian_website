@@ -7,17 +7,17 @@
   /* DARK MODE (BASELINE) */
   --bg-primary: #111111;
   --bg-secondary: #171717;
-  --card-bg: #1A1A1A;
-  
-  --text-primary: #EEEEEE;
+  --card-bg: #1a1a1a;
+
+  --text-primary: #eeeeee;
   --text-secondary: rgba(238, 238, 238, 0.65);
-  
+
   --border-subtle: rgba(238, 238, 238, 0.1);
   --border-heavy: rgba(255, 255, 255, 0.2);
-  
-  --accent-color: #00FFD1;
-  --accent-hover: #00E6BD;
-  
+
+  --accent-color: #00ffd1;
+  --accent-hover: #00e6bd;
+
   --shadow-color: rgba(0, 0, 0, 0.5);
   --glow-color: rgba(0, 255, 209, 0.15);
 
@@ -25,21 +25,21 @@
   --overlay-bg: rgba(10, 10, 10, 0.9);
 }
 
-html[data-theme="light"] {
+html[data-theme='light'] {
   /* LIGHT MODE (OVERRIDE) */
-  --bg-primary: #EEEEEE;
-  --bg-secondary: #F8F8F8;
-  --card-bg: #FFFFFF;
-  
+  --bg-primary: #eeeeee;
+  --bg-secondary: #f8f8f8;
+  --card-bg: #ffffff;
+
   --text-primary: #111111;
   --text-secondary: rgba(17, 17, 17, 0.65);
-  
+
   --border-subtle: rgba(17, 17, 17, 0.1);
   --border-heavy: rgba(0, 0, 0, 0.2);
-  
-  --accent-color: #00FFD1; /* User requested same accent */
-  --accent-hover: #00E6BD;
-  
+
+  --accent-color: #00ffd1; /* User requested same accent */
+  --accent-hover: #00e6bd;
+
   --shadow-color: rgba(0, 0, 0, 0.05);
   --glow-color: rgba(0, 255, 209, 0.1);
 
@@ -54,7 +54,9 @@ html[data-theme="light"] {
 body {
   background-color: var(--bg-primary);
   color: var(--text-primary);
-  transition: background-color 0.4s ease, color 0.4s ease;
+  transition:
+    background-color 0.4s ease,
+    color 0.4s ease;
 }
 
 /* Base Utility Classes mapped to tokens */
@@ -62,14 +64,19 @@ body {
   background: var(--card-bg);
   border: 1px solid var(--border-subtle);
   box-shadow: 0 10px 30px var(--shadow-color);
-  transition: background-color 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+  transition:
+    background-color 0.4s ease,
+    border-color 0.4s ease,
+    box-shadow 0.4s ease;
 }
 
 .theme-glass {
   background: var(--glass-bg);
   backdrop-filter: blur(12px);
   border: 1px solid var(--border-subtle);
-  transition: background-color 0.4s ease, border-color 0.4s ease;
+  transition:
+    background-color 0.4s ease,
+    border-color 0.4s ease;
 }
 
 .theme-text-secondary {

@@ -8,7 +8,7 @@
 
   {%- if article.image -%}
     <div style="margin-bottom: var(--space-64); width: 100%;">
-      <img src="{{ article.image | image_url: width: 1200 }}" alt="{{ article.title | escape }}" style="width: 100%; height: auto; display: block;">
+      <img src="{{ article.image | image_url: width: 1200 }}" alt="{{ article.title | escape }}" style="width: 100%; height: auto; display: block;" width="{{ article.image.width }}" height="{{ article.image.height }}">
     </div>
   {%- endif -%}
 

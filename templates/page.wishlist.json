@@ -4,7 +4,5 @@
       "type": "page-wishlist"
     }
   },
-  "order": [
-    "main"
-  ]
+  "order": ["main"]
 }

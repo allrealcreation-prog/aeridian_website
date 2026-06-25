@@ -1,0 +1,9 @@
+node_modules/
+assets/*.min.js
+assets/three.min.js
+assets/gsap.min.js
+assets/ScrollTrigger.min.js
+assets/vendor/
+dist/
+build/
+coverage/

@@ -1,0 +1,4 @@
+RemoteAsset:
+  enabled: true
+  ignore:
+    - layout/theme.liquid

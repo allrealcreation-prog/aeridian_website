@@ -182,7 +182,7 @@
       <div class="brand-lockup" style="margin-bottom: var(--space-48);">
         <div class="brand-lockup__wordmark" style="overflow: hidden;">
           {%- if section.settings.logo != blank -%}
-            <img src="{{ section.settings.logo | image_url: width: 800 }}" alt="{{ shop.name }}" class="hero-logo" width="{{ section.settings.logo.width }}" height="{{ section.settings.logo.height }}">
+            <img src="{{ section.settings.logo | image_url: width: 800 }}" alt="{{ shop.name }}" class="hero-logo" width="{{ section.settings.logo.width }}" height="{{ section.settings.logo.height }}" fetchpriority="high" loading="eager">
           {%- else -%}
             <h1 class="hero-logo" style="margin: 0; line-height: 0; display: block; max-width: 400px; width: 100%;">
               {% render 'icon-wordmark' %}
@@ -215,7 +215,7 @@
 </section>
 
 <!-- Defer Three.js Library -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer></script>
+<script src="{{ 'three.min.js' | asset_url }}" defer></script>
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {

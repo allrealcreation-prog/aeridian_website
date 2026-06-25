@@ -121,6 +121,7 @@ class AeridianWishlist {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  window.AeridianWishlistEngine = new AeridianWishlist();
+  window.AERIDIAN.Modules.Wishlist = new AeridianWishlist();
+  window.AERIDIAN.Utils.log('Wishlist', 'initialized');
 });
 </script>

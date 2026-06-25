@@ -1,0 +1,37 @@
+{
+  "env": {
+    "browser": true,
+    "es2021": true
+  },
+  "extends": "eslint:recommended",
+  "parserOptions": {
+    "ecmaVersion": 12,
+    "sourceType": "module"
+  },
+  "globals": {
+    "window": "readonly",
+    "document": "readonly",
+    "console": "readonly",
+    "Shopify": "readonly",
+    "gsap": "readonly",
+    "ScrollTrigger": "readonly",
+    "THREE": "readonly",
+    "CustomEvent": "readonly",
+    "IntersectionObserver": "readonly",
+    "ResizeObserver": "readonly",
+    "AbortController": "readonly"
+  },
+  "rules": {
+    "no-undef": "error",
+    "no-unreachable": "error",
+    "no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
+    "no-dupe-keys": "error",
+    "no-redeclare": "error",
+    "eqeqeq": "error",
+    "curly": "error",
+    "prefer-const": "error",
+    "semi": "off",
+    "quotes": "off",
+    "no-console": "off"
+  }
+}

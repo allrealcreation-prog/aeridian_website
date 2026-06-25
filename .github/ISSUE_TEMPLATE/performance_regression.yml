@@ -1,0 +1,34 @@
+name: Performance Regression
+description: Report a drop in Lighthouse score or framerate stutter
+title: "[PERFORMANCE] "
+labels: ["performance", "bug"]
+body:
+  - type: markdown
+    attributes:
+      value: "Thanks for reporting a performance issue! Maintaining our 95+ score is critical."
+  - type: textarea
+    id: description
+    attributes:
+      label: Description of the Regression
+      description: Describe what feels slow. Is it scrolling, clicking a button, or the initial page load?
+    validations:
+      required: true
+  - type: input
+    id: lighthouse
+    attributes:
+      label: Lighthouse Metrics
+      description: If applicable, please paste the Lighthouse Mobile Score (e.g., LCP 3.2s, TBT 400ms).
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce
+      description: How can we replicate this performance drop?
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment Details
+      description: Device (e.g., iPhone 13 Pro), Browser (e.g., Safari), OS (e.g., iOS 16).
+    validations:
+      required: true

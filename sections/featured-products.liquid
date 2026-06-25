@@ -212,7 +212,7 @@
           <div class="product-card js-tilt-card" data-handle="{{ product.handle }}">
             <a href="{{ product.url }}" class="product-card__image-wrap">
               {%- if product.featured_image -%}
-                <img src="{{ product.featured_image | image_url: width: 600 }}" alt="{{ product.title }}" class="product-card__image" loading="lazy">
+                <img src="{{ product.featured_image | image_url: width: 600 }}" alt="{{ product.title }}" class="product-card__image" loading="lazy" width="{{ product.featured_image.width }}" height="{{ product.featured_image.height }}">
               {%- else -%}
                 {{ 'product-1' | placeholder_svg_tag: 'product-card__image' }}
               {%- endif -%}

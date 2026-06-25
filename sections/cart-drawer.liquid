@@ -78,7 +78,7 @@
       {%- for item in cart.items -%}
         <div class="cart-drawer__item" data-key="{{ item.key }}">
           {%- if item.image -%}
-            <img src="{{ item.image | image_url: width: 160 }}" class="cart-drawer__item-img" alt="{{ item.title | escape }}">
+            <img src="{{ item.image | image_url: width: 160 }}" class="cart-drawer__item-img" alt="{{ item.title | escape }}" width="{{ item.image.width }}" height="{{ item.image.height }}">
           {%- else -%}
             <div class="cart-drawer__item-img"></div>
           {%- endif -%}
@@ -138,9 +138,10 @@ class AeridianCartDrawer {
     this.overlay.addEventListener('click', () => this.close());
     
     // Listen to global cart add
-    window.addEventListener('aeridian:cart-updated', () => {
+    this._globalCartHandler = () => {
       this.refreshCart().then(() => this.open());
-    });
+    };
+    window.addEventListener('aeridian:cart-updated', this._globalCartHandler);
 
     // Delegate clicks for qty & remove
     this.drawer.addEventListener('click', (e) => {
@@ -222,11 +223,28 @@ class AeridianCartDrawer {
       this.drawer.style.pointerEvents = 'auto';
     }
   }
+  destroy() {
+    if (this._globalCartHandler) {
+      window.removeEventListener('aeridian:cart-updated', this._globalCartHandler);
+    }
+  }
+
+  reInit() {
+    this.destroy();
+    this.bindEvents();
+  }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  window.AeridianCartDrawerInstance = new AeridianCartDrawer();
-});
+if (!window.AERIDIAN) window.AERIDIAN = { Modules: {} };
+if (!window.AERIDIAN.Modules.CartDrawer) {
+  window.AERIDIAN.Modules.CartDrawer = new AeridianCartDrawer();
+  document.addEventListener('DOMContentLoaded', () => {
+    window.AERIDIAN.Utils?.log('CartDrawer', 'initialized');
+  });
+} else {
+  // If re-rendered by Shopify
+  window.AERIDIAN.Modules.CartDrawer = new AeridianCartDrawer();
+}
 </script>
 
 {% schema %}

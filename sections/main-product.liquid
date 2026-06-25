@@ -196,7 +196,7 @@
       <div class="pdp-gallery-container" id="PDPGallery">
         <div class="pdp-thumbnails">
           {%- for image in product.images -%}
-            <img src="{{ image | image_url: width: 150 }}" alt="{{ product.title }}" class="pdp-thumb {% if forloop.first %}is-active{% endif %}" data-index="{{ forloop.index0 }}" loading="lazy">
+            <img src="{{ image | image_url: width: 150 }}" alt="{{ product.title }}" class="pdp-thumb {% if forloop.first %}is-active{% endif %}" data-index="{{ forloop.index0 }}" loading="lazy" width="{{ image.width }}" height="{{ image.height }}">
           {%- endfor -%}
         </div>
         
@@ -211,7 +211,9 @@
                            {{ image | image_url: width: 2000 }} 2000w"
                    sizes="(min-width: 1024px) 60vw, 100vw"
                    alt="{{ product.title | escape }}" 
-                   loading="{% if forloop.first %}eager{% else %}lazy{% endif %}">
+                   loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+                   {% if forloop.first %}fetchpriority="high"{% endif %} 
+                   width="{{ image.width }}" height="{{ image.height }}">
             </div>
           {%- endfor -%}
         </div>
@@ -326,7 +328,7 @@
 {%- if section.settings.show_sticky_bar -%}
 <div class="pdp-sticky-bar" id="PDPStickyBar">
   <div style="display: flex; gap: var(--space-16); align-items: center;">
-    <img src="{{ product.featured_image | image_url: width: 60 }}" alt="" style="width: 40px; height: 50px; object-fit: cover; border-radius: 2px;">
+    <img src="{{ product.featured_image | image_url: width: 60 }}" alt="" style="width: 40px; height: 50px; object-fit: cover; border-radius: 2px;" width="{{ product.featured_image.width }}" height="{{ product.featured_image.height }}">
     <div>
       <div style="font-size: var(--font-caption); font-weight: bold;">{{ product.title }}</div>
       <div style="font-size: 10px; color: var(--text-secondary);" id="StickyPrice">{{ product.price | money }}</div>
@@ -415,7 +417,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // 4. Variant Data Object for JS
-  window.AERIDIAN_PRODUCT = {{ product | json }};
+  window.AERIDIAN.State.Product = {{ product | json }};
 });
 </script>
 

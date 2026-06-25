@@ -1,21 +1,59 @@
 <!-- AERIDIAN Theme Provider (Inline execution to prevent FOUC) -->
 <script>
+  "use strict";
   (function() {
+    // 1. Initialize AERIDIAN Enterprise Namespace
+    window.AERIDIAN = window.AERIDIAN || {
+      VERSION: "1.0.0",
+      DEBUG: true,
+      Modules: {},
+      State: {},
+      Utils: {
+        log: function(category, ...args) {
+          if (!window.AERIDIAN.DEBUG) return;
+          console.log(`[AERIDIAN][${category}]`, ...args);
+        },
+        warn: function(category, ...args) {
+          if (!window.AERIDIAN.DEBUG) return;
+          console.warn(`[AERIDIAN][${category}]`, ...args);
+        },
+        error: function(category, ...args) {
+          if (!window.AERIDIAN.DEBUG) return;
+          console.error(`[AERIDIAN][${category}]`, ...args);
+        },
+        mark: function(name) {
+          if (window.AERIDIAN.DEBUG && window.performance) performance.mark(name);
+        },
+        measure: function(name, start, end) {
+          if (window.AERIDIAN.DEBUG && window.performance) {
+            try {
+              performance.measure(name, start, end);
+              const measures = performance.getEntriesByName(name);
+              if (measures.length > 0) {
+                const measure = measures.pop();
+                window.AERIDIAN.Utils.log('Performance', `${name} took ${measure.duration.toFixed(2)}ms`);
+              }
+            } catch (e) {}
+          }
+        }
+      }
+    };
+
     try {
-      // 1. Fetch Merchant Settings
-      window.AeridianSettings = {
+      // 2. Fetch Merchant Settings
+      window.AERIDIAN.State.Settings = {
         defaultTheme: {{ settings.default_theme | json }},
         autoSwitch: {{ settings.enable_theme_auto_switch | json }}
       };
 
-      // 2. Determine initial state
+      // 3. Determine initial state
       var storedTheme = localStorage.getItem('aeridian_theme');
       var finalTheme = 'dark'; // Fallback baseline
 
       if (storedTheme) {
         // User has explicit preference
         finalTheme = storedTheme;
-      } else if (window.AeridianSettings.autoSwitch) {
+      } else if (window.AERIDIAN.State.Settings.autoSwitch) {
         // Time-based auto switching (7AM - 7PM = Light)
         var hour = new Date().getHours();
         finalTheme = (hour >= 7 && hour < 19) ? 'light' : 'dark';

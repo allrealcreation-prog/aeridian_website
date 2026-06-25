@@ -102,7 +102,7 @@
       <div class="bs-featured__image-wrap">
         {%- if section.settings.main_product != blank -%}
           {%- assign main_product = all_products[section.settings.main_product] -%}
-          <img src="{{ main_product.featured_image | image_url: width: 1000 }}" alt="{{ main_product.title }}" class="bs-featured__image" id="BS-MainImage">
+          <img src="{{ main_product.featured_image | image_url: width: 1000 }}" alt="{{ main_product.title }}" class="bs-featured__image" id="BS-MainImage" width="{{ main_product.featured_image.width }}" height="{{ main_product.featured_image.height }}">
         {%- else -%}
           {{ 'product-1' | placeholder_svg_tag: 'bs-featured__image' }}
         {%- endif -%}

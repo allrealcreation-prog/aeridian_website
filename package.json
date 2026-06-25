@@ -1,0 +1,19 @@
+{
+  "name": "aeridian-theme",
+  "version": "1.0.0",
+  "description": "AERIDIAN Luxury Shopify OS 2.0 Theme",
+  "scripts": {
+    "lint": "eslint assets/theme-engine.js assets/motion-engine.js assets/product-form.js assets/collection-filters.js",
+    "format": "prettier --write \"**/*.{js,css,json}\"",
+    "theme-check": "shopify theme check",
+    "qa": "npm run lint && npm run theme-check",
+    "lighthouse": "echo 'Run Lighthouse via CLI or Chrome DevTools'",
+    "validate": "npm run format && npm run qa",
+    "prepare": "husky install"
+  },
+  "devDependencies": {
+    "eslint": "^8.0.0",
+    "husky": "^8.0.0",
+    "prettier": "^3.0.0"
+  }
+}

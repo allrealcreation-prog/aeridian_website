@@ -1,0 +1,15 @@
+# AERIDIAN Code Owners
+# These owners will be the default reviewers for pull requests.
+
+# General codebase
+*       @aeridian-core
+
+# Core JavaScript Architecture
+assets/*.js @aeridian-frontend
+
+# Documentation
+docs/   @aeridian-docs
+*.md    @aeridian-docs
+
+# CI/CD and GitHub Actions
+.github/ @aeridian-devops

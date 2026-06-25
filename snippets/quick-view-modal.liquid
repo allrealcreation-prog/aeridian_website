@@ -1,7 +1,7 @@
 <dialog class="quick-view-modal" id="QuickViewModal">
-  <div class="quick-view__overlay" onclick="closeQuickView()"></div>
+  <div class="quick-view__overlay" onclick="window.AERIDIAN.Modules.QuickView.close()"></div>
   <div class="quick-view__container">
-    <button class="drawer__close" onclick="closeQuickView()" aria-label="Close Quick View" style="position: absolute; top: var(--space-24); right: var(--space-24); z-index: 10;">
+    <button class="drawer__close" onclick="window.AERIDIAN.Modules.QuickView.close()" aria-label="Close Quick View" style="position: absolute; top: var(--space-24); right: var(--space-24); z-index: 10;">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 6L6 18M6 6L18 18" stroke-linecap="round"/></svg>
     </button>
     <div class="quick-view__content" id="QuickViewContent">
@@ -91,7 +91,9 @@
 </style>
 
 <script>
-  window.openQuickView = function(handle) {
+  window.AERIDIAN.Modules.QuickView = window.AERIDIAN.Modules.QuickView || {};
+
+  window.AERIDIAN.Modules.QuickView.open = function(handle) {
     const modal = document.getElementById('QuickViewModal');
     const loading = document.getElementById('QuickViewLoading');
     const rendered = document.getElementById('QuickViewRendered');
@@ -119,8 +121,21 @@
       });
   }
 
-  window.closeQuickView = function() {
+  window.AERIDIAN.Modules.QuickView.close = function() {
     document.getElementById('QuickViewModal').classList.remove('is-open');
     document.body.style.overflow = '';
+  }
+
+  // Global delegate listener for Quick View buttons
+  if (!window.AERIDIAN.Modules.QuickView._isBound) {
+    document.addEventListener('click', (e) => {
+      const target = e.target.closest('.js-quick-view');
+      if (target) {
+        e.preventDefault();
+        const handle = target.dataset.handle;
+        if (handle) window.AERIDIAN.Modules.QuickView.open(handle);
+      }
+    });
+    window.AERIDIAN.Modules.QuickView._isBound = true;
   }
 </script>

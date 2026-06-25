@@ -62,7 +62,7 @@
 <section class="collection-hero" data-section-id="{{ section.id }}">
   {%- if has_image -%}
     <div class="collection-hero__bg">
-      <img src="{{ collection.image | image_url: width: 2000 }}" alt="{{ collection.title }}" loading="eager">
+      <img src="{{ collection.image | image_url: width: 2000 }}" alt="{{ collection.title }}" loading="eager" width="{{ collection.image.width }}" height="{{ collection.image.height }}">
     </div>
   {%- else -%}
     <!-- Fallback Energy Glow -->

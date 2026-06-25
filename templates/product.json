@@ -15,9 +15,5 @@
       "settings": {}
     }
   },
-  "order": [
-    "main",
-    "storytelling",
-    "recommendations"
-  ]
+  "order": ["main", "storytelling", "recommendations"]
 }

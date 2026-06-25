@@ -136,12 +136,13 @@
     {%- if position == 'left' -%}
       <li class="header-nav__item" data-has-mega="true">
         <div class="header-nav__link-wrapper">
-          <a href="/collections/all" class="header-nav__link">Shop</a>
+          <a href="{{ routes.all_products_collection_url }}" class="header-nav__link">Shop</a>
           <button class="header-nav__toggle" aria-expanded="false" aria-label="Toggle Shop Menu" onclick="toggleMegaMenu(event, 'Shop', this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></button>
         </div>
       </li>
       <li class="header-nav__item" data-has-mega="true">
-          <a href="/collections" class="header-nav__link">Collections</a>
+        <div class="header-nav__link-wrapper">
+          <a href="{{ routes.collections_url }}" class="header-nav__link">Collections</a>
           <button class="header-nav__toggle" aria-expanded="false" aria-label="Toggle Collections Menu" onclick="toggleMegaMenu(event, 'Collections', this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></button>
         </div>
       </li>

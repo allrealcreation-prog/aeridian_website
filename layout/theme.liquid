@@ -17,6 +17,7 @@
     <link rel="preconnect" href="https://cdn.shopify.com" crossorigin>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap">
 
     <!-- Phase 15: Critical CSS -->
     <style id="AeridianCritical">
@@ -67,7 +68,6 @@
       @media (max-width: 1024px) { .pdp-layout { grid-template-columns: 1fr; gap: 32px; } }
     </style>
 
-    {{ content_for_header }}
 
     <!-- Phase 11: Global Theme Engine -->
     {% render 'theme-provider' %}
@@ -77,17 +77,11 @@
     
     <!-- Phase 12: Global Motion Engine -->
     <link rel="stylesheet" href="{{ 'motion-tokens.css' | asset_url }}" media="print" onload="this.media='all'">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" defer></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js" defer></script>
     
+
     {%- comment -%}
       CSS variables generation based on schema settings
     {%- endcomment -%}
-    {%- liquid
-      assign font_primary = settings.font_primary
-      assign font_fallback = settings.font_fallback
-    -%}
-    
     <style>
       :root {
         --color-primary-obsidian: {{ settings.color_primary_obsidian }};
@@ -107,7 +101,8 @@
       }
     </style>
 
-    {{ 'theme.css' | asset_url | stylesheet_tag }}
+    <link rel="stylesheet" href="{{ 'theme.css' | asset_url }}" media="print" onload="this.media='all'">
+    <noscript>{{ 'theme.css' | asset_url | stylesheet_tag }}</noscript>
     
     <style>
       /* Prevent scrolling while loading */
@@ -158,11 +153,11 @@
     
     <!-- Phase 12 Motion Engine Controller -->
     <script>
-      window.AeridianSettings = window.AeridianSettings || {};
-      window.AeridianSettings.enableCursor = {{ settings.enable_custom_cursor | default: true | json }};
-      window.AeridianSettings.enableMagnetic = {{ settings.enable_magnetic_buttons | default: true | json }};
-      window.AeridianSettings.enablePageTransitions = {{ settings.enable_page_transitions | default: true | json }};
-      window.AeridianSettings.enableScrollProgress = {{ settings.enable_scroll_progress | default: true | json }};
+      window.AERIDIAN.State.Settings = window.AERIDIAN.State.Settings || {};
+      window.AERIDIAN.State.Settings.enableCursor = {{ settings.enable_custom_cursor | default: true | json }};
+      window.AERIDIAN.State.Settings.enableMagnetic = {{ settings.enable_magnetic_buttons | default: true | json }};
+      window.AERIDIAN.State.Settings.enablePageTransitions = {{ settings.enable_page_transitions | default: true | json }};
+      window.AERIDIAN.State.Settings.enableScrollProgress = {{ settings.enable_scroll_progress | default: true | json }};
     </script>
     <script src="{{ 'motion-engine.js' | asset_url }}" defer="defer"></script>
 

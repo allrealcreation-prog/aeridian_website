@@ -124,7 +124,7 @@
           <div class="tc-card__badge">Popular</div>
           <div style="overflow: hidden;">
             {%- if product.featured_image -%}
-              <img src="{{ product.featured_image | image_url: width: 600 }}" alt="{{ product.title }}" class="tc-card__image" loading="lazy">
+              <img src="{{ product.featured_image | image_url: width: 600 }}" alt="{{ product.title }}" class="tc-card__image" loading="lazy" width="{{ product.featured_image.width }}" height="{{ product.featured_image.height }}">
             {%- else -%}
               {{ 'product-1' | placeholder_svg_tag: 'tc-card__image' }}
             {%- endif -%}
