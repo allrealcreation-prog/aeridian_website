@@ -190,7 +190,7 @@
     </div>
 
     <!-- Logo (Center) -->
-    <a href="{{ routes.root_url }}" class="header-logo" aria-label="{{ shop.name }}">
+    <a href="{{ routes.root_url }}" class="header-logo js-magnetic" data-magnetic-intensity="0.15" data-cursor-state="link" aria-label="{{ shop.name }}">
       {%- if section.settings.logo != blank -%}
         <img src="{{ section.settings.logo | image_url: width: 400 }}" alt="{{ shop.name }}" width="{{ section.settings.logo.width }}" height="{{ section.settings.logo.height }}" style="max-width: {{ section.settings.logo_width }}px;">
       {%- else -%}
@@ -209,26 +209,26 @@
       <!-- Theme Controls & Utilities -->
       <div class="header-utilities">
         
-        <button id="ThemeToggle" class="header-icon header-icon--theme js-magnetic" data-magnetic-intensity="0.3" aria-label="Toggle Theme" title="Toggle Theme">
+        <button id="ThemeToggle" class="header-icon header-icon--theme js-magnetic" data-cursor-state="button" data-magnetic-intensity="0.3" aria-label="Toggle Theme" title="Toggle Theme">
           <!-- Sun (Light Mode) -->
           <svg class="theme-icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="display: none;"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
           <!-- Moon (Dark Mode) -->
           <svg class="theme-icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
         </button>
 
-        <button class="header-icon header-icon--search js-magnetic" data-magnetic-intensity="0.3" aria-label="Search" onclick="toggleSearch()">
+        <button class="header-icon header-icon--search js-magnetic" data-cursor-state="button" data-magnetic-intensity="0.3" aria-label="Search" onclick="toggleSearch()">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 21L16.65 16.65" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
         
-        <a href="{{ routes.account_url }}" class="header-icon header-icon--account js-magnetic" data-magnetic-intensity="0.3" aria-label="Account">
+        <a href="{{ routes.account_url }}" class="header-icon header-icon--account js-magnetic" data-cursor-state="button" data-magnetic-intensity="0.3" aria-label="Account">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 11C14.2091 11 16 9.20914 16 7C16 4.79086 14.2091 3 12 3C9.79086 3 8 4.79086 8 7C8 9.20914 9.79086 11 12 11Z" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </a>
 
-        <button class="header-icon header-icon--wishlist js-magnetic" data-magnetic-intensity="0.3" aria-label="Wishlist" onclick="toggleWishlist()">
+        <button class="header-icon header-icon--wishlist js-magnetic" data-cursor-state="button" data-magnetic-intensity="0.3" aria-label="Wishlist" onclick="toggleWishlist()">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
 
-        <button class="header-icon header-icon--cart js-magnetic" data-magnetic-intensity="0.3" aria-expanded="false" aria-controls="CartDrawer" aria-label="Cart" onclick="toggleCart(this)" style="display: flex; align-items: center; gap: 8px;">
+        <button class="header-icon header-icon--cart js-magnetic" data-cursor-state="button" data-magnetic-intensity="0.3" aria-expanded="false" aria-controls="CartDrawer" aria-label="Cart" onclick="toggleCart(this)" style="display: flex; align-items: center; gap: 8px;">
           <!-- Premium Geometric Shopping Tote -->
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
             <path d="M5 8h14v12H5z" stroke-linecap="square" />

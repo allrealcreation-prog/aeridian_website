@@ -389,3 +389,55 @@ html[data-theme='light'] {
   --color-secondary-steel: #888888;
   --border-subtle: 1px solid rgba(0, 0, 0, 0.1);
 }
+
+/* ==========================================================================
+   PREMIUM HOVER INTERACTIONS (Phase 20.2)
+   ========================================================================== */
+
+/* Cards Hover Depth */
+.theme-hover-depth {
+  transition:
+    transform var(--duration-base) var(--ease-premium),
+    box-shadow var(--duration-base) var(--ease-premium);
+  will-change: transform, box-shadow;
+}
+
+@media (hover: hover) {
+  .theme-hover-depth:hover,
+  .theme-hover-depth:focus-within {
+    box-shadow: var(--elevation-1);
+    transform: translateY(-2px);
+  }
+}
+
+/* Touch Fallback */
+@media (hover: none) {
+  .theme-hover-depth:active {
+    transform: scale(var(--motion-scale-sm));
+  }
+}
+
+/* Navigation Underline Interpolation */
+.hover-underline {
+  position: relative;
+  display: inline-block;
+}
+.hover-underline::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background-color: currentColor;
+  transform: scaleX(0);
+  transform-origin: right center;
+  transition: transform var(--duration-base) var(--ease-premium);
+}
+@media (hover: hover) {
+  .hover-underline:hover::after,
+  .hover-underline:focus-visible::after {
+    transform: scaleX(1);
+    transform-origin: left center;
+  }
+}

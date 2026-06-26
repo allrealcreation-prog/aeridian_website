@@ -398,16 +398,16 @@
 <section class="brand-story" data-section-id="{{ section.id }}">
   
   <!-- PART 1: INTRO -->
-  <div class="bs-intro" id="BSIntro">
+  <div class="bs-intro" id="BSIntro" data-reveal-sequence="true">
     <div>
-      <div class="bs-section-title">About AERIDIAN</div>
+      <div class="bs-section-title" data-reveal-role="eyebrow" data-reveal-level="D">About AERIDIAN</div>
       <div class="bs-intro__text-mask">
-        <h2 class="bs-intro__headline" id="BSIntroH1">Always New</h2>
+        <h2 class="bs-intro__headline" id="BSIntroH1" data-reveal-role="headline" data-reveal-level="B">Always New</h2>
       </div>
       <div class="bs-intro__text-mask">
-        <h2 class="bs-intro__headline" id="BSIntroH2">To The World</h2>
+        <h2 class="bs-intro__headline" id="BSIntroH2" data-reveal-role="headline" data-reveal-level="B">To The World</h2>
       </div>
-      <p class="bs-intro__sub" id="BSIntroSub">AERIDIAN is a premium graphic apparel brand built around constant discovery, creativity and evolution.</p>
+      <p class="bs-intro__sub" id="BSIntroSub" data-reveal-role="body" data-reveal-level="C">AERIDIAN is a premium graphic apparel brand built around constant discovery, creativity and evolution.</p>
     </div>
   </div>
 
@@ -745,6 +745,14 @@ document.addEventListener("DOMContentLoaded", () => {
         camera.updateProjectionMatrix();
         renderer.setSize(container.clientWidth, container.clientHeight);
       }, 250);
+    });
+  }
+  
+  // Register with Storytelling Engine
+  if (window.AERIDIAN && window.AERIDIAN.Utils.Storytelling) {
+    window.AERIDIAN.Utils.Storytelling.register({
+      selector: '.brand-story',
+      timeline: 'brand'
     });
   }
 });

@@ -5,20 +5,93 @@
 
 :root {
   /* Durations */
+  --motion-instant: 0ms;
   --motion-fast: 200ms;
   --motion-base: 400ms;
+  --motion-medium: 600ms;
   --motion-slow: 800ms;
-  --motion-cinematic: 1200ms;
+  --motion-hero: 1000ms;
+  --motion-cinematic: 1500ms;
 
   /* Easings */
   --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
-  --ease-premium: cubic-bezier(0.165, 0.84, 0.44, 1); /* Luxury deceleration */
-  --ease-cinematic: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-soft: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-premium: cubic-bezier(0.165, 0.84, 0.44, 1);
+  --ease-expo: cubic-bezier(0.19, 1, 0.22, 1);
+  --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --ease-luxury: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-dramatic: cubic-bezier(0.77, 0, 0.175, 1);
+
+  /* Distance */
+  --motion-distance-xs: 5px;
+  --motion-distance-sm: 10px;
+  --motion-distance-md: 20px;
+  --motion-distance-lg: 40px;
+
+  /* Opacity */
+  --motion-opacity-hidden: 0;
+  --motion-opacity-soft: 0.5;
+  --motion-opacity-full: 1;
+
+  /* Scale */
+  --motion-scale-sm: 0.95;
+  --motion-scale-md: 1.05;
+  --motion-scale-lg: 1.1;
+
+  /* Rotation */
+  --motion-rotation-subtle: 3deg;
 
   /* Staggers */
   --stagger-sm: 0.05s;
   --stagger-md: 0.1s;
   --stagger-lg: 0.2s;
+}
+
+@media (max-width: 768px) {
+  :root {
+    /* Responsive Motion: Reduce distance on mobile */
+    --motion-distance-xs: 3px;
+    --motion-distance-sm: 5px;
+    --motion-distance-md: 10px;
+    --motion-distance-lg: 20px;
+
+    /* Speed up animations slightly on mobile to feel snappier */
+    --motion-base: 300ms;
+    --motion-medium: 500ms;
+    --motion-slow: 600ms;
+    --motion-hero: 800ms;
+    --motion-cinematic: 1000ms;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    /* Accessibility: Remove decorative travel distance */
+    --motion-distance-xs: 0px;
+    --motion-distance-sm: 0px;
+    --motion-distance-md: 0px;
+    --motion-distance-lg: 0px;
+
+    /* Instant durations for non-essential fading */
+    --motion-fast: 0.01ms;
+    --motion-base: 0.01ms;
+    --motion-medium: 0.01ms;
+    --motion-slow: 0.01ms;
+    --motion-hero: 0.01ms;
+    --motion-cinematic: 0.01ms;
+
+    --stagger-sm: 0s;
+    --stagger-md: 0s;
+    --stagger-lg: 0s;
+  }
+
+  /* Force instant transitions globally, except where opacity provides functional context */
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 /* 
@@ -106,16 +179,120 @@
       background-color 0.3s ease;
   }
 
-  #CustomCursor.is-hovering {
-    width: 21px;
-    height: 21px;
-    border: 1.5px solid var(--text-primary);
+  #CustomCursor.is-button {
+    width: 36px;
+    height: 36px;
+    background-color: transparent;
+    mix-blend-mode: difference;
     opacity: 1;
+    border: 1px solid var(--bg-primary, #fff);
   }
 
-  #CustomCursor.is-hovering::after {
+  #CustomCursor.is-button::after {
+    opacity: 0;
+  }
+
+  #CustomCursor.is-link {
+    width: 6px;
+    height: 6px;
     background-color: var(--text-primary);
-    transform: scale(0.8);
+    border-color: transparent;
+  }
+
+  #CustomCursor.is-link::after {
+    opacity: 0;
+  }
+
+  #CustomCursor.is-card {
+    width: 44px;
+    height: 44px;
+    background-color: var(--bg-primary);
+    mix-blend-mode: normal;
+    border-color: transparent;
+  }
+
+  #CustomCursor.is-card::after {
+    content: '+';
+    width: auto;
+    height: auto;
+    background-color: transparent;
+    color: var(--text-primary);
+    font-size: 14px;
+    font-weight: 300;
+  }
+
+  #CustomCursor.is-drag {
+    width: 44px;
+    height: 44px;
+    background-color: var(--text-primary);
+    border-color: transparent;
+    opacity: 0.9;
+  }
+
+  #CustomCursor.is-drag::after {
+    content: '< >';
+    width: auto;
+    height: auto;
+    background-color: transparent;
+    color: var(--bg-primary);
+    font-size: 10px;
+    letter-spacing: 2px;
+  }
+
+  #CustomCursor.is-loading {
+    width: 24px;
+    height: 24px;
+    border-top-color: transparent;
+    animation: cursor-spin 1s linear infinite;
+  }
+
+  #CustomCursor.is-text {
+    width: 2px;
+    height: 18px;
+    border-radius: 0;
+    border-color: transparent;
+    background-color: var(--text-primary);
+  }
+
+  #CustomCursor.is-text::after {
+    opacity: 0;
+  }
+
+  #CustomCursor.is-media {
+    width: 44px;
+    height: 44px;
+    background-color: rgba(0, 0, 0, 0.4);
+    border-color: transparent;
+    backdrop-filter: blur(4px);
+  }
+
+  #CustomCursor.is-media::after {
+    content: 'PLAY';
+    width: auto;
+    height: auto;
+    background-color: transparent;
+    color: #fff;
+    font-size: 8px;
+    letter-spacing: 1px;
+  }
+
+  #CustomCursor.is-disabled {
+    opacity: 0.3;
+    border-color: var(--text-primary);
+    background-color: transparent;
+  }
+
+  #CustomCursor.is-disabled::after {
+    width: 12px;
+    height: 1px;
+    border-radius: 0;
+    transform: rotate(45deg);
+  }
+
+  @keyframes cursor-spin {
+    100% {
+      transform: translate(-50%, -50%) rotate(360deg);
+    }
   }
 }
 

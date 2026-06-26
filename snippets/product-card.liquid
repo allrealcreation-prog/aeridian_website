@@ -128,34 +128,43 @@
 
   /* Premium Hover Sequence */
   @media (hover: hover) {
-    .product-card:hover .product-card__media {
+    .product-card:hover .product-card__media,
+    .product-card:focus-within .product-card__media {
       border-color: var(--border-heavy);
       box-shadow: 0 4px 16px rgba(0,0,0,0.05); /* Subdued soft elevation */
     }
-    .product-card:hover .product-card__image--primary {
-      transform: scale(1.01);
+    .product-card:hover .product-card__image--primary,
+    .product-card:focus-within .product-card__image--primary {
+      transform: scale(var(--motion-scale-md));
       filter: brightness(0.95);
       {% if product.images[1] %}opacity: 0;{% endif %}
     }
-    .product-card:hover .product-card__image--secondary {
+    .product-card:hover .product-card__image--secondary,
+    .product-card:focus-within .product-card__image--secondary {
       opacity: 1;
-      transform: scale(1.01);
+      transform: scale(var(--motion-scale-md));
     }
-    .product-card:hover .product-card__actions {
+    .product-card:hover .product-card__actions,
+    .product-card:focus-within .product-card__actions {
       opacity: 1;
       transform: translateY(0);
     }
-    .product-card:hover .product-card__title {
+    .product-card:hover .product-card__title,
+    .product-card:focus-within .product-card__title {
       color: var(--text-primary);
+    }
+    .product-card:hover .product-card__info,
+    .product-card:focus-within .product-card__info {
+      transform: translateY(calc(var(--motion-distance-xs) * -1));
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .product-card, .product-card__image, .product-card__actions { transition: none !important; transform: none !important; }
+    .product-card, .product-card__info, .product-card__image, .product-card__actions { transition: none !important; transform: none !important; }
   }
 </style>
 
-<div class="product-card" {% if product %}data-product-handle="{{ product.handle }}"{% endif %}>
+<div class="product-card theme-hover-depth" data-cursor-state="card" {% if product %}data-product-handle="{{ product.handle }}"{% endif %}>
   
   {%- if placeholder -%}
     <a href="#" class="product-card__media">

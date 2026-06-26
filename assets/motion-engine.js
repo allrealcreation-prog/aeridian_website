@@ -17,6 +17,105 @@
 
   window.AERIDIAN.Utils.mark('MotionEngine:Start');
 
+  // --- 1. STORYTELLING REGISTRY ---
+  window.AERIDIAN.Utils.Storytelling = {
+    registry: [],
+    register: function (config) {
+      if (config && config.selector && config.timeline) {
+        this.registry.push(config);
+      }
+    },
+  };
+
+  // --- 2. TEXT SPLITTER UTILITY ---
+  class TextSplitter {
+    constructor(element, options = {}) {
+      this.element = element;
+      this.type = options.type || 'words';
+      if (!this.element.dataset.originalHtml) {
+        this.element.dataset.originalHtml = this.element.innerHTML;
+      }
+      this.isProcessed = false;
+    }
+
+    split() {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        return;
+      }
+      if (this.isProcessed) {
+        return;
+      }
+
+      const text = this.element.textContent.trim();
+      if (!text) {
+        return;
+      }
+
+      this.element.setAttribute('aria-label', text);
+      this.element.innerHTML = '';
+
+      if (this.type === 'chars') {
+        const words = text.split(' ');
+        words.forEach((word, wordIdx) => {
+          const wordSpan = document.createElement('span');
+          wordSpan.style.display = 'inline-block';
+          wordSpan.style.whiteSpace = 'nowrap';
+
+          word.split('').forEach((char) => {
+            const charWrapper = document.createElement('span');
+            charWrapper.style.display = 'inline-block';
+            charWrapper.style.overflow = 'hidden';
+
+            const charInner = document.createElement('span');
+            charInner.style.display = 'inline-block';
+            charInner.textContent = char;
+            charInner.setAttribute('aria-hidden', 'true');
+            charInner.classList.add('split-char');
+
+            charWrapper.appendChild(charInner);
+            wordSpan.appendChild(charWrapper);
+          });
+
+          this.element.appendChild(wordSpan);
+          if (wordIdx < words.length - 1) {
+            this.element.appendChild(document.createTextNode(' '));
+          }
+        });
+      } else {
+        const words = text.split(' ');
+        words.forEach((word, wordIdx) => {
+          const wordWrapper = document.createElement('span');
+          wordWrapper.style.display = 'inline-block';
+          wordWrapper.style.overflow = 'hidden';
+          wordWrapper.style.verticalAlign = 'bottom';
+
+          const wordInner = document.createElement('span');
+          wordInner.style.display = 'inline-block';
+          wordInner.textContent = word;
+          wordInner.setAttribute('aria-hidden', 'true');
+          wordInner.classList.add('split-word');
+
+          wordWrapper.appendChild(wordInner);
+          this.element.appendChild(wordWrapper);
+
+          if (wordIdx < words.length - 1) {
+            this.element.appendChild(document.createTextNode(' '));
+          }
+        });
+      }
+      this.isProcessed = true;
+    }
+
+    restore() {
+      if (this.element.dataset.originalHtml && this.isProcessed) {
+        this.element.innerHTML = this.element.dataset.originalHtml;
+        this.element.removeAttribute('aria-label');
+        this.isProcessed = false;
+      }
+    }
+  }
+  window.AERIDIAN.Utils.TextSplitter = TextSplitter;
+
   class AeridianMotionEngine {
     constructor() {
       this.settings = window.AERIDIAN.State.Settings || {};
@@ -59,6 +158,7 @@
     }
 
     handleDOMContentLoaded() {
+      this.initGSAPDefaults();
       this.initPageTransitionEnter();
 
       if (this.config.enableCursor) {
@@ -75,6 +175,172 @@
       }
 
       this.initScrollReveal();
+    }
+
+    initGSAPDefaults() {
+      if (!window.gsap) {
+        return;
+      }
+
+      // Extract raw CSS variable values for standard use
+      const styles = getComputedStyle(document.documentElement);
+      const standardDuration = parseFloat(styles.getPropertyValue('--motion-medium')) / 1000 || 0.6;
+
+      // Global GSAP Defaults
+      gsap.defaults({
+        duration: standardDuration,
+        ease: 'power3.out',
+        overwrite: 'auto',
+      });
+
+      // Expose AERIDIAN Motion Utility API
+      window.AERIDIAN.Utils.Motion = {
+        fadeIn: (targets, vars = {}) => gsap.to(targets, { opacity: 1, ...vars }),
+        fadeOut: (targets, vars = {}) => gsap.to(targets, { opacity: 0, ...vars }),
+        slideUp: (targets, vars = {}) =>
+          gsap.fromTo(
+            targets,
+            { y: 'var(--motion-distance-lg)', opacity: 0 },
+            { y: 0, opacity: 1, ...vars }
+          ),
+        slideDown: (targets, vars = {}) =>
+          gsap.fromTo(
+            targets,
+            { y: 'calc(var(--motion-distance-lg) * -1)', opacity: 0 },
+            { y: 0, opacity: 1, ...vars }
+          ),
+        scaleIn: (targets, vars = {}) =>
+          gsap.fromTo(
+            targets,
+            { scale: 'var(--motion-scale-sm)', opacity: 0 },
+            { scale: 1, opacity: 1, transformOrigin: 'center center', ...vars }
+          ),
+        scaleOut: (targets, vars = {}) =>
+          gsap.fromTo(
+            targets,
+            { scale: 'var(--motion-scale-lg)', opacity: 1 },
+            { scale: 1, opacity: 0, transformOrigin: 'center center', ...vars }
+          ),
+        staggerReveal: (targets, vars = {}) =>
+          gsap.fromTo(
+            targets,
+            { y: 'var(--motion-distance-md)', opacity: 0 },
+            { y: 0, opacity: 1, stagger: 'var(--stagger-md)', ...vars }
+          ),
+        parallax: (targets, speed = 0.5) => {
+          if (window.ScrollTrigger) {
+            return gsap.to(targets, {
+              yPercent: 20 * speed,
+              ease: 'none',
+              scrollTrigger: {
+                trigger: targets,
+                start: 'top bottom',
+                end: 'bottom top',
+                scrub: true,
+              },
+            });
+          }
+        },
+        magnetic: (element, xMultiplier = 1, yMultiplier = 1) => {
+          if (!element || !window.gsap) {
+            return;
+          }
+          const bound = element.getBoundingClientRect();
+          const centerX = bound.left + bound.width / 2;
+          const centerY = bound.top + bound.height / 2;
+          return (e) => {
+            const x = (e.clientX - centerX) * xMultiplier;
+            const y = (e.clientY - centerY) * yMultiplier;
+            gsap.to(element, { x, y, duration: 0.3, ease: 'power2.out' });
+          };
+        },
+      };
+
+      // Typography Sub-Module
+      window.AERIDIAN.Utils.Motion.Typography = {
+        revealLevelA: (element, vars = {}) => {
+          const splitter = new window.AERIDIAN.Utils.TextSplitter(element, { type: 'chars' });
+          splitter.split();
+          const chars = element.querySelectorAll('.split-char');
+          return gsap.fromTo(
+            chars,
+            { y: '100%', opacity: 0 },
+            { y: '0%', opacity: 1, stagger: 0.02, duration: 0.8, ease: 'power4.out', ...vars }
+          );
+        },
+        revealLevelB: (element, vars = {}) => {
+          const splitter = new window.AERIDIAN.Utils.TextSplitter(element, { type: 'words' });
+          splitter.split();
+          const words = element.querySelectorAll('.split-word');
+          return gsap.fromTo(
+            words,
+            { y: '100%', opacity: 0 },
+            { y: '0%', opacity: 1, stagger: 0.05, duration: 0.8, ease: 'power3.out', ...vars }
+          );
+        },
+        revealLevelC: (element, vars = {}) => {
+          return gsap.fromTo(
+            element,
+            { y: 'var(--motion-distance-sm)', opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.6, ease: 'power2.out', ...vars }
+          );
+        },
+        revealLevelD: (element, vars = {}) => {
+          return gsap.fromTo(
+            element,
+            { opacity: 0 },
+            { opacity: 1, duration: 0.6, ease: 'power2.out', ...vars }
+          );
+        },
+      };
+
+      // ImageReveals Sub-Module
+      window.AERIDIAN.Utils.Motion.ImageReveals = {
+        revealMask: (element, vars = {}) => {
+          return gsap.fromTo(
+            element,
+            { clipPath: 'inset(100% 0 0 0)' },
+            { clipPath: 'inset(0% 0 0 0)', duration: 1.2, ease: 'power3.inOut', ...vars }
+          );
+        },
+        revealBlur: (element, vars = {}) => {
+          return gsap.fromTo(
+            element,
+            { filter: 'blur(20px)', opacity: 0 },
+            {
+              filter: 'blur(0px)',
+              opacity: 1,
+              duration: 1.0,
+              ease: 'power2.out',
+              clearProps: 'filter',
+              ...vars,
+            }
+          );
+        },
+        revealClipPath: (element, vars = {}) => {
+          return gsap.fromTo(
+            element,
+            { clipPath: 'circle(0% at center)' },
+            { clipPath: 'circle(100% at center)', duration: 1.5, ease: 'power4.inOut', ...vars }
+          );
+        },
+        revealOpacity: (element, vars = {}) => {
+          return gsap.fromTo(
+            element,
+            { opacity: 0 },
+            { opacity: 1, duration: 1.2, ease: 'power2.out', ...vars }
+          );
+        },
+      };
+
+      // MatchMedia Accessibility Hook
+      if (window.gsap.matchMedia) {
+        const mm = gsap.matchMedia();
+        mm.add('(prefers-reduced-motion: reduce)', () => {
+          gsap.ticker.fps(1); // Dramatically reduce ticker updates
+          gsap.globalTimeline.timeScale(1000); // Instantly finish all timelines
+        });
+      }
     }
 
     destroy() {
@@ -222,7 +488,7 @@
       });
     }
 
-    // --- 2. CUSTOM CURSOR ---
+    // --- 2. CUSTOM CURSOR (STATE MACHINE) ---
     initCustomCursor() {
       // Only apply on fine pointer devices (desktops)
       if (!window.matchMedia('(pointer: fine)').matches) {
@@ -230,42 +496,99 @@
       }
 
       const cursor = document.getElementById('CustomCursor');
-      if (!cursor) {
+      if (!cursor || !window.gsap) {
         return;
       }
 
       document.body.classList.add('has-custom-cursor');
 
-      let mouseX = 0,
-        mouseY = 0;
-      let cursorX = 0,
-        cursorY = 0;
+      // Setup gsap.quickTo for high-performance momentum interpolation
+      const xTo = gsap.quickTo(cursor, 'x', { duration: 0.3, ease: 'power3.out' });
+      const yTo = gsap.quickTo(cursor, 'y', { duration: 0.3, ease: 'power3.out' });
 
       this.on(document, 'mousemove', (e) => {
-        mouseX = e.clientX;
-        mouseY = e.clientY;
+        xTo(e.clientX);
+        yTo(e.clientY);
       });
 
-      // Smooth follow loop using GSAP ticker
-      const tickerFn = () => {
-        cursorX += (mouseX - cursorX) * 0.15;
-        cursorY += (mouseY - cursorY) * 0.15;
-        gsap.set(cursor, { x: cursorX, y: cursorY });
+      // Centralized Event Delegation for States
+      let currentState = '';
+
+      const setCursorState = (state) => {
+        if (currentState === state) {
+          return;
+        }
+        if (currentState) {
+          cursor.classList.remove(`is-${currentState}`);
+        }
+        if (state) {
+          cursor.classList.add(`is-${state}`);
+        }
+        currentState = state;
       };
 
-      gsap.ticker.add(tickerFn);
-      this._gsapTickers.push(tickerFn);
+      this.on(
+        document,
+        'pointerenter',
+        (e) => {
+          const target = e.target;
+          if (target.nodeType !== 1) {
+            return;
+          } // Ignore text nodes
 
-      // Hover states for links and buttons
-      const interactables = document.querySelectorAll('a, button, .js-magnetic, .theme-card');
-      interactables.forEach((el) => {
-        this.on(el, 'mouseenter', () => cursor.classList.add('is-hovering'));
-        this.on(el, 'mouseleave', () => cursor.classList.remove('is-hovering'));
-      });
+          // Find closest interactable element
+          const el = target.closest('[data-cursor-state], a, button, input, textarea, .theme-card');
+          if (!el) {
+            return;
+          }
+
+          let state = 'link'; // default fallback for a/button
+
+          if (el.hasAttribute('data-cursor-state')) {
+            state = el.getAttribute('data-cursor-state');
+          } else if (el.tagName === 'BUTTON' || el.classList.contains('btn')) {
+            state = 'button';
+          } else if (el.classList.contains('theme-card')) {
+            state = 'card';
+          } else if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+            state = 'text';
+            if (el.disabled) {
+              state = 'disabled';
+            }
+          }
+
+          setCursorState(state);
+        },
+        { capture: true }
+      );
+
+      this.on(
+        document,
+        'pointerleave',
+        (e) => {
+          const target = e.target;
+          if (target.nodeType !== 1) {
+            return;
+          }
+          const el = target.closest('[data-cursor-state], a, button, input, textarea, .theme-card');
+          if (el) {
+            // Verify we are actually leaving the bounds of the interactable
+            if (!e.relatedTarget || !el.contains(e.relatedTarget)) {
+              setCursorState('');
+            }
+          }
+        },
+        { capture: true }
+      );
     }
 
     // --- 3. MAGNETIC ELEMENTS ---
     initMagneticElements() {
+      // Touch devices explicitly blocked
+      if (window.matchMedia('(hover: none)').matches || !window.gsap) {
+        return;
+      }
+
       const magnetics = document.querySelectorAll('.js-magnetic');
 
       magnetics.forEach((el) => {
@@ -274,9 +597,9 @@
           const x = e.clientX - rect.left - rect.width / 2;
           const y = e.clientY - rect.top - rect.height / 2;
 
-          // Intensity scaling - Refined for luxury
-          const intensity = el.getAttribute('data-magnetic-intensity') || 0.3;
-          const maxPull = 8;
+          // Bounded magnetic pull (subtle)
+          const intensity = parseFloat(el.getAttribute('data-magnetic-intensity')) || 0.2;
+          const maxPull = 12;
 
           const pullX = Math.max(-maxPull, Math.min(maxPull, x * intensity));
           const pullY = Math.max(-maxPull, Math.min(maxPull, y * intensity));
@@ -285,6 +608,7 @@
         });
 
         this.on(el, 'mouseleave', () => {
+          // Soft and precise return utilizing Phase 20.1 standard ease
           gsap.to(el, { x: 0, y: 0, duration: 0.6, ease: 'power3.out' });
         });
       });
@@ -311,7 +635,7 @@
       );
     }
 
-    // --- 5. SCROLL REVEAL (GSAP SCROLLTRIGGER) ---
+    // --- 5. SCROLL REVEAL & STORYTELLING TIMELINES ---
     initScrollReveal() {
       if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') {
         return;
@@ -319,14 +643,14 @@
 
       gsap.registerPlugin(ScrollTrigger);
 
+      // 5.1 Simple reveals
       const reveals = document.querySelectorAll('[data-scroll-reveal]');
-
       reveals.forEach((el) => {
         gsap.to(el, {
           scrollTrigger: {
             trigger: el,
-            start: 'top 85%', // Reveal when element is 85% down viewport
-            toggleActions: 'play none none reverse',
+            start: 'top 85%',
+            once: true, // Only reveal once for Phase 20.3
           },
           opacity: 1,
           y: 0,
@@ -334,6 +658,85 @@
           ease: 'power3.out',
         });
       });
+
+      // 5.2 Storytelling Registry Sequences
+      if (window.AERIDIAN.Utils.Storytelling && window.AERIDIAN.Utils.Storytelling.registry) {
+        window.AERIDIAN.Utils.Storytelling.registry.forEach((config) => {
+          const sections = document.querySelectorAll(config.selector);
+          sections.forEach((section) => {
+            const tl = gsap.timeline({
+              scrollTrigger: {
+                trigger: section,
+                start: 'top 75%',
+                once: true,
+              },
+            });
+
+            // Standard Narrative Sequence Order
+            const roles = ['eyebrow', 'headline', 'body', 'cta', 'media', 'background'];
+
+            roles.forEach((role) => {
+              const elements = section.querySelectorAll(`[data-reveal-role="${role}"]`);
+              if (elements.length > 0) {
+                elements.forEach((el) => {
+                  const level = el.getAttribute('data-reveal-level');
+                  const effect = el.getAttribute('data-reveal-effect');
+
+                  // Use specific typography level or fallback to simple reveal
+                  let tween;
+                  if (level === 'A' && window.AERIDIAN.Utils.Motion.Typography.revealLevelA) {
+                    tween = window.AERIDIAN.Utils.Motion.Typography.revealLevelA(el);
+                  } else if (
+                    level === 'B' &&
+                    window.AERIDIAN.Utils.Motion.Typography.revealLevelB
+                  ) {
+                    tween = window.AERIDIAN.Utils.Motion.Typography.revealLevelB(el);
+                  } else if (
+                    level === 'C' &&
+                    window.AERIDIAN.Utils.Motion.Typography.revealLevelC
+                  ) {
+                    tween = window.AERIDIAN.Utils.Motion.Typography.revealLevelC(el);
+                  } else if (
+                    level === 'D' &&
+                    window.AERIDIAN.Utils.Motion.Typography.revealLevelD
+                  ) {
+                    tween = window.AERIDIAN.Utils.Motion.Typography.revealLevelD(el);
+                  } else if (
+                    effect === 'mask' &&
+                    window.AERIDIAN.Utils.Motion.ImageReveals.revealMask
+                  ) {
+                    tween = window.AERIDIAN.Utils.Motion.ImageReveals.revealMask(el);
+                  } else if (
+                    effect === 'blur' &&
+                    window.AERIDIAN.Utils.Motion.ImageReveals.revealBlur
+                  ) {
+                    tween = window.AERIDIAN.Utils.Motion.ImageReveals.revealBlur(el);
+                  } else if (
+                    effect === 'clip' &&
+                    window.AERIDIAN.Utils.Motion.ImageReveals.revealClipPath
+                  ) {
+                    tween = window.AERIDIAN.Utils.Motion.ImageReveals.revealClipPath(el);
+                  } else if (
+                    effect === 'opacity' &&
+                    window.AERIDIAN.Utils.Motion.ImageReveals.revealOpacity
+                  ) {
+                    tween = window.AERIDIAN.Utils.Motion.ImageReveals.revealOpacity(el);
+                  } else {
+                    tween = gsap.fromTo(
+                      el,
+                      { y: 20, opacity: 0 },
+                      { y: 0, opacity: 1, duration: 0.6, ease: 'power2.out' }
+                    );
+                  }
+
+                  // Add to timeline with overlap
+                  tl.add(tween, '<0.2');
+                });
+              }
+            });
+          });
+        });
+      }
     }
   }
 
