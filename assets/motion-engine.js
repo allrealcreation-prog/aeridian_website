@@ -673,11 +673,36 @@
             });
 
             // Standard Narrative Sequence Order
-            const roles = ['eyebrow', 'headline', 'body', 'cta', 'media', 'background'];
+            const roles = ['eyebrow', 'headline', 'body', 'cta', 'media', 'background', 'card'];
 
             roles.forEach((role) => {
               const elements = section.querySelectorAll(`[data-reveal-role="${role}"]`);
               if (elements.length > 0) {
+                
+                // Special handling for editorial grid cards
+                if (role === 'card') {
+                  gsap.fromTo(elements, 
+                    { y: 40, opacity: 0 },
+                    {
+                      y: 0,
+                      opacity: 1,
+                      duration: 0.8,
+                      ease: 'power3.out',
+                      stagger: {
+                        amount: 0.8,
+                        grid: 'auto',
+                        from: 'start'
+                      },
+                      scrollTrigger: {
+                        trigger: section,
+                        start: 'top 80%',
+                        once: true
+                      }
+                    }
+                  );
+                  return; // skip individual timeline insertion
+                }
+
                 elements.forEach((el) => {
                   const level = el.getAttribute('data-reveal-level');
                   const effect = el.getAttribute('data-reveal-effect');

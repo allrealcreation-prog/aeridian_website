@@ -158,7 +158,7 @@
   <div class="cg-container">
     
     <!-- Toolbar -->
-    <div class="cg-toolbar" data-scroll-reveal>
+    <div class="cg-toolbar" data-reveal-role="eyebrow" data-reveal-level="D">
       <button class="cg-toolbar-btn js-magnetic" id="ToggleFiltersBtn" data-magnetic-intensity="0.2" aria-expanded="false" aria-controls="CollectionSidebar">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
         Filter Artifacts
@@ -239,21 +239,25 @@
           
           {%- if collection.products.size == 0 -%}
             <!-- Premium Placeholder Grid -->
-            <div class="cg-grid" id="CollectionGrid">
+            <div class="cg-grid" id="CollectionGrid" data-reveal-sequence="true">
               {% assign dummy_names = "Aeris Tech Jacket,Strata Cargo Pant,Nova Utility Pant,Obsidian Shell Jacket,Titan Overshirt,Vector Tee,Core Essential Tee,Atmos Hoodie" | split: "," %}
               {%- for i in (1..8) -%}
-                <div data-scroll-reveal>
+                <div data-reveal-role="card" data-reveal-effect="opacity">
                   {% assign idx = forloop.index0 %}
                   {% assign dummy_title = dummy_names[idx] %}
-                  {% render 'product-card', placeholder: true, dummy_title: dummy_title, dummy_idx: i %}
+                  {% assign is_prio = false %}
+                  {% if forloop.index <= 3 %}{% assign is_prio = true %}{% endif %}
+                  {% render 'product-card', placeholder: true, dummy_title: dummy_title, dummy_idx: i, is_priority: is_prio %}
                 </div>
               {%- endfor -%}
             </div>
           {%- else -%}
-            <div class="cg-grid" id="CollectionGrid">
+            <div class="cg-grid" id="CollectionGrid" data-reveal-sequence="true">
               {%- for product in collection.products -%}
-                <div data-scroll-reveal>
-                  {% render 'product-card', product: product %}
+                <div data-reveal-role="card" data-reveal-effect="opacity">
+                  {% assign is_prio = false %}
+                  {% if forloop.index <= 3 %}{% assign is_prio = true %}{% endif %}
+                  {% render 'product-card', product: product, is_priority: is_prio %}
                 </div>
               {%- endfor -%}
             </div>
@@ -336,6 +340,14 @@ document.addEventListener("DOMContentLoaded", () => {
       closeDrawer();
     }
   });
+
+  // Register with Storytelling Engine
+  if (window.AERIDIAN && window.AERIDIAN.Utils.Storytelling) {
+    window.AERIDIAN.Utils.Storytelling.register({
+      selector: '.collection-grid-system',
+      timeline: 'collection'
+    });
+  }
 });
 </script>
 

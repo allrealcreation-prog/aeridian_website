@@ -133,30 +133,53 @@
       url.searchParams.set('variant', variant.id);
       window.history.replaceState({}, '', url);
 
-      // 3. Update Price
-      if (this.priceWrap) {
-        let priceHtml = '';
-        if (variant.compare_at_price > variant.price) {
-          priceHtml = `
-            <span class="pdp-price--compare">${this.formatMoney(variant.compare_at_price)}</span>
-            <span class="pdp-price--sale">${this.formatMoney(variant.price)}</span>
-          `;
+      // 3. Update Price & Button (with GSAP transition if available)
+      const performUpdate = () => {
+        if (this.priceWrap) {
+          let priceHtml = '';
+          if (variant.compare_at_price > variant.price) {
+            priceHtml = `
+              <span class="pdp-price--compare">${this.formatMoney(variant.compare_at_price)}</span>
+              <span class="pdp-price--sale">${this.formatMoney(variant.price)}</span>
+            `;
+          } else {
+            priceHtml = `<span>${this.formatMoney(variant.price)}</span>`;
+          }
+          this.priceWrap.innerHTML = priceHtml;
+          if (this.stickyPrice) {
+            this.stickyPrice.innerHTML = this.formatMoney(variant.price);
+          }
+        }
+
+        if (!variant.available) {
+          this.submitBtn.setAttribute('disabled', 'disabled');
+          this.submitBtn.textContent = 'Archived';
         } else {
-          priceHtml = `<span>${this.formatMoney(variant.price)}</span>`;
+          this.submitBtn.removeAttribute('disabled');
+          this.submitBtn.textContent = 'Acquire Artifact';
         }
-        this.priceWrap.innerHTML = priceHtml;
-        if (this.stickyPrice) {
-          this.stickyPrice.innerHTML = this.formatMoney(variant.price);
-        }
+      };
+
+      if (window.gsap && this.priceWrap) {
+        gsap.to([this.priceWrap, this.submitBtn], {
+          opacity: 0,
+          y: -5,
+          duration: 0.2,
+          ease: 'power2.inOut',
+          onComplete: () => {
+            performUpdate();
+            gsap.to([this.priceWrap, this.submitBtn], { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' });
+          }
+        });
+      } else {
+        performUpdate();
       }
 
-      // 4. Update Button State
-      if (!variant.available) {
-        this.submitBtn.setAttribute('disabled', 'disabled');
-        this.submitBtn.textContent = 'Archived';
-      } else {
-        this.submitBtn.removeAttribute('disabled');
-        this.submitBtn.textContent = 'Acquire Artifact';
+      // 4. Update Gallery Image via Custom Event
+      // If variant has an attached image, dispatch event to let main-product.liquid handle crossfade
+      if (variant.featured_image) {
+        const imageId = variant.featured_image.id;
+        window.dispatchEvent(new CustomEvent('aeridian:variant-image-change', { detail: { imageId: imageId, variantId: variant.id } }));
       }
     }
 
@@ -181,7 +204,7 @@
           }
           return response.json();
         })
-        .then((data) => {
+        .then((_data) => {
           this.submitBtn.classList.remove('is-loading');
 
           // Feedback animation

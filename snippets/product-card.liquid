@@ -14,12 +14,15 @@
     height: 100%;
   }
 
-  /* Image Container */
+  /* Blur-Up Skeleton Background */
   .product-card__media {
     position: relative;
     width: 100%;
     aspect-ratio: 4/5;
     background-color: var(--bg-secondary);
+    background-image: radial-gradient(circle at center, var(--border-subtle) 0%, transparent 70%);
+    background-size: 150% 150%;
+    background-position: center;
     border-radius: var(--radius-sm);
     overflow: hidden;
     margin-bottom: var(--space-16);
@@ -31,13 +34,20 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 300ms var(--ease-luxury), opacity 300ms var(--ease-luxury), filter 300ms var(--ease-luxury);
+    opacity: 0; /* JS or CSS will fade in once loaded, simplified by loading attribute but visually hidden initially if needed. Wait, we want a simple blur-up. */
+    animation: fadeIn var(--duration-base) forwards;
+    transition: transform 400ms var(--ease-luxury), filter 400ms var(--ease-luxury);
+  }
+  
+  @keyframes fadeIn {
+    to { opacity: 1; }
   }
 
   .product-card__image--secondary {
     position: absolute;
     top: 0; left: 0;
     opacity: 0;
+    transition: transform 400ms var(--ease-luxury), opacity 400ms var(--ease-luxury);
   }
 
   /* Badges */
@@ -48,7 +58,7 @@
     display: flex;
     flex-direction: column;
     gap: var(--space-4);
-    z-index: 2;
+    z-index: 3;
   }
 
   .badge {
@@ -66,7 +76,7 @@
   .badge--sold-out { background: rgba(255, 0, 0, 0.1); color: #ff4444; border-color: rgba(255,0,0,0.2); }
   .badge--sale { background: var(--glow-color); color: var(--accent-color); border-color: var(--accent-color); }
 
-  /* Quick Actions (Hover) */
+  /* Quick Actions (Hover/Desktop) */
   .product-card__actions {
     position: absolute;
     bottom: var(--space-12);
@@ -76,8 +86,8 @@
     gap: var(--space-8);
     opacity: 0;
     transform: translateY(10px);
-    transition: opacity var(--duration-base), transform var(--duration-base);
-    z-index: 2;
+    transition: opacity var(--duration-base) var(--ease-premium), transform var(--duration-base) var(--ease-premium);
+    z-index: 3;
   }
 
   .pc-action-btn {
@@ -101,6 +111,8 @@
     display: flex;
     flex-direction: column;
     flex-grow: 1;
+    transition: transform var(--duration-base) var(--ease-premium);
+    z-index: 2;
   }
 
   .product-card__vendor {
@@ -114,7 +126,7 @@
     text-decoration: none;
     font-weight: 500;
     margin-bottom: var(--space-8);
-    transition: color var(--duration-fast) var(--ease-luxury);
+    transition: color var(--duration-fast);
   }
 
   .product-card__price {
@@ -126,23 +138,22 @@
   .price--compare { text-decoration: line-through; opacity: 0.5; }
   .price--sale { color: var(--accent-color); font-weight: bold; }
 
-  /* Premium Hover Sequence */
-  @media (hover: hover) {
+  /* Premium Hover Sequence (Desktop) */
+  @media (hover: hover) and (min-width: 1025px) {
     .product-card:hover .product-card__media,
     .product-card:focus-within .product-card__media {
       border-color: var(--border-heavy);
-      box-shadow: 0 4px 16px rgba(0,0,0,0.05); /* Subdued soft elevation */
+      box-shadow: var(--elevation-2);
     }
     .product-card:hover .product-card__image--primary,
     .product-card:focus-within .product-card__image--primary {
-      transform: scale(var(--motion-scale-md));
-      filter: brightness(0.95);
+      transform: scale(1.03); /* Strict limit 1.03 */
       {% if product.images[1] %}opacity: 0;{% endif %}
     }
     .product-card:hover .product-card__image--secondary,
     .product-card:focus-within .product-card__image--secondary {
       opacity: 1;
-      transform: scale(var(--motion-scale-md));
+      transform: scale(1.03);
     }
     .product-card:hover .product-card__actions,
     .product-card:focus-within .product-card__actions {
@@ -155,12 +166,32 @@
     }
     .product-card:hover .product-card__info,
     .product-card:focus-within .product-card__info {
-      transform: translateY(calc(var(--motion-distance-xs) * -1));
+      transform: translateY(-4px); /* Very subtle depth shift */
+    }
+  }
+
+  /* Tablet Adjustments (Reduced motion 30%) */
+  @media (hover: hover) and (max-width: 1024px) {
+    .product-card:hover .product-card__media { box-shadow: var(--elevation-1); }
+    .product-card:hover .product-card__image--primary { transform: scale(1.02); {% if product.images[1] %}opacity: 0;{% endif %} }
+    .product-card:hover .product-card__image--secondary { opacity: 1; transform: scale(1.02); }
+    .product-card:hover .product-card__actions { opacity: 1; transform: translateY(0); }
+    .product-card:hover .product-card__info { transform: translateY(-2px); }
+  }
+
+  /* Mobile/Touch (No hover assumptions) */
+  @media (hover: none) {
+    .product-card__actions {
+      display: none; /* Rely on PDP click for touch interfaces per standard luxury conventions */
+    }
+    .product-card:active .product-card__media {
+      opacity: 0.8; /* Fast tap feedback */
+      transition: opacity var(--duration-fast);
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .product-card, .product-card__info, .product-card__image, .product-card__actions { transition: none !important; transform: none !important; }
+    .product-card, .product-card__info, .product-card__image, .product-card__actions { transition: none !important; transform: none !important; animation: none !important; opacity: 1 !important; }
   }
 </style>
 
@@ -193,15 +224,22 @@
       {%- endif -%}
     </div>
 
-    <!-- Images (Phase 15 Optimized) -->
+    <!-- Images (Phase 20.4 Optimized Fetch & Blur-up) -->
     {%- if product.featured_image -%}
+      {%- assign fetch_val = 'auto' -%}
+      {%- assign load_val = 'lazy' -%}
+      {%- if is_priority -%}
+        {%- assign fetch_val = 'high' -%}
+        {%- assign load_val = 'eager' -%}
+      {%- endif -%}
       <img src="{{ product.featured_image | image_url: width: 600 }}" 
            srcset="{{ product.featured_image | image_url: width: 300 }} 300w, 
                    {{ product.featured_image | image_url: width: 600 }} 600w, 
                    {{ product.featured_image | image_url: width: 900 }} 900w"
            sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
            alt="{{ product.title | escape }}" 
-           loading="lazy" 
+           loading="{{ load_val }}" 
+           fetchpriority="{{ fetch_val }}"
            class="product-card__image product-card__image--primary" width="{{ product.featured_image.width }}" height="{{ product.featured_image.height }}">
       {%- if product.images[1] -%}
         <img src="{{ product.images[1] | image_url: width: 600 }}" 

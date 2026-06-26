@@ -196,7 +196,7 @@
       <div class="pdp-gallery-container" id="PDPGallery">
         <div class="pdp-thumbnails">
           {%- for image in product.images -%}
-            <img src="{{ image | image_url: width: 150 }}" alt="{{ product.title }}" class="pdp-thumb {% if forloop.first %}is-active{% endif %}" data-index="{{ forloop.index0 }}" loading="lazy" width="{{ image.width }}" height="{{ image.height }}">
+            <img src="{{ image | image_url: width: 150 }}" alt="{{ product.title }}" class="pdp-thumb {% if forloop.first %}is-active{% endif %}" data-index="{{ forloop.index0 }}" data-image-id="{{ image.id }}" loading="lazy" width="{{ image.width }}" height="{{ image.height }}">
           {%- endfor -%}
         </div>
         
@@ -416,7 +416,26 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // 4. Variant Data Object for JS
+  // 4. Variant Gallery Crossfade Transition
+  window.addEventListener('aeridian:variant-image-change', (e) => {
+    const imageId = e.detail.imageId;
+    const targetThumb = document.querySelector(`.pdp-thumb[data-image-id="${imageId}"]`);
+    
+    if(targetThumb) {
+      targetThumb.click(); // Trigger the scroll sync logic
+      
+      // Inject GSAP Phase 20 crossfade
+      if (window.gsap) {
+        const gallery = document.getElementById('PDPMainScroll');
+        gsap.fromTo(gallery,
+          { opacity: 0.4, scale: 0.98 },
+          { opacity: 1, scale: 1, duration: 0.6, ease: 'power3.out' }
+        );
+      }
+    }
+  });
+
+  // 5. Variant Data Object for JS
   window.AERIDIAN.State.Product = {{ product | json }};
 });
 </script>
