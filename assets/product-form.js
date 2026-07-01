@@ -168,8 +168,13 @@
           ease: 'power2.inOut',
           onComplete: () => {
             performUpdate();
-            gsap.to([this.priceWrap, this.submitBtn], { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' });
-          }
+            gsap.to([this.priceWrap, this.submitBtn], {
+              opacity: 1,
+              y: 0,
+              duration: 0.4,
+              ease: 'power2.out',
+            });
+          },
         });
       } else {
         performUpdate();
@@ -179,7 +184,11 @@
       // If variant has an attached image, dispatch event to let main-product.liquid handle crossfade
       if (variant.featured_image) {
         const imageId = variant.featured_image.id;
-        window.dispatchEvent(new CustomEvent('aeridian:variant-image-change', { detail: { imageId: imageId, variantId: variant.id } }));
+        window.dispatchEvent(
+          new CustomEvent('aeridian:variant-image-change', {
+            detail: { imageId: imageId, variantId: variant.id },
+          })
+        );
       }
     }
 

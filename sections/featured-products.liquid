@@ -1,9 +1,15 @@
 <style>
   .featured-products {
     position: relative;
-    background-color: var(--color-primary-obsidian);
+    background-color: #181818;
+    background-image: linear-gradient(to bottom, #151515 0%, #181818 150px);
     color: var(--color-primary-pure-white);
     padding-bottom: var(--space-120);
+  }
+
+  html[data-theme='light'] .featured-products {
+    background-color: #eaecef;
+    background-image: linear-gradient(to bottom, #f4f4f4 0%, #eaecef 150px);
   }
 
   /* Intro Section (80vh) */
@@ -15,11 +21,11 @@
     align-items: center;
     text-align: center;
     padding: 0 var(--space-24);
-    background: radial-gradient(circle at center, rgba(127, 217, 255, 0.05) 0%, transparent 60%);
+    background: radial-gradient(closest-side, rgba(127, 217, 255, 0.05) 0%, transparent 100%);
   }
 
   html[data-theme="light"] .fp-intro {
-    background: radial-gradient(circle at center, rgba(127, 217, 255, 0.1) 0%, transparent 60%);
+    background: radial-gradient(closest-side, rgba(127, 217, 255, 0.1) 0%, transparent 100%);
   }
 
   .fp-intro__label {
@@ -105,7 +111,7 @@
   }
 
   .product-card:hover .product-card__image {
-    transform: scale(1.08);
+    transform: scale(1.04);
   }
 
   .product-card__info {
@@ -235,7 +241,8 @@
         {%- for i in (1..8) -%}
           <div class="product-card js-tilt-card">
             <div class="product-card__image-wrap">
-              {{ 'product-' | append: i | placeholder_svg_tag: 'product-card__image' }}
+              {%- assign dummy_idx = i | modulo: 6 | plus: 1 -%}
+              {{ 'product-' | append: dummy_idx | placeholder_svg_tag: 'product-card__image' }}
             </div>
             <div class="product-card__info">
               <div class="product-card__vendor">AERIDIAN</div>

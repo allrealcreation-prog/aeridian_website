@@ -3,12 +3,16 @@
     position: relative;
     width: 100%;
     height: 100vh;
-    height: 100svh;
+    height: 100dvh;
+    background-color: #111111;
     overflow: hidden;
-    background-color: var(--bg-primary);
     color: var(--text-primary);
     display: flex;
     align-items: center;
+  }
+
+  html[data-theme='light'] .hero-cinematic {
+    background-color: #fafaf9;
   }
 
   /* Pure CSS Background Grid */
@@ -58,6 +62,7 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
+    transform: translateY(-15px);
   }
 
   .hero-eyebrow {
@@ -144,11 +149,24 @@
       opacity: 1;
       transform: none;
     }
-    .hero-canvas-wrapper {
-      background: radial-gradient(circle, var(--color-accent-atmospheric) 0%, transparent 60%);
-      opacity: 0.2;
-    }
     #AeridianCoreCanvas { display: none; }
+  }
+
+  /* Atmospheric Center Glow */
+  .hero-cinematic::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.04) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  html[data-theme='light'] .hero-cinematic::before {
+    background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.6) 0%, transparent 70%);
   }
 </style>
 
@@ -286,7 +304,6 @@ document.addEventListener("DOMContentLoaded", () => {
   function initThreeJs() {
     if (isRendering) return;
     isRendering = true;
-    console.log('Hero renderer initialized');
 
     const canvas = document.getElementById('AeridianCoreCanvas');
     const wrapper = document.getElementById('CanvasWrapper');
@@ -304,36 +321,47 @@ document.addEventListener("DOMContentLoaded", () => {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Limit pixel ratio for performance
 
     // --- GEOMETRIES ---
-    // Outer Shell (Glassy Obsidian)
-    const shellGeo = new THREE.IcosahedronGeometry(2.5, 1);
+    const initIsLight = document.documentElement.getAttribute('data-theme') === 'light';
+    const initColor = initIsLight ? 0x444444 : 0xe8e8e8;
+
+    // Premium Abstract Sculpture (Torus Knot)
+    const shellGeo = new THREE.TorusKnotGeometry(1.8, 0.5, 256, 64, 3, 5);
     const shellMat = new THREE.MeshPhysicalMaterial({
-      color: 0x050505,
-      metalness: 0.9,
-      roughness: 0.1,
-      transmission: 0.9, // glass effect
+      color: initColor,
+      emissive: 0x000000,
+      metalness: 0.6,
+      roughness: 0.3,
       clearcoat: 1.0,
-      clearcoatRoughness: 0.1
+      clearcoatRoughness: 0.1,
+      transmission: 0.0, // luxury glass/resin effect removed for ceramic
+      ior: 1.5
     });
     const shell = new THREE.Mesh(shellGeo, shellMat);
     scene.add(shell);
 
-    // Inner Structure (Wireframe Titanium)
-    const innerGeo = new THREE.IcosahedronGeometry(2.2, 2);
-    const innerMat = new THREE.MeshStandardMaterial({
-      color: 0xBFC3C9,
-      metalness: 0.8,
-      roughness: 0.2,
-      wireframe: true
-    });
-    const innerCore = new THREE.Mesh(innerGeo, innerMat);
-    scene.add(innerCore);
-
-    // Energy Light (Cyan)
+    // --- LIGHTING ---
+    // Energy Light (Cyan Internal Glow)
     const coreLight = new THREE.PointLight(0x7FD9FF, 2, 20);
     scene.add(coreLight);
     
+    // Key Light (White)
+    const keyLight = new THREE.DirectionalLight(0xffffff, 2.5);
+    keyLight.position.set(5, 5, 5);
+    scene.add(keyLight);
+
+    // Fill Light (Subtle blue)
+    const fillLight = new THREE.DirectionalLight(0xaaccff, 0.8);
+    fillLight.position.set(-5, -2, 5);
+    scene.add(fillLight);
+
+    // Rim Light (White)
+    const rimLight = new THREE.DirectionalLight(0xffffff, 2.0);
+    rimLight.position.set(0, 5, -10);
+    scene.add(rimLight);
+
     // Ambient Light
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+    const initAmbient = initIsLight ? 1.2 : 0.4;
+    const ambientLight = new THREE.AmbientLight(0xffffff, initAmbient);
     scene.add(ambientLight);
 
     // Ambient Particles
@@ -381,22 +409,25 @@ document.addEventListener("DOMContentLoaded", () => {
       }, 250);
     });
 
-    // Theme Mode Observer (Update core color based on mode)
-    const observer = new MutationObserver(() => {
-      const isLight = document.documentElement.getAttribute('data-theme') === 'light';
-      if(isLight) {
-        shellMat.color.setHex(0x111111); // Slightly lighter for contrast against white
-        ambientLight.intensity = 1.0;
+    // Theme Listener for Hero
+    window.addEventListener('AeridianThemeChange', (e) => {
+      const isLight = e.detail.theme === 'light';
+      const targetColor = isLight ? new THREE.Color(0x444444) : new THREE.Color(0xe8e8e8);
+      const targetAmbient = isLight ? 1.2 : 0.4;
+      
+      if(typeof gsap !== 'undefined') {
+        gsap.to(shellMat.color, { r: targetColor.r, g: targetColor.g, b: targetColor.b, duration: 0.5, ease: "power2.inOut" });
+        gsap.to(ambientLight, { intensity: targetAmbient, duration: 0.5, ease: "power2.inOut" });
       } else {
-        shellMat.color.setHex(0x050505);
-        ambientLight.intensity = 0.5;
+        shellMat.color.copy(targetColor);
+        ambientLight.intensity = targetAmbient;
       }
     });
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 
     // --- ANIMATION LOOP ---
     const clock = new THREE.Clock();
     let isHovered = false;
+    let baseRotationY = 0;
 
     // Raycaster for hover
     const raycaster = new THREE.Raycaster();
@@ -412,24 +443,18 @@ document.addEventListener("DOMContentLoaded", () => {
       isHovered = intersects.length > 0;
     });
 
-    function animate() {
-      if(!isRendering) return;
-      requestAnimationFrame(animate);
+    const renderFrame = () => {
+      if(!isRendering || document.hidden) return;
 
-      // Pause if tab is inactive
-      if(document.hidden) return;
-
+      const deltaTime = clock.getDelta();
       const elapsedTime = clock.getElapsedTime();
 
-      // Idle Rotation & Floating
-      shell.rotation.y += 0.002;
-      shell.rotation.x += 0.001;
-      innerCore.rotation.y -= 0.003;
-      innerCore.rotation.z += 0.002;
+      // Continuous Rotation
+      const rotationSpeed = (Math.PI * 2) / 150; // 150s per rev
+      baseRotationY += deltaTime * rotationSpeed;
       
       // Floating Sine Wave
       shell.position.y = Math.sin(elapsedTime * 0.5) * 0.3;
-      innerCore.position.y = shell.position.y;
       coreLight.position.y = shell.position.y;
 
       // Particle Drift
@@ -438,7 +463,7 @@ document.addEventListener("DOMContentLoaded", () => {
       // Hover Energy Pulse
       if(isHovered) {
         coreLight.intensity = THREE.MathUtils.lerp(coreLight.intensity, 4 + Math.sin(elapsedTime * 5), 0.1);
-        shell.rotation.y += 0.005; // Spin slightly faster
+        baseRotationY += 0.005; // Spin slightly faster
       } else {
         coreLight.intensity = THREE.MathUtils.lerp(coreLight.intensity, 2 + Math.sin(elapsedTime * 2) * 0.5, 0.05);
       }
@@ -451,13 +476,21 @@ document.addEventListener("DOMContentLoaded", () => {
       targetX = Math.max(-maxRotation, Math.min(maxRotation, targetX));
       targetY = Math.max(-maxRotation, Math.min(maxRotation, targetY));
 
-      shell.rotation.y += 0.05 * (targetX - shell.rotation.y);
-      shell.rotation.x += 0.05 * (targetY - shell.rotation.x);
+      shell.rotation.y = baseRotationY + (targetX * 0.5); // Apply base rotation + mouse look offset
+      shell.rotation.x = Math.sin(elapsedTime * 0.1) * 0.005 + (targetY * 0.5); // Subtle X oscillation + mouse look
 
       renderer.render(scene, camera);
-    }
+    };
 
-    animate();
+    if (window.AERIDIAN && window.AERIDIAN.RAF) {
+      window.AERIDIAN.RAF.add('HeroCinematic', renderFrame);
+    } else {
+      function animate() {
+        requestAnimationFrame(animate);
+        renderFrame();
+      }
+      animate();
+    }
   }
 });
 </script>

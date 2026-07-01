@@ -4,13 +4,15 @@
      ========================================== */
   .brand-story {
     position: relative;
-    background-color: var(--color-primary-obsidian);
+    background-color: #141414;
+    background-image: linear-gradient(to bottom, #181818 0%, #141414 150px);
     color: var(--color-primary-pure-white);
     overflow: hidden;
   }
 
   html[data-theme="light"] .brand-story {
-    background-color: var(--bg-primary);
+    background-color: #f4f4f4;
+    background-image: linear-gradient(to bottom, #eaecef 0%, #f4f4f4 150px);
     color: var(--text-primary);
   }
 
@@ -194,11 +196,10 @@
   .bs-universe {
     height: 180vh;
     position: relative;
-    background: radial-gradient(circle at center, rgba(127, 217, 255, 0.05) 0%, transparent 70%);
   }
   
   html[data-theme="light"] .bs-universe {
-    background: radial-gradient(circle at center, rgba(127, 217, 255, 0.1) 0%, transparent 70%);
+    /* no colour override needed */
   }
 
   .bs-universe__pin {
@@ -216,6 +217,26 @@
     font-size: var(--font-heading-1);
     font-weight: bold;
     z-index: 10;
+    position: relative;
+  }
+
+  /* Atmospheric glow originates from the exact logo centre */
+  .bs-orbit-center::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle at center, rgba(127, 217, 255, 0.08) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  html[data-theme="light"] .bs-orbit-center::before {
+    background: radial-gradient(circle at center, rgba(100, 210, 170, 0.07) 0%, transparent 70%);
   }
 
   .bs-orbit-ring {
@@ -242,11 +263,17 @@
     border: 1px solid rgba(255,255,255,0.1);
     font-size: var(--font-caption);
     white-space: nowrap;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    color: var(--text-secondary);
   }
 
   html[data-theme="light"] .bs-orbit-item {
     background: var(--bg-primary);
     border-color: rgba(0,0,0,0.1);
+    color: var(--text-primary);
   }
 
   /* ==========================================
@@ -382,7 +409,8 @@
   }
 
   @keyframes pulseSignal {
-    0% { height: 0; opacity: 1; }
+    0% { height: 0; opacity: 0; transform: translateX(-50%) translateY(0); }
+    20% { opacity: 1; }
     100% { height: 100px; opacity: 0; transform: translateX(-50%) translateY(50px); }
   }
 
@@ -422,9 +450,9 @@
       </div>
       <div class="bs-origin__right">
         {%- if section.settings.origin_image_1 != blank -%}
-          <img src="{{ section.settings.origin_image_1 | image_url: width: 800 }}" class="bs-origin__image" id="OI1" width="{{ section.settings.origin_image_1.width }}" height="{{ section.settings.origin_image_1.height }}">
-          <img src="{{ section.settings.origin_image_2 | image_url: width: 800 }}" class="bs-origin__image" id="OI2" width="{{ section.settings.origin_image_2.width }}" height="{{ section.settings.origin_image_2.height }}">
-          <img src="{{ section.settings.origin_image_3 | image_url: width: 800 }}" class="bs-origin__image" id="OI3" width="{{ section.settings.origin_image_3.width }}" height="{{ section.settings.origin_image_3.height }}">
+          <img src="{{ section.settings.origin_image_1 | image_url: width: 800 }}" class="bs-origin__image" id="OI1" width="{{ section.settings.origin_image_1.width }}" height="{{ section.settings.origin_image_1.height }}" loading="lazy">
+          <img src="{{ section.settings.origin_image_2 | image_url: width: 800 }}" class="bs-origin__image" id="OI2" width="{{ section.settings.origin_image_2.width }}" height="{{ section.settings.origin_image_2.height }}" loading="lazy">
+          <img src="{{ section.settings.origin_image_3 | image_url: width: 800 }}" class="bs-origin__image" id="OI3" width="{{ section.settings.origin_image_3.width }}" height="{{ section.settings.origin_image_3.height }}" loading="lazy">
         {%- else -%}
           <div class="bs-origin__image is-active" id="OI1">{{ 'lifestyle-1' | placeholder_svg_tag }}</div>
           <div class="bs-origin__image" id="OI2">{{ 'lifestyle-2' | placeholder_svg_tag }}</div>
@@ -470,14 +498,84 @@
         </div>
       </div>
       
-      <div class="bs-orbit-ring" style="width: 400px; height: 400px; margin-left: -200px; margin-top: -200px;" id="Orbit1">
-        <div class="bs-orbit-item" style="transform: rotate(0deg) translateX(200px) rotate(0deg);">Retro & Vintage</div>
-        <div class="bs-orbit-item" style="transform: rotate(180deg) translateX(200px) rotate(-180deg);">Pop Culture</div>
+      <!-- RING 1 (r=160px): Core — Streetwear · Innovation · Luxury -->
+      <div class="bs-orbit-ring" style="width: 320px; height: 320px; margin-left: -160px; margin-top: -160px;" id="Orbit1">
+        <div class="bs-orbit-wrapper" style="position: absolute; top: 50%; left: 50%; transform: rotate(0deg) translateX(160px);">
+          <div class="bs-orbit-item" style="transform: translateX(-50%) translateY(-50%) rotate(0deg);">Streetwear</div>
+        </div>
+        <div class="bs-orbit-wrapper" style="position: absolute; top: 50%; left: 50%; transform: rotate(120deg) translateX(160px);">
+          <div class="bs-orbit-item" style="transform: translateX(-50%) translateY(-50%) rotate(-120deg);">Innovation</div>
+        </div>
+        <div class="bs-orbit-wrapper" style="position: absolute; top: 50%; left: 50%; transform: rotate(240deg) translateX(160px);">
+          <div class="bs-orbit-item" style="transform: translateX(-50%) translateY(-50%) rotate(-240deg);">Luxury</div>
+        </div>
       </div>
-      
-      <div class="bs-orbit-ring" style="width: 600px; height: 600px; margin-left: -300px; margin-top: -300px;" id="Orbit2">
-        <div class="bs-orbit-item" style="transform: rotate(90deg) translateX(300px) rotate(-90deg);">Art & Design</div>
-        <div class="bs-orbit-item" style="transform: rotate(270deg) translateX(300px) rotate(-270deg);">Nature & Travel</div>
+
+      <!-- RING 2 (r=240px): Technology · Industrial Design · Minimalism · Accessories -->
+      <div class="bs-orbit-ring" style="width: 480px; height: 480px; margin-left: -240px; margin-top: -240px;" id="Orbit2">
+        <div class="bs-orbit-wrapper" style="position: absolute; top: 50%; left: 50%; transform: rotate(0deg) translateX(240px);">
+          <div class="bs-orbit-item" style="transform: translateX(-50%) translateY(-50%) rotate(0deg);">Technology</div>
+        </div>
+        <div class="bs-orbit-wrapper" style="position: absolute; top: 50%; left: 50%; transform: rotate(90deg) translateX(240px);">
+          <div class="bs-orbit-item" style="transform: translateX(-50%) translateY(-50%) rotate(-90deg);">Industrial Design</div>
+        </div>
+        <div class="bs-orbit-wrapper" style="position: absolute; top: 50%; left: 50%; transform: rotate(180deg) translateX(240px);">
+          <div class="bs-orbit-item" style="transform: translateX(-50%) translateY(-50%) rotate(-180deg);">Minimalism</div>
+        </div>
+        <div class="bs-orbit-wrapper" style="position: absolute; top: 50%; left: 50%; transform: rotate(270deg) translateX(240px);">
+          <div class="bs-orbit-item" style="transform: translateX(-50%) translateY(-50%) rotate(-270deg);">Accessories</div>
+        </div>
+      </div>
+
+      <!-- RING 3 (r=330px): Architecture · Art & Design · Photography · Cinema -->
+      <div class="bs-orbit-ring" style="width: 660px; height: 660px; margin-left: -330px; margin-top: -330px;" id="Orbit3">
+        <div class="bs-orbit-wrapper" style="position: absolute; top: 50%; left: 50%; transform: rotate(45deg) translateX(330px);">
+          <div class="bs-orbit-item" style="transform: translateX(-50%) translateY(-50%) rotate(-45deg);">Architecture</div>
+        </div>
+        <div class="bs-orbit-wrapper" style="position: absolute; top: 50%; left: 50%; transform: rotate(135deg) translateX(330px);">
+          <div class="bs-orbit-item" style="transform: translateX(-50%) translateY(-50%) rotate(-135deg);">Art &amp; Design</div>
+        </div>
+        <div class="bs-orbit-wrapper" style="position: absolute; top: 50%; left: 50%; transform: rotate(225deg) translateX(330px);">
+          <div class="bs-orbit-item" style="transform: translateX(-50%) translateY(-50%) rotate(-225deg);">Photography</div>
+        </div>
+        <div class="bs-orbit-wrapper" style="position: absolute; top: 50%; left: 50%; transform: rotate(315deg) translateX(330px);">
+          <div class="bs-orbit-item" style="transform: translateX(-50%) translateY(-50%) rotate(-315deg);">Cinema</div>
+        </div>
+      </div>
+
+      <!-- RING 4 (r=425px): Music · Gaming · Future Culture · Automotive -->
+      <div class="bs-orbit-ring" style="width: 850px; height: 850px; margin-left: -425px; margin-top: -425px;" id="Orbit4">
+        <div class="bs-orbit-wrapper" style="position: absolute; top: 50%; left: 50%; transform: rotate(22deg) translateX(425px);">
+          <div class="bs-orbit-item" style="transform: translateX(-50%) translateY(-50%) rotate(-22deg);">Music</div>
+        </div>
+        <div class="bs-orbit-wrapper" style="position: absolute; top: 50%; left: 50%; transform: rotate(112deg) translateX(425px);">
+          <div class="bs-orbit-item" style="transform: translateX(-50%) translateY(-50%) rotate(-112deg);">Gaming</div>
+        </div>
+        <div class="bs-orbit-wrapper" style="position: absolute; top: 50%; left: 50%; transform: rotate(202deg) translateX(425px);">
+          <div class="bs-orbit-item" style="transform: translateX(-50%) translateY(-50%) rotate(-202deg);">Future Culture</div>
+        </div>
+        <div class="bs-orbit-wrapper" style="position: absolute; top: 50%; left: 50%; transform: rotate(292deg) translateX(425px);">
+          <div class="bs-orbit-item" style="transform: translateX(-50%) translateY(-50%) rotate(-292deg);">Automotive</div>
+        </div>
+      </div>
+
+      <!-- RING 5 (r=525px): Lifestyle ring — 5 categories -->
+      <div class="bs-orbit-ring" style="width: 1050px; height: 1050px; margin-left: -525px; margin-top: -525px;" id="Orbit5">
+        <div class="bs-orbit-wrapper" style="position: absolute; top: 50%; left: 50%; transform: rotate(0deg) translateX(525px);">
+          <div class="bs-orbit-item" style="transform: translateX(-50%) translateY(-50%) rotate(0deg);">Nature &amp; Travel</div>
+        </div>
+        <div class="bs-orbit-wrapper" style="position: absolute; top: 50%; left: 50%; transform: rotate(72deg) translateX(525px);">
+          <div class="bs-orbit-item" style="transform: translateX(-50%) translateY(-50%) rotate(-72deg);">Sports &amp; Performance</div>
+        </div>
+        <div class="bs-orbit-wrapper" style="position: absolute; top: 50%; left: 50%; transform: rotate(144deg) translateX(525px);">
+          <div class="bs-orbit-item" style="transform: translateX(-50%) translateY(-50%) rotate(-144deg);">Outdoor</div>
+        </div>
+        <div class="bs-orbit-wrapper" style="position: absolute; top: 50%; left: 50%; transform: rotate(216deg) translateX(525px);">
+          <div class="bs-orbit-item" style="transform: translateX(-50%) translateY(-50%) rotate(-216deg);">Retro &amp; Vintage</div>
+        </div>
+        <div class="bs-orbit-wrapper" style="position: absolute; top: 50%; left: 50%; transform: rotate(288deg) translateX(525px);">
+          <div class="bs-orbit-item" style="transform: translateX(-50%) translateY(-50%) rotate(-288deg);">Lifestyle</div>
+        </div>
       </div>
 
     </div>
@@ -577,17 +675,83 @@ document.addEventListener("DOMContentLoaded", () => {
         scrollTrigger: { trigger: "#BSProcess", start: "top top", end: "bottom bottom", scrub: true }
       });
 
-      // 5. CSS Orbital Universe
-      gsap.to("#Orbit1", {
-        rotationZ: 360,
-        ease: "none",
-        scrollTrigger: { trigger: "#BSUniverse", start: "top bottom", end: "bottom top", scrub: 1 }
+      // 5. CSS Orbital Universe — Centralized RAF Math (Performance Optimization)
+      const orbitConfig = [
+        { id: 'Orbit1', dir: 1,  duration: 35, el: null, items: [] },
+        { id: 'Orbit2', dir: -1, duration: 50, el: null, items: [] },
+        { id: 'Orbit3', dir: 1,  duration: 65, el: null, items: [] },
+        { id: 'Orbit4', dir: -1, duration: 80, el: null, items: [] },
+        { id: 'Orbit5', dir: 1,  duration: 100, el: null, items: [] },
+      ];
+
+      orbitConfig.forEach(config => {
+        config.el = document.getElementById(config.id);
+        if (config.el) {
+          config.items = Array.from(config.el.querySelectorAll('.bs-orbit-item'));
+        }
       });
-      gsap.to("#Orbit2", {
-        rotationZ: -360,
-        ease: "none",
-        scrollTrigger: { trigger: "#BSUniverse", start: "top bottom", end: "bottom top", scrub: 1.5 }
+
+      let orbitRafId;
+      let lastTime = performance.now();
+      const orbitRotations = [0, 0, 0, 0, 0];
+
+      // Use IntersectionObserver to pause the loop when out of view
+      let orbitVisible = false;
+      const orbitIo = new IntersectionObserver(entries => {
+        orbitVisible = entries[0].isIntersecting;
+        if (orbitVisible) lastTime = performance.now();
       });
+      const universeEl = document.getElementById('BSUniverse');
+      if (universeEl) orbitIo.observe(universeEl);
+
+      const orbitTick = (time) => {
+        if (!orbitVisible) return;
+        
+        const delta = (time - lastTime) / 1000;
+        lastTime = time;
+
+        for (let i = 0; i < orbitConfig.length; i++) {
+          const config = orbitConfig[i];
+          if (!config.el) continue;
+          
+          // Calculate angular velocity (degrees per second)
+          const speed = 360 / config.duration;
+          orbitRotations[i] += speed * delta * config.dir;
+          
+          // Apply rotation to the ring
+          config.el.style.transform = `rotate(${orbitRotations[i]}deg)`;
+          
+          // Calculate the counter-rotation
+          const counterRot = -orbitRotations[i];
+          
+          // Apply counter-rotation to all items within the ring to keep them upright
+          // We must read their dataset or original rotation to preserve their initial offset,
+          // but since they are wrapped in .bs-orbit-wrapper, we just need to append the counter-rotation.
+          // Wait, the items already have an inline style: transform: translateX(-50%) translateY(-50%) rotate(Xdeg);
+          // To be performant, we will overwrite the transform string directly.
+          for (let j = 0; j < config.items.length; j++) {
+            const item = config.items[j];
+            // Store the initial offset angle if not already stored
+            if (item.dataset.initialAngle === undefined) {
+              // Extract rotation from inline style "rotate(-120deg)"
+              const match = item.style.transform.match(/rotate\(([-\d.]+)deg\)/);
+              item.dataset.initialAngle = match ? parseFloat(match[1]) : 0;
+            }
+            const totalRot = parseFloat(item.dataset.initialAngle) + counterRot;
+            item.style.transform = `translateX(-50%) translateY(-50%) rotate(${totalRot}deg)`;
+          }
+        }
+      };
+
+      if (window.AERIDIAN && window.AERIDIAN.RAF) {
+        window.AERIDIAN.RAF.add('BrandStoryOrbits', orbitTick);
+      } else {
+        const fallbackLoop = (time) => {
+          orbitTick(time);
+          orbitRafId = requestAnimationFrame(fallbackLoop);
+        };
+        orbitRafId = requestAnimationFrame(fallbackLoop);
+      }
 
       // 7. Brand Manifesto
       const manTl = gsap.timeline({ scrollTrigger: { trigger: "#BSManifesto", start: "top top", end: "bottom bottom", scrub: true } });
@@ -684,12 +848,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const particlesMesh = new THREE.Points(geometry, material);
     scene.add(particlesMesh);
 
-    // Theme Observer for Horizon
-    const observer = new MutationObserver(() => {
-      const light = document.documentElement.getAttribute('data-theme') === 'light';
+    // Theme Listener for Horizon
+    window.addEventListener('AeridianThemeChange', (e) => {
+      const light = e.detail.theme === 'light';
       material.color.setHex(light ? 0x00D9FF : 0x7FD9FF);
     });
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 
     let count = 0;
     
@@ -700,8 +863,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     io.observe(document.getElementById('BSFuture'));
 
-    function animate() {
-      requestAnimationFrame(animate);
+    const renderFrame = () => {
       if(!isVisible || document.hidden) return;
 
       count += 0.02;
@@ -734,8 +896,17 @@ document.addEventListener("DOMContentLoaded", () => {
       if(particlesMesh.position.z > 10) particlesMesh.position.z = 0;
 
       renderer.render(scene, camera);
+    };
+
+    if (window.AERIDIAN && window.AERIDIAN.RAF) {
+      window.AERIDIAN.RAF.add('BrandStoryFuture', renderFrame);
+    } else {
+      function animate() {
+        requestAnimationFrame(animate);
+        renderFrame();
+      }
+      animate();
     }
-    animate();
 
     let resizeTimer;
     window.addEventListener('resize', () => {

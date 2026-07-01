@@ -34,7 +34,8 @@
       {%- for dummy_title in dummy_titles -%}
         <article class="article-card">
           <div class="article-card__image" style="aspect-ratio: 16/9; overflow: hidden; margin-bottom: var(--space-24);">
-            {{ 'lifestyle-' | append: forloop.index | placeholder_svg_tag: 'placeholder-svg' }}
+            {%- assign dummy_idx = forloop.index | modulo: 2 | plus: 1 -%}
+            {{ 'lifestyle-' | append: dummy_idx | placeholder_svg_tag: 'placeholder-svg' }}
           </div>
           <div class="article-card__meta" style="font-size: var(--font-caption); color: var(--text-secondary); margin-bottom: var(--space-8); text-transform: uppercase;">
             {{ 'now' | date: "%B %d, %Y" }}

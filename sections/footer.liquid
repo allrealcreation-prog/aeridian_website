@@ -1,10 +1,16 @@
 <style>
   .site-footer {
     position: relative;
-    background-color: var(--bg-primary);
+    background-color: #101010;
+    background-image: linear-gradient(to bottom, #1a1a1a 0%, #101010 150px);
     color: var(--text-primary);
     padding-top: var(--space-80);
     overflow: hidden;
+  }
+  
+  html[data-theme='light'] .site-footer {
+    background-color: #e5e5e5;
+    background-image: linear-gradient(to bottom, #eaecef 0%, #e5e5e5 150px);
   }
 
   .footer-container {
@@ -149,7 +155,7 @@
     bottom: 50%; left: 50%;
     transform: translate(-50%, 50%);
     width: 600px; height: 600px;
-    background: radial-gradient(circle, var(--glow-color) 0%, transparent 60%);
+    background: radial-gradient(closest-side, var(--glow-color) 0%, transparent 100%);
     pointer-events: none;
     z-index: 1;
     animation: corePulseFinal 6s ease-in-out infinite alternate;
@@ -171,7 +177,8 @@
     100% { transform: translate(-50%, 50%) scale(1.2); opacity: 1; }
   }
   @keyframes waveExpand {
-    0% { transform: translate(-50%, 50%) scale(1); opacity: 0.8; }
+    0% { transform: translate(-50%, 50%) scale(1); opacity: 0; }
+    20% { opacity: 0.8; }
     100% { transform: translate(-50%, 50%) scale(6); opacity: 0; }
   }
 

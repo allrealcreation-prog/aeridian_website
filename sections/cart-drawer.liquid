@@ -164,6 +164,17 @@ class AeridianCartDrawer {
     this.drawer.classList.add('is-open');
     this.overlay.classList.add('is-active');
     document.body.style.overflow = 'hidden';
+
+    // Phase 20.5: Staggered GSAP reveal for cart items
+    if (window.gsap) {
+      const items = this.drawer.querySelectorAll('.cart-drawer__item');
+      if (items.length > 0) {
+        gsap.fromTo(items, 
+          { y: 20, opacity: 0 }, 
+          { y: 0, opacity: 1, duration: 0.4, stagger: 0.1, ease: 'power2.out', delay: 0.2 }
+        );
+      }
+    }
   }
 
   close() {

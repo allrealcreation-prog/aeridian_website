@@ -10,7 +10,7 @@
   --card-bg: #1a1a1a;
 
   --text-primary: #eeeeee;
-  --text-secondary: rgba(238, 238, 238, 0.65);
+  --text-secondary: rgba(238, 238, 238, 0.8);
 
   --border-subtle: rgba(238, 238, 238, 0.1);
   --border-heavy: rgba(255, 255, 255, 0.2);
@@ -39,7 +39,7 @@ html[data-theme='light'] {
   --card-bg: #ffffff;
 
   --text-primary: #111111;
-  --text-secondary: rgba(17, 17, 17, 0.65);
+  --text-secondary: rgba(17, 17, 17, 0.8);
 
   --border-subtle: rgba(17, 17, 17, 0.1);
   --border-heavy: rgba(0, 0, 0, 0.2);
@@ -99,9 +99,18 @@ body {
 }
 
 /* Depth Utility Classes */
-.theme-elevated-1 { box-shadow: var(--elevation-1); }
-.theme-elevated-2 { box-shadow: var(--elevation-2); }
-.theme-elevated-3 { box-shadow: var(--elevation-3); }
-.theme-elevated-4 { box-shadow: var(--elevation-4); }
-.theme-elevated-5 { box-shadow: var(--elevation-5); }
-
+.theme-elevated-1 {
+  box-shadow: var(--elevation-1);
+}
+.theme-elevated-2 {
+  box-shadow: var(--elevation-2);
+}
+.theme-elevated-3 {
+  box-shadow: var(--elevation-3);
+}
+.theme-elevated-4 {
+  box-shadow: var(--elevation-4);
+}
+.theme-elevated-5 {
+  box-shadow: var(--elevation-5);
+}

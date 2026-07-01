@@ -131,22 +131,44 @@
     background: var(--text-primary);
     color: var(--bg-primary);
   }
+  
+  /* Skeleton Animations */
+  @keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+  }
+  .skeleton-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
 </style>
 
 <div class="wishlist-hero">
   <svg class="wishlist-hero__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
     <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" stroke-linecap="round" stroke-linejoin="round"/>
   </svg>
-  <h1 class="wishlist-hero__title">{{ section.settings.heading | default: 'Saved Artifacts' }}</h1>
-  <p class="wishlist-hero__subtitle">{{ section.settings.subtitle | default: 'Your curated selection of AERIDIAN equipment. These items are saved locally to your device.' }}</p>
+  <h1 style="font-size: var(--font-display-l); font-family: var(--font-heading); font-weight: 300; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: var(--space-16);">{{ section.settings.heading | default: 'Saved Artifacts' }}</h1>
+  <p style="font-size: var(--font-body-large); color: var(--text-secondary); max-width: 600px; margin: 0 auto; line-height: 1.6;">{{ section.settings.subtitle | default: 'Your curated selection of AERIDIAN equipment. These items are saved locally to your device.' }}</p>
 </div>
 
 <div class="wishlist-grid-container">
   
   <div class="wishlist-empty" id="WishlistEmptyState">
-    <p>{{ section.settings.empty_text | default: 'Your archive is currently empty. Discover new technical layers and equipment.' }}</p>
-    <a href="{{ section.settings.empty_url | default: routes.all_products_collection_url }}" class="btn-primary" style="display: inline-block;">{{ section.settings.empty_btn_text | default: 'Explore Collection' }}</a>
+    <div style="max-width: 400px; margin: 0 auto;">
+      <p style="font-size: var(--font-body-large); color: var(--text-secondary); margin-bottom: var(--space-32);">{{ section.settings.empty_text | default: 'Your archive is currently empty. Discover new technical layers and equipment.' }}</p>
+      <a href="{{ section.settings.empty_url | default: routes.all_products_collection_url }}" class="btn-primary js-magnetic" data-magnetic-intensity="0.2" style="display: inline-block;">{{ section.settings.empty_btn_text | default: 'Explore Collection' }}</a>
+    </div>
   </div>
+
+  <template id="WishlistSkeletonTemplate">
+    <div class="wishlist-card wishlist-card--skeleton">
+      <div class="wishlist-card__image-wrapper skeleton-pulse" style="background: var(--bg-secondary);"></div>
+      <div class="wishlist-card__info" style="gap: var(--space-8);">
+        <div class="skeleton-pulse" style="height: 1.5rem; width: 80%; background: var(--bg-secondary); border-radius: var(--radius-sm);"></div>
+        <div class="skeleton-pulse" style="height: 1rem; width: 40%; background: var(--bg-secondary); border-radius: var(--radius-sm);"></div>
+      </div>
+    </div>
+  </template>
 
   <div class="wishlist-grid" id="WishlistGridRender">
     <!-- Populated by JS -->
@@ -164,29 +186,34 @@ document.addEventListener("DOMContentLoaded", () => {
   if (items.length === 0) {
     emptyState.classList.add('is-active');
   } else {
-    // Generate Placeholder Cards for Saved Handles
+    // Generate Skeleton Cards for Saved Handles
     items.forEach(handle => {
-      const card = document.createElement('div');
-      card.className = 'wishlist-card';
+      const template = document.getElementById('WishlistSkeletonTemplate');
+      const skeletonFragment = template.content.cloneNode(true);
+      const skeleton = skeletonFragment.querySelector('.wishlist-card--skeleton');
+      skeleton.dataset.handle = handle;
       
-      // In a real environment, we would fetch product data via /products/handle.js
-      // For this luxury fallback, we generate a premium placeholder structure
-      card.innerHTML = `
-        <button class="wishlist-card__remove" aria-label="Remove from wishlist" onclick="removeFromWishlist('${handle}', this)">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
-        </button>
-        <a href="/products/${handle}" class="wishlist-card__image-wrapper">
-          <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: var(--text-secondary); opacity: 0.5;">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-          </div>
-        </a>
-        <div class="wishlist-card__info">
-          <a href="/products/${handle}" class="wishlist-card__title" style="text-transform: capitalize;">${handle.replace(/-/g, ' ')}</a>
-          <div class="wishlist-card__price">AERIDIAN Artifact</div>
-          <a href="/products/${handle}" class="btn-secondary" style="margin-top: 8px; text-align: center; width: 100%;">View Details</a>
-        </div>
-      `;
-      grid.appendChild(card);
+      grid.appendChild(skeleton);
+      
+      // Fetch the actual card via Section Rendering API
+      fetch(`/products/${handle}?section_id=wishlist-card-renderer`)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(html, 'text/html');
+          const renderedCard = doc.querySelector('.wishlist-card-wrapper');
+          if (renderedCard) {
+            renderedCard.className = 'wishlist-card'; // Add grid classes
+            grid.replaceChild(renderedCard, skeleton);
+          } else {
+            // Product not found or error, remove skeleton
+            skeleton.remove();
+          }
+        })
+        .catch(err => {
+          console.error('Failed to load wishlist card for:', handle, err);
+          skeleton.remove();
+        });
     });
   }
 });
@@ -212,6 +239,9 @@ function removeFromWishlist(handle, btnElement) {
       }
     }, 300);
   }
+  
+  const counter = document.getElementById('WishlistCount');
+  if (counter) counter.innerText = items.length;
   
   // Update header icons if needed
   window.dispatchEvent(new CustomEvent('aeridian:wishlist-updated'));

@@ -20,7 +20,8 @@
       {% assign dummy_collections = "Outerwear,Kinetic Layers,Accessories,Footwear,Core Essentials,Archive" | split: "," %}
       {%- for dummy_title in dummy_collections -%}
         <div class="collection-card" style="position: relative; overflow: hidden; aspect-ratio: 4/5;">
-          {{ 'collection-' | append: forloop.index | placeholder_svg_tag: 'placeholder-svg' }}
+          {%- assign dummy_idx = forloop.index | modulo: 6 | plus: 1 -%}
+          {{ 'collection-' | append: dummy_idx | placeholder_svg_tag: 'placeholder-svg' }}
           <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); display: flex; align-items: flex-end; padding: var(--space-24);">
             <h2 style="margin: 0; color: #fff;">{{ dummy_title }}</h2>
           </div>

@@ -1,10 +1,16 @@
 <style>
   .best-sellers {
     position: relative;
-    background-color: var(--color-primary-obsidian);
+    background-color: #181818;
+    background-image: linear-gradient(to bottom, #181818 0%, #181818 150px);
     color: var(--color-primary-pure-white);
     padding: var(--space-120) var(--space-24);
     min-height: 120vh;
+  }
+
+  html[data-theme='light'] .best-sellers {
+    background-color: #eaecef;
+    background-image: linear-gradient(to bottom, #eaecef 0%, #eaecef 150px);
   }
 
   .bs-container {
@@ -28,7 +34,7 @@
   .bs-featured__image-wrap {
     flex: 1;
     position: relative;
-    background: radial-gradient(circle at center, rgba(127, 217, 255, 0.1) 0%, transparent 70%);
+    background: radial-gradient(closest-side, rgba(127, 217, 255, 0.1) 0%, transparent 100%);
     border-radius: var(--radius-sm);
     display: flex;
     justify-content: center;
@@ -122,7 +128,10 @@
       {%- for i in (1..3) -%}
         <!-- Example statically loop to represent block setup -->
         <div class="bs-card">
-          {{ 'product-' | append: i | placeholder_svg_tag: 'bs-card__image' }}
+          <div style="overflow: hidden;">
+            {%- assign dummy_idx = i | modulo: 6 | plus: 1 -%}
+            {{ 'product-' | append: dummy_idx | placeholder_svg_tag: 'bs-card__image' }}
+          </div>
           <div class="bs-card__content">
             <h4 style="font-size: var(--font-heading-3); margin-bottom: var(--space-8);">Tech Cargo Pant 0{{ i }}</h4>
             <div style="display: flex; justify-content: space-between; align-items: center;">

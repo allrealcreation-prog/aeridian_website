@@ -2,8 +2,13 @@
   .trust-eco {
     position: relative;
     /* Tokenized */
-    background-color: var(--bg-primary);
+    background-color: #1a1a1a;
+    background-image: linear-gradient(to bottom, #1a1a1a 0%, #1a1a1a 150px);
     color: var(--text-primary);
+  }
+  html[data-theme='light'] .trust-eco {
+    background-color: #eeeeee;
+    background-image: linear-gradient(to bottom, #eaecef 0%, #eeeeee 150px);
   }
 
   .te-container {
@@ -34,7 +39,7 @@
     top: 50%; left: 50%;
     transform: translate(-50%, -50%);
     width: 60%; height: 60%;
-    background: radial-gradient(circle, var(--glow-color) 0%, transparent 70%);
+    background: radial-gradient(closest-side, var(--glow-color) 0%, transparent 100%);
     z-index: 1;
   }
 

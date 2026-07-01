@@ -11,6 +11,37 @@
 (function () {
   'use strict';
 
+  window.AERIDIAN = window.AERIDIAN || {};
+  window.AERIDIAN.Modules = window.AERIDIAN.Modules || {};
+
+  // Centralized RequestAnimationFrame Dispatcher
+  window.AERIDIAN.RAF = {
+    callbacks: new Map(),
+    isRunning: false,
+    add: function (id, callback) {
+      this.callbacks.set(id, callback);
+      this.start();
+    },
+    remove: function (id) {
+      this.callbacks.delete(id);
+    },
+    start: function () {
+      if (this.isRunning) {
+        return;
+      }
+      this.isRunning = true;
+      const loop = (time) => {
+        if (this.callbacks.size === 0) {
+          this.isRunning = false;
+          return;
+        }
+        this.callbacks.forEach((cb) => cb(time));
+        requestAnimationFrame(loop);
+      };
+      requestAnimationFrame(loop);
+    },
+  };
+
   if (window.AERIDIAN && window.AERIDIAN.Modules.MotionEngine) {
     return;
   }
@@ -678,10 +709,10 @@
             roles.forEach((role) => {
               const elements = section.querySelectorAll(`[data-reveal-role="${role}"]`);
               if (elements.length > 0) {
-                
                 // Special handling for editorial grid cards
                 if (role === 'card') {
-                  gsap.fromTo(elements, 
+                  gsap.fromTo(
+                    elements,
                     { y: 40, opacity: 0 },
                     {
                       y: 0,
@@ -691,13 +722,13 @@
                       stagger: {
                         amount: 0.8,
                         grid: 'auto',
-                        from: 'start'
+                        from: 'start',
                       },
                       scrollTrigger: {
                         trigger: section,
                         start: 'top 80%',
-                        once: true
-                      }
+                        once: true,
+                      },
                     }
                   );
                   return; // skip individual timeline insertion
@@ -762,6 +793,22 @@
           });
         });
       }
+
+      // 5.3 Scroll Momentum Depth Shift (Phase 20.5)
+      const momentumSections = document.querySelectorAll('[data-momentum="true"]');
+      momentumSections.forEach((section) => {
+        gsap.to(section, {
+          yPercent: 15,
+          opacity: 0.8,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: section,
+            start: 'top bottom',
+            end: 'bottom top',
+            scrub: true,
+          },
+        });
+      });
     }
   }
 

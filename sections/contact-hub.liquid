@@ -1,12 +1,14 @@
 <style>
   .contact-hub {
     position: relative;
-    background-color: var(--color-primary-obsidian);
+    background-color: #1a1a1a;
+    background-image: linear-gradient(to bottom, #141414 0%, #1a1a1a 150px);
     color: var(--color-primary-pure-white);
   }
 
   html[data-theme="light"] .contact-hub {
-    background-color: var(--bg-primary);
+    background-color: #f4f4f4;
+    background-image: linear-gradient(to bottom, #eaecef 0%, #f4f4f4 150px);
     color: var(--text-primary);
   }
 
@@ -54,7 +56,8 @@
   .ch-intro__signal:nth-child(3) { animation-delay: 2.6s; }
 
   @keyframes signalExpand {
-    0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0.8; }
+    0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+    20% { opacity: 0.8; }
     100% { transform: translate(-50%, -50%) scale(4); opacity: 0; }
   }
 
@@ -182,7 +185,7 @@
     justify-content: center;
     align-items: center;
     text-align: center;
-    background: radial-gradient(circle at center, rgba(127, 217, 255, 0.1) 0%, transparent 50%);
+    background: radial-gradient(closest-side, rgba(127, 217, 255, 0.1) 0%, transparent 100%);
   }
 
   /* PART 8: Global Map (Three.js) */
@@ -344,8 +347,8 @@
 
   <!-- PART 8: GLOBAL MAP (Three.js) -->
   <div class="ch-map" id="CHMap">
-    <div style="position: absolute; bottom: var(--space-64); width: 100%; text-align: center; z-index: 2; pointer-events: none;">
-      <p style="font-size: var(--font-caption); letter-spacing: 0.1em; color: var(--color-accent-atmospheric);">GLOBAL PRESENCE</p>
+    <div style="position: absolute; top: 15%; width: 100%; text-align: center; z-index: 2; pointer-events: none;">
+      <p style="font-size: var(--font-caption); letter-spacing: 0.2em; color: var(--color-accent-atmospheric);">GLOBAL PRESENCE</p>
     </div>
   </div>
 
@@ -397,35 +400,37 @@ document.addEventListener("DOMContentLoaded", () => {
     const isLight = document.documentElement.getAttribute('data-theme') === 'light';
     const colorHex = isLight ? 0x00D9FF : 0x7FD9FF;
 
-    // Create a wireframe sphere (Globe)
-    const geometry = new THREE.SphereGeometry(80, 32, 32);
+    // Create an elegant Icosahedron wireframe
+    const geometry = new THREE.IcosahedronGeometry(75, 2);
     const material = new THREE.MeshBasicMaterial({ 
       color: colorHex, 
       wireframe: true,
       transparent: true,
-      opacity: 0.15
+      opacity: 0.1
     });
     const globe = new THREE.Mesh(geometry, material);
+    globe.position.y = -20; // add breathing room
     scene.add(globe);
 
-    // Create a points cloud overlay
+    // Create a dense points cloud overlay
+    const pointsGeo = new THREE.IcosahedronGeometry(75, 5);
     const pointsMaterial = new THREE.PointsMaterial({
       color: colorHex,
-      size: 1.5,
+      size: 1.0,
       transparent: true,
-      opacity: 0.8
+      opacity: 0.4
     });
-    const points = new THREE.Points(geometry, pointsMaterial);
+    const points = new THREE.Points(pointsGeo, pointsMaterial);
+    points.position.y = -20;
     scene.add(points);
 
-    // Theme Observer
-    const observer = new MutationObserver(() => {
-      const light = document.documentElement.getAttribute('data-theme') === 'light';
+    // Theme Listener
+    window.addEventListener('AeridianThemeChange', (e) => {
+      const light = e.detail.theme === 'light';
       const c = light ? 0x00D9FF : 0x7FD9FF;
       material.color.setHex(c);
       pointsMaterial.color.setHex(c);
     });
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 
     // Intersection Observer to pause rendering
     let isVisible = false;
@@ -434,18 +439,26 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     io.observe(container);
 
-    function animate() {
-      requestAnimationFrame(animate);
+    const renderFrame = () => {
       if(!isVisible || document.hidden) return;
 
-      globe.rotation.y += 0.002;
-      points.rotation.y += 0.002;
-      globe.rotation.x += 0.001;
-      points.rotation.x += 0.001;
+      globe.rotation.y += 0.001;
+      points.rotation.y += 0.001;
+      globe.rotation.x += 0.0005;
+      points.rotation.x += 0.0005;
 
       renderer.render(scene, camera);
+    };
+
+    if (window.AERIDIAN && window.AERIDIAN.RAF) {
+      window.AERIDIAN.RAF.add('ContactGlobe', renderFrame);
+    } else {
+      function animate() {
+        requestAnimationFrame(animate);
+        renderFrame();
+      }
+      animate();
     }
-    animate();
 
     let resizeTimer;
     window.addEventListener('resize', () => {

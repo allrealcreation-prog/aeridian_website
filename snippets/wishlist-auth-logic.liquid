@@ -66,6 +66,7 @@ class AeridianWishlist {
     this.storageKey = 'aeridian_wishlist';
     this.items = JSON.parse(localStorage.getItem(this.storageKey)) || [];
     this.init();
+    this.updateCount();
   }
 
   init() {
@@ -106,6 +107,14 @@ class AeridianWishlist {
 
   save() {
     localStorage.setItem(this.storageKey, JSON.stringify(this.items));
+    this.updateCount();
+  }
+
+  updateCount() {
+    const counter = document.getElementById('WishlistCount');
+    if (counter) {
+      counter.innerText = this.items.length;
+    }
   }
 
   showToast(message) {
@@ -121,6 +130,7 @@ class AeridianWishlist {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  if (window.AERIDIAN && window.AERIDIAN.Modules.Wishlist) return;
   window.AERIDIAN.Modules.Wishlist = new AeridianWishlist();
   window.AERIDIAN.Utils.log('Wishlist', 'initialized');
 });
