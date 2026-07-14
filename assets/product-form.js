@@ -181,7 +181,7 @@
           }
           return response.json();
         })
-        .then((data) => {
+        .then((_data) => {
           this.submitBtn.classList.remove('is-loading');
 
           // Feedback animation
