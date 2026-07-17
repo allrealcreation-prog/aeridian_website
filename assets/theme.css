@@ -16,16 +16,6 @@
      COLOR SYSTEM
      ========================================================================== */
 
-  /* Primary Colors */
-  --color-primary-obsidian: #050505;
-  --color-primary-carbon: #111111;
-  --color-primary-pure-white: #ffffff;
-  --color-primary-soft-white: #f5f5f5;
-
-  /* Secondary Colors */
-  --color-secondary-titanium: #bfc3c9;
-  --color-secondary-steel: #8b919b;
-
   /* Accent Color */
   --color-accent-atmospheric: #7fd9ff;
 
@@ -108,7 +98,6 @@
      LAYOUT SYSTEM
      ========================================================================== */
 
-  --container-large: 1440px;
   --container-standard: 1280px;
   --container-narrow: 980px;
 }
@@ -303,10 +292,6 @@ a:hover {
   padding-right: var(--space-24);
 }
 
-.container--large {
-  max-width: var(--container-large);
-}
-
 .container--narrow {
   max-width: var(--container-narrow);
 }
@@ -376,16 +361,3 @@ a:hover {
   }
 }
 
-/* ==========================================================================
-   LIGHT MODE OVERRIDES
-   ========================================================================== */
-
-html[data-theme='light'] {
-  --color-primary-obsidian: #eeeeee;
-  --color-primary-carbon: #ffffff;
-  --color-primary-pure-white: #050505;
-  --color-primary-soft-white: #222222;
-  --color-secondary-titanium: #666666;
-  --color-secondary-steel: #888888;
-  --border-subtle: 1px solid rgba(0, 0, 0, 0.1);
-}
