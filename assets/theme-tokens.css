@@ -23,14 +23,6 @@
 
   --glass-bg: rgba(23, 23, 23, 0.6);
   --overlay-bg: rgba(10, 10, 10, 0.9);
-
-  /* NEW: Theme colors moved from theme.css */
-  --color-primary-obsidian: #050505;
-  --color-primary-carbon: #111111;
-  --color-primary-pure-white: #ffffff;
-  --color-primary-soft-white: #f5f5f5;
-  --color-secondary-titanium: #bfc3c9;
-  --color-secondary-steel: #8b919b;
 }
 
 html[data-theme='light'] {
@@ -45,19 +37,14 @@ html[data-theme='light'] {
   --border-subtle: rgba(17, 17, 17, 0.1);
   --border-heavy: rgba(0, 0, 0, 0.2);
 
+  --accent-color: #00ffd1; /* User requested same accent */
+  --accent-hover: #00e6bd;
+
   --shadow-color: rgba(0, 0, 0, 0.05);
   --glow-color: rgba(0, 255, 209, 0.1);
 
   --glass-bg: rgba(255, 255, 255, 0.6);
   --overlay-bg: rgba(238, 238, 238, 0.9);
-
-  /* NEW: Theme colors moved from theme.css */
-  --color-primary-obsidian: #eeeeee;
-  --color-primary-carbon: #ffffff;
-  --color-primary-pure-white: #050505;
-  --color-primary-soft-white: #222222;
-  --color-secondary-titanium: #666666;
-  --color-secondary-steel: #888888;
 }
 
 /* 

@@ -448,30 +448,13 @@ document.addEventListener("DOMContentLoaded", () => {
     animate();
 
     let resizeTimer;
-    const resizeHandler = () => {
+    window.addEventListener('resize', () => {
       clearTimeout(resizeTimer);
       resizeTimer = setTimeout(() => {
         camera.aspect = container.clientWidth / container.clientHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(container.clientWidth, container.clientHeight);
       }, 250);
-    };
-    window.addEventListener('resize', resizeHandler);
-
-    // Resource Disposal on Shopify Editor Unload
-    document.addEventListener('shopify:section:unload', (e) => {
-      if (e.target.contains(container)) {
-        isVisible = false;
-        io.disconnect();
-        window.removeEventListener('resize', resizeHandler);
-
-        geometry.dispose();
-        material.dispose();
-        pointsMaterial.dispose();
-        renderer.dispose();
-
-        if (canvas.parentNode) canvas.parentNode.removeChild(canvas);
-      }
     });
   }
 });
