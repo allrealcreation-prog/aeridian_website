@@ -29,7 +29,7 @@ jobs:
       run: npx prettier --check "**/*.{js,css,json}"
       
     - name: Install Shopify CLI
-      run: npm install -g @shopify/cli @shopify/theme
+      run: npm install -g @shopify/cli
 
     - name: Theme Check Validation
-      run: shopify theme check
+      run: npx @shopify/cli theme check
