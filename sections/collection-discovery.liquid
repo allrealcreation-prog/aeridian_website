@@ -561,31 +561,29 @@ document.addEventListener("DOMContentLoaded", () => {
         card.appendChild(img);
       } else {
         const placeholder = document.createElement('div');
-        placeholder.style.width = '100%';
-        placeholder.style.height = '100%';
-        placeholder.style.background = 'var(--bg-secondary)';
+        placeholder.style.cssText = 'width:100%;height:100%;background:var(--bg-secondary);';
         card.appendChild(placeholder);
       }
 
       const overlay = document.createElement('div');
       overlay.className = 'cd-grid-card__overlay';
 
-      const overlayTextContainer = document.createElement('div');
+      const textContainer = document.createElement('div');
 
       const title = document.createElement('div');
       title.className = 'cd-grid-card__title';
       title.textContent = cat.title;
-      overlayTextContainer.appendChild(title);
+      textContainer.appendChild(title);
 
       const desc = document.createElement('div');
       desc.className = 'cd-grid-card__desc';
       desc.textContent = 'Explore';
-      overlayTextContainer.appendChild(desc);
+      textContainer.appendChild(desc);
 
-      overlay.appendChild(overlayTextContainer);
+      overlay.appendChild(textContainer);
 
-      const svgNs = "http://www.w3.org/2000/svg";
-      const svg = document.createElementNS(svgNs, "svg");
+      const svgNS = 'http://www.w3.org/2000/svg';
+      const svg = document.createElementNS(svgNS, 'svg');
       svg.setAttribute('width', '24');
       svg.setAttribute('height', '24');
       svg.setAttribute('viewBox', '0 0 24 24');
@@ -593,15 +591,15 @@ document.addEventListener("DOMContentLoaded", () => {
       svg.setAttribute('stroke', 'currentColor');
       svg.setAttribute('stroke-width', '1.5');
 
-      const path = document.createElementNS(svgNs, "path");
+      const path = document.createElementNS(svgNS, 'path');
       path.setAttribute('d', 'M5 12H19M19 12L12 5M19 12L12 19');
       path.setAttribute('stroke-linecap', 'round');
       path.setAttribute('stroke-linejoin', 'round');
-
       svg.appendChild(path);
-      overlay.appendChild(svg);
 
+      overlay.appendChild(svg);
       card.appendChild(overlay);
+
       grid.appendChild(card);
     });
   }
@@ -671,6 +669,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const el = document.createElement('button');
       el.className = 'cd-node';
       el.id = cat.id;
+
       if (cat.img) {
         const img = document.createElement('img');
         img.src = cat.img;
@@ -679,6 +678,7 @@ document.addEventListener("DOMContentLoaded", () => {
         img.setAttribute('height', '100%');
         el.appendChild(img);
       }
+
       const span = document.createElement('span');
       span.textContent = cat.title;
       el.appendChild(span);
