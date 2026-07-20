@@ -19,7 +19,7 @@ Please refer to the `docs/` directory for exhaustive technical implementation de
 
 ## Local Development
 1. Clone this repository.
-2. Ensure you are running Node `v18+` (see `.nvmrc`).
+2. Ensure you are running Node `v22.12.0+` (see `.nvmrc`).
 3. Run `shopify theme dev` via the Shopify CLI.
 4. Access your local preview URL.
 5. Refer to [CONTRIBUTING.md](./CONTRIBUTING.md) before submitting a Pull Request.
