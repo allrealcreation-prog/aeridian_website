@@ -826,7 +826,15 @@ document.addEventListener("DOMContentLoaded", () => {
     if(history.length === 0) return;
     
     // Simple mock logic: show the last 2 interacted categories as "Tags"
-    list.innerHTML = history.slice(-2).map(t => `<span style="padding: 8px 16px; border: 1px solid var(--color-secondary-titanium); border-radius: 20px;">${t}</span>`).join('');
+    list.innerHTML = '';
+    history.slice(-2).forEach(t => {
+      const span = document.createElement('span');
+      span.style.padding = '8px 16px';
+      span.style.border = '1px solid var(--color-secondary-titanium)';
+      span.style.borderRadius = '20px';
+      span.textContent = t;
+      list.appendChild(span);
+    });
   }
 });
 </script>
