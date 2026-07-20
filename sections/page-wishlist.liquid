@@ -171,21 +171,98 @@ document.addEventListener("DOMContentLoaded", () => {
       
       // In a real environment, we would fetch product data via /products/handle.js
       // For this luxury fallback, we generate a premium placeholder structure
-      card.innerHTML = `
-        <button class="wishlist-card__remove" aria-label="Remove from wishlist" onclick="removeFromWishlist('${handle}', this)">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
-        </button>
-        <a href="/products/${handle}" class="wishlist-card__image-wrapper">
-          <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: var(--text-secondary); opacity: 0.5;">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-          </div>
-        </a>
-        <div class="wishlist-card__info">
-          <a href="/products/${handle}" class="wishlist-card__title" style="text-transform: capitalize;">${handle.replace(/-/g, ' ')}</a>
-          <div class="wishlist-card__price">AERIDIAN Artifact</div>
-          <a href="/products/${handle}" class="btn-secondary" style="margin-top: 8px; text-align: center; width: 100%;">View Details</a>
-        </div>
-      `;
+      const removeBtn = document.createElement('button');
+      removeBtn.className = 'wishlist-card__remove';
+      removeBtn.setAttribute('aria-label', 'Remove from wishlist');
+      removeBtn.addEventListener('click', function() {
+        removeFromWishlist(handle, this);
+      });
+
+      const svgNs = "http://www.w3.org/2000/svg";
+      const svgCross = document.createElementNS(svgNs, 'svg');
+      svgCross.setAttribute('width', '14');
+      svgCross.setAttribute('height', '14');
+      svgCross.setAttribute('viewBox', '0 0 24 24');
+      svgCross.setAttribute('fill', 'none');
+      svgCross.setAttribute('stroke', 'currentColor');
+      svgCross.setAttribute('stroke-width', '2');
+
+      const pathCross = document.createElementNS(svgNs, 'path');
+      pathCross.setAttribute('d', 'M18 6L6 18M6 6l12 12');
+      svgCross.appendChild(pathCross);
+      removeBtn.appendChild(svgCross);
+      card.appendChild(removeBtn);
+
+      const imageWrapper = document.createElement('a');
+      imageWrapper.href = '/products/' + encodeURIComponent(handle);
+      imageWrapper.className = 'wishlist-card__image-wrapper';
+
+      const imageInner = document.createElement('div');
+      imageInner.style.width = '100%';
+      imageInner.style.height = '100%';
+      imageInner.style.display = 'flex';
+      imageInner.style.alignItems = 'center';
+      imageInner.style.justifyContent = 'center';
+      imageInner.style.color = 'var(--text-secondary)';
+      imageInner.style.opacity = '0.5';
+
+      const svgPlaceholder = document.createElementNS(svgNs, 'svg');
+      svgPlaceholder.setAttribute('width', '48');
+      svgPlaceholder.setAttribute('height', '48');
+      svgPlaceholder.setAttribute('viewBox', '0 0 24 24');
+      svgPlaceholder.setAttribute('fill', 'none');
+      svgPlaceholder.setAttribute('stroke', 'currentColor');
+      svgPlaceholder.setAttribute('stroke-width', '1');
+
+      const rect = document.createElementNS(svgNs, 'rect');
+      rect.setAttribute('x', '3');
+      rect.setAttribute('y', '3');
+      rect.setAttribute('width', '18');
+      rect.setAttribute('height', '18');
+      rect.setAttribute('rx', '2');
+      rect.setAttribute('ry', '2');
+
+      const circle = document.createElementNS(svgNs, 'circle');
+      circle.setAttribute('cx', '8.5');
+      circle.setAttribute('cy', '8.5');
+      circle.setAttribute('r', '1.5');
+
+      const polyline = document.createElementNS(svgNs, 'polyline');
+      polyline.setAttribute('points', '21 15 16 10 5 21');
+
+      svgPlaceholder.appendChild(rect);
+      svgPlaceholder.appendChild(circle);
+      svgPlaceholder.appendChild(polyline);
+      imageInner.appendChild(svgPlaceholder);
+      imageWrapper.appendChild(imageInner);
+      card.appendChild(imageWrapper);
+
+      const infoContainer = document.createElement('div');
+      infoContainer.className = 'wishlist-card__info';
+
+      const titleLink = document.createElement('a');
+      titleLink.href = '/products/' + encodeURIComponent(handle);
+      titleLink.className = 'wishlist-card__title';
+      titleLink.style.textTransform = 'capitalize';
+      titleLink.textContent = handle.replace(/-/g, ' ');
+      infoContainer.appendChild(titleLink);
+
+      const priceDiv = document.createElement('div');
+      priceDiv.className = 'wishlist-card__price';
+      priceDiv.textContent = 'AERIDIAN Artifact';
+      infoContainer.appendChild(priceDiv);
+
+      const viewDetailsBtn = document.createElement('a');
+      viewDetailsBtn.href = '/products/' + encodeURIComponent(handle);
+      viewDetailsBtn.className = 'btn-secondary';
+      viewDetailsBtn.style.marginTop = '8px';
+      viewDetailsBtn.style.textAlign = 'center';
+      viewDetailsBtn.style.width = '100%';
+      viewDetailsBtn.textContent = 'View Details';
+      infoContainer.appendChild(viewDetailsBtn);
+
+      card.appendChild(infoContainer);
+
       grid.appendChild(card);
     });
   }
