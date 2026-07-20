@@ -47,7 +47,7 @@
 
       // Cache variant group radios for fast lookups
       const fieldsets = Array.from(this.form.querySelectorAll('.variant-group'));
-      this.variantGroupRadios = fieldsets.map(group =>
+      this.variantGroupRadios = fieldsets.map((group) =>
         Array.from(group.querySelectorAll('input[type="radio"]'))
       );
 
