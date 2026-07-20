@@ -265,27 +265,27 @@ document.addEventListener("DOMContentLoaded", () => {
       imgPlaceholder.style.marginBottom = '16px';
       card.appendChild(imgPlaceholder);
 
-      const handleLabel = document.createElement('p');
-      handleLabel.style.fontSize = '12px';
-      handleLabel.style.color = 'var(--text-secondary)';
-      handleLabel.style.textTransform = 'uppercase';
-      handleLabel.textContent = 'Product Handle';
-      card.appendChild(handleLabel);
+      const p = document.createElement('p');
+      p.style.fontSize = '12px';
+      p.style.color = 'var(--text-secondary)';
+      p.style.textTransform = 'uppercase';
+      p.textContent = 'Product Handle';
+      card.appendChild(p);
 
-      const title = document.createElement('h4');
-      title.style.fontSize = '14px';
-      title.style.marginBottom = '16px';
-      title.textContent = handle;
-      card.appendChild(title);
+      const h4 = document.createElement('h4');
+      h4.style.fontSize = '14px';
+      h4.style.marginBottom = '16px';
+      h4.textContent = handle;
+      card.appendChild(h4);
 
-      const viewBtn = document.createElement('a');
-      viewBtn.href = '/products/' + encodeURIComponent(handle);
-      viewBtn.className = 'btn-primary';
-      viewBtn.style.width = '100%';
-      viewBtn.style.padding = '8px';
-      viewBtn.style.fontSize = '10px';
-      viewBtn.textContent = 'View Product';
-      card.appendChild(viewBtn);
+      const a = document.createElement('a');
+      a.setAttribute('href', `/products/${encodeURIComponent(handle)}`);
+      a.className = 'btn-primary';
+      a.style.width = '100%';
+      a.style.padding = '8px';
+      a.style.fontSize = '10px';
+      a.textContent = 'View Product';
+      card.appendChild(a);
 
       renderTarget.appendChild(card);
     });
