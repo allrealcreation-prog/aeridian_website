@@ -238,9 +238,10 @@
               // Append new items
               const currentGrid = document.getElementById('CollectionGrid');
               const newItems = Array.from(newGrid.children);
+              const fragment = document.createDocumentFragment();
 
               newItems.forEach((item, index) => {
-                currentGrid.appendChild(item);
+                fragment.appendChild(item);
                 // Staggered reveal for new items
                 if (window.gsap) {
                   gsap.fromTo(
@@ -250,6 +251,8 @@
                   );
                 }
               });
+
+              currentGrid.appendChild(fragment);
             }
 
             // Replace pagination container
