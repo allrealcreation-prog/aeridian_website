@@ -361,21 +361,23 @@ document.addEventListener("DOMContentLoaded", () => {
     const windowHalfX = window.innerWidth / 2;
     const windowHalfY = window.innerHeight / 2;
 
-    document.addEventListener('mousemove', (event) => {
+    const onDocumentMouseMove = (event) => {
       mouseX = (event.clientX - windowHalfX);
       mouseY = (event.clientY - windowHalfY);
-    });
+    };
+    document.addEventListener('mousemove', onDocumentMouseMove);
 
     // Handle Resize
     let resizeTimer;
-    window.addEventListener('resize', () => {
+    const onWindowResize = () => {
       clearTimeout(resizeTimer);
       resizeTimer = setTimeout(() => {
         camera.aspect = wrapper.clientWidth / wrapper.clientHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(wrapper.clientWidth, wrapper.clientHeight);
       }, 250);
-    });
+    };
+    window.addEventListener('resize', onWindowResize);
 
     // Theme Mode Observer (Update core color based on mode)
     const observer = new MutationObserver(() => {
@@ -398,7 +400,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
 
-    wrapper.addEventListener('mousemove', (e) => {
+    const onWrapperMouseMove = (e) => {
       const rect = wrapper.getBoundingClientRect();
       mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
       mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
@@ -406,11 +408,14 @@ document.addEventListener("DOMContentLoaded", () => {
       raycaster.setFromCamera(mouse, camera);
       const intersects = raycaster.intersectObject(shell);
       isHovered = intersects.length > 0;
-    });
+    };
+    wrapper.addEventListener('mousemove', onWrapperMouseMove);
+
+    let rafId;
 
     function animate() {
       if(!isRendering) return;
-      requestAnimationFrame(animate);
+      rafId = requestAnimationFrame(animate);
 
       // Pause if tab is inactive
       if(document.hidden) return;
@@ -454,6 +459,29 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     animate();
+
+    // Resource Disposal on Shopify Editor Unload
+    document.addEventListener('shopify:section:unload', (e) => {
+      if (e.target.contains(wrapper)) {
+        isRendering = false;
+        cancelAnimationFrame(rafId);
+
+        document.removeEventListener('mousemove', onDocumentMouseMove);
+        window.removeEventListener('resize', onWindowResize);
+        wrapper.removeEventListener('mousemove', onWrapperMouseMove);
+        observer.disconnect();
+
+        shellGeo.dispose();
+        shellMat.dispose();
+        innerGeo.dispose();
+        innerMat.dispose();
+        particlesGeo.dispose();
+        particlesMat.dispose();
+        renderer.dispose();
+
+        if (canvas.parentNode) canvas.parentNode.removeChild(canvas);
+      }
+    });
   }
 });
 </script>

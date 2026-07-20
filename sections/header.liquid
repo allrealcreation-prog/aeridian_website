@@ -228,14 +228,14 @@
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
 
-        <a href="{{ routes.cart_url }}" class="header-icon header-icon--cart js-magnetic" data-magnetic-intensity="0.3" aria-label="Cart" style="display: flex; align-items: center; gap: 8px; text-decoration: none;">
+        <button class="header-icon header-icon--cart js-magnetic" data-magnetic-intensity="0.3" aria-expanded="false" aria-controls="CartDrawer" aria-label="Cart" onclick="toggleCart(this)" style="display: flex; align-items: center; gap: 8px;">
           <!-- Premium Geometric Shopping Tote -->
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
             <path d="M5 8h14v12H5z" stroke-linecap="square" />
             <path d="M9 8V5h6v3" stroke-linecap="square" />
           </svg>
           <span id="CartCount" class="cart-count-badge" style="font-size: var(--font-body-small); font-weight: 500;">{{ cart.item_count | default: 0 }}</span>
-        </a>
+        </button>
       </div>
     </div>
   </div>
@@ -272,6 +272,7 @@
   // Global Toggle Functions
   function toggleMobileNav(btn) { document.getElementById('MobileNavDrawer').classList.add('is-open'); document.body.style.overflow = 'hidden'; if(btn) btn.setAttribute('aria-expanded', 'true'); }
   function toggleSearch() { document.getElementById('SearchOverlay').classList.add('is-open'); document.body.style.overflow = 'hidden'; document.getElementById('SearchInput').focus(); }
+  function toggleCart(btn) { if(window.AERIDIAN && window.AERIDIAN.Modules.CartDrawer) window.AERIDIAN.Modules.CartDrawer.open(); }
   function toggleWishlist() { document.getElementById('WishlistDrawer').classList.add('is-open'); document.body.style.overflow = 'hidden'; }
 
   // Theme Toggle Function

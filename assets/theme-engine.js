@@ -157,6 +157,9 @@
         if (e.target.querySelector('#ProductForm') && window.AERIDIAN.Modules.ProductForm) {
           window.AERIDIAN.Modules.ProductForm.destroy();
         }
+        if (e.target.querySelector('#CartDrawer') && window.AERIDIAN.Modules.CartDrawer) {
+          window.AERIDIAN.Modules.CartDrawer.destroy();
+        }
         if (
           e.target.querySelector('#CollectionFilterForm') &&
           window.AERIDIAN.Modules.CollectionFilters
@@ -171,6 +174,9 @@
         // Re-init modules if they exist in the new DOM
         if (e.target.querySelector('#ProductForm') && window.AERIDIAN.Modules.ProductForm) {
           window.AERIDIAN.Modules.ProductForm.reInit();
+        }
+        if (e.target.querySelector('#CartDrawer') && window.AERIDIAN.Modules.CartDrawer) {
+          window.AERIDIAN.Modules.CartDrawer.reInit();
         }
         if (
           e.target.querySelector('#CollectionFilterForm') &&
