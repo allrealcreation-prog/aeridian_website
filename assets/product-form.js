@@ -45,6 +45,12 @@
 
       this.product = window.AERIDIAN.State.Product;
 
+      // Cache variant group radios for fast lookups
+      const fieldsets = Array.from(this.form.querySelectorAll('.variant-group'));
+      this.variantGroupRadios = fieldsets.map(group =>
+        Array.from(group.querySelectorAll('input[type="radio"]'))
+      );
+
       // Ensure form is actually bound
       this.bindEvents();
     }
@@ -105,10 +111,9 @@
     onVariantChange() {
       // Get selected options
       const options = [];
-      const fieldsets = Array.from(this.form.querySelectorAll('.variant-group'));
 
-      fieldsets.forEach((group) => {
-        const checked = group.querySelector('input[type="radio"]:checked');
+      this.variantGroupRadios.forEach((radios) => {
+        const checked = radios.find((radio) => radio.checked);
         if (checked) {
           options.push(checked.value);
         }
