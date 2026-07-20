@@ -272,20 +272,20 @@ document.addEventListener("DOMContentLoaded", () => {
       handleLabel.textContent = 'Product Handle';
       card.appendChild(handleLabel);
 
-      const titleEl = document.createElement('h4');
-      titleEl.style.fontSize = '14px';
-      titleEl.style.marginBottom = '16px';
-      titleEl.textContent = handle;
-      card.appendChild(titleEl);
+      const title = document.createElement('h4');
+      title.style.fontSize = '14px';
+      title.style.marginBottom = '16px';
+      title.textContent = handle;
+      card.appendChild(title);
 
-      const linkEl = document.createElement('a');
-      linkEl.className = 'btn-primary';
-      linkEl.setAttribute('href', '/products/' + encodeURIComponent(handle));
-      linkEl.style.width = '100%';
-      linkEl.style.padding = '8px';
-      linkEl.style.fontSize = '10px';
-      linkEl.textContent = 'View Product';
-      card.appendChild(linkEl);
+      const viewBtn = document.createElement('a');
+      viewBtn.href = '/products/' + encodeURIComponent(handle);
+      viewBtn.className = 'btn-primary';
+      viewBtn.style.width = '100%';
+      viewBtn.style.padding = '8px';
+      viewBtn.style.fontSize = '10px';
+      viewBtn.textContent = 'View Product';
+      card.appendChild(viewBtn);
 
       renderTarget.appendChild(card);
     });
