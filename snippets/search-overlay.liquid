@@ -180,7 +180,14 @@
     const suggestionsContainer = document.querySelector('.search-overlay__suggestions');
     
     // Cache the default state html
-    const defaultStateHTML = suggestionsContainer ? suggestionsContainer.innerHTML : '';
+
+    // Cache the default state node
+    const defaultStateNodes = [];
+    if (suggestionsContainer) {
+      Array.from(suggestionsContainer.childNodes).forEach(node => {
+        defaultStateNodes.push(node.cloneNode(true));
+      });
+    }
 
     if (searchInput && suggestionsContainer) {
       searchInput.addEventListener('input', (e) => {
@@ -188,11 +195,20 @@
         const query = e.target.value.trim();
         
         if (query.length === 0) {
-          suggestionsContainer.innerHTML = defaultStateHTML;
+
+          suggestionsContainer.textContent = '';
+          defaultStateNodes.forEach(node => {
+            suggestionsContainer.appendChild(node.cloneNode(true));
+          });
           return;
         }
 
-        suggestionsContainer.innerHTML = '<div class="search-overlay__title" style="color: var(--accent-color);">Detecting Signals...</div>';
+        suggestionsContainer.textContent = '';
+        const detectingDiv = document.createElement('div');
+        detectingDiv.className = 'search-overlay__title';
+        detectingDiv.style.color = 'var(--accent-color)';
+        detectingDiv.textContent = 'Detecting Signals...';
+        suggestionsContainer.appendChild(detectingDiv);
 
         debounceTimer = setTimeout(() => {
           fetch(`/search/suggest.json?q=${encodeURIComponent(query)}&resources[type]=product,article,collection&resources[options][unavailable_products]=last`)
@@ -202,49 +218,132 @@
               const articles = data.resources.results.articles || [];
               const collections = data.resources.results.collections || [];
 
-              let html = '';
+              suggestionsContainer.textContent = '';
+              const wrapper = document.createElement('div');
+              wrapper.style.display = 'grid';
+              wrapper.style.gridTemplateColumns = '1fr 2fr';
+              wrapper.style.gap = 'var(--space-64)';
+              wrapper.style.width = '100%';
 
               if (products.length === 0 && articles.length === 0 && collections.length === 0) {
-                html = `<div class="search-overlay__title">No coordinates found for "${query}".</div>`;
+                const noCoords = document.createElement('div');
+                noCoords.className = 'search-overlay__title';
+                noCoords.textContent = `No coordinates found for "${query}".`;
+                wrapper.appendChild(noCoords);
               } else {
                 // Products
                 if (products.length > 0) {
-                  html += `<div><div class="search-overlay__title">Artifacts</div><ul class="search-overlay__list">`;
+                  const prodDiv = document.createElement('div');
+
+                  const prodTitle = document.createElement('div');
+                  prodTitle.className = 'search-overlay__title';
+                  prodTitle.textContent = 'Artifacts';
+                  prodDiv.appendChild(prodTitle);
+
+                  const prodList = document.createElement('ul');
+                  prodList.className = 'search-overlay__list';
+
                   products.slice(0, 4).forEach(p => {
-                    html += `<li><a href="${p.url}" class="search-overlay__link" style="display:flex; align-items:center; gap:16px;">
-                      ${p.image ? `<img src="${p.image}" width="40" height="50" style="object-fit:cover; border-radius:2px;">` : ''}
-                      <span>${p.title} <br><span style="font-size:10px; color:var(--text-secondary);">${p.price}</span></span>
-                    </a></li>`;
+                    const li = document.createElement('li');
+                    const a = document.createElement('a');
+                    a.href = p.url;
+                    a.className = 'search-overlay__link';
+                    a.style.display = 'flex';
+                    a.style.alignItems = 'center';
+                    a.style.gap = '16px';
+
+                    if (p.image) {
+                      const img = document.createElement('img');
+                      img.src = p.image;
+                      img.width = 40;
+                      img.height = 50;
+                      img.style.objectFit = 'cover';
+                      img.style.borderRadius = '2px';
+                      a.appendChild(img);
+                    }
+
+                    const spanContainer = document.createElement('span');
+
+                    const titleText = document.createTextNode(p.title + ' ');
+                    spanContainer.appendChild(titleText);
+
+                    const br = document.createElement('br');
+                    spanContainer.appendChild(br);
+
+                    const priceSpan = document.createElement('span');
+                    priceSpan.style.fontSize = '10px';
+                    priceSpan.style.color = 'var(--text-secondary)';
+                    priceSpan.textContent = p.price;
+                    spanContainer.appendChild(priceSpan);
+
+                    a.appendChild(spanContainer);
+                    li.appendChild(a);
+                    prodList.appendChild(li);
                   });
-                  html += `</ul></div>`;
+                  prodDiv.appendChild(prodList);
+                  wrapper.appendChild(prodDiv);
                 }
                 
                 // Collections & Articles
                 if (collections.length > 0 || articles.length > 0) {
-                  html += `<div>`;
-                  if(collections.length > 0) {
-                    html += `<div class="search-overlay__title">Categories</div><ul class="search-overlay__list" style="margin-bottom:32px;">`;
+                  const rightCol = document.createElement('div');
+
+                  if (collections.length > 0) {
+                    const colTitle = document.createElement('div');
+                    colTitle.className = 'search-overlay__title';
+                    colTitle.textContent = 'Categories';
+                    rightCol.appendChild(colTitle);
+
+                    const colList = document.createElement('ul');
+                    colList.className = 'search-overlay__list';
+                    colList.style.marginBottom = '32px';
+
                     collections.slice(0, 2).forEach(c => {
-                      html += `<li><a href="${c.url}" class="search-overlay__link">${c.title}</a></li>`;
+                      const li = document.createElement('li');
+                      const a = document.createElement('a');
+                      a.href = c.url;
+                      a.className = 'search-overlay__link';
+                      a.textContent = c.title;
+                      li.appendChild(a);
+                      colList.appendChild(li);
                     });
-                    html += `</ul>`;
+                    rightCol.appendChild(colList);
                   }
-                  if(articles.length > 0) {
-                    html += `<div class="search-overlay__title">Journal</div><ul class="search-overlay__list">`;
+
+                  if (articles.length > 0) {
+                    const artTitle = document.createElement('div');
+                    artTitle.className = 'search-overlay__title';
+                    artTitle.textContent = 'Journal';
+                    rightCol.appendChild(artTitle);
+
+                    const artList = document.createElement('ul');
+                    artList.className = 'search-overlay__list';
+
                     articles.slice(0, 2).forEach(a => {
-                      html += `<li><a href="${a.url}" class="search-overlay__link">${a.title}</a></li>`;
+                      const li = document.createElement('li');
+                      const link = document.createElement('a');
+                      link.href = a.url;
+                      link.className = 'search-overlay__link';
+                      link.textContent = a.title;
+                      li.appendChild(link);
+                      artList.appendChild(li);
                     });
-                    html += `</ul>`;
+                    rightCol.appendChild(artList);
                   }
-                  html += `</div>`;
+
+                  wrapper.appendChild(rightCol);
                 }
               }
 
-              suggestionsContainer.innerHTML = `<div style="display: grid; grid-template-columns: 1fr 2fr; gap: var(--space-64); width: 100%;">${html}</div>`;
+              suggestionsContainer.appendChild(wrapper);
             })
             .catch(err => {
               console.error('Search error:', err);
-              suggestionsContainer.innerHTML = `<div class="search-overlay__title">Error establishing signal.</div>`;
+              suggestionsContainer.textContent = '';
+              const errDiv = document.createElement('div');
+              errDiv.className = 'search-overlay__title';
+              errDiv.textContent = 'Error establishing signal.';
+              suggestionsContainer.appendChild(errDiv);
             });
         }, 300); // 300ms debounce
       });
