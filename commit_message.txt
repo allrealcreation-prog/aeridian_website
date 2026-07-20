@@ -1,0 +1,15 @@
+🔒 Fix DOM-based XSS in search-overlay and collection-discovery
+
+🎯 **What:**
+Multiple DOM-based XSS vulnerabilities were identified and fixed in the Shopify OS 2.0 theme. Specifically:
+- `snippets/search-overlay.liquid`: Replaced `innerHTML` concatenation with native DOM creation APIs (e.g., `document.createElement`, `textContent`) when rendering predictive search API results (products, collections, articles).
+- `snippets/search-overlay.liquid`: Secured the "No coordinates found for..." state to properly sanitize the search query via `textContent` rather than `innerHTML`.
+- `sections/collection-discovery.liquid`: Removed `innerHTML` generation in both `populateGridFallback` and `initOrbitalUniverse` methods. Now dynamically appending nodes and attributes via safe native DOM APIs, avoiding XSS when rendering user-configured category items.
+- `sections/collection-discovery.liquid`: Modified `updateRecommendations` tag lists to build and append items using native DOM API methods instead of `innerHTML`.
+- Both default state caching and fallback cleanups were updated to securely clear states via `textContent` or use `cloneNode(true)` rather than parsing unvalidated strings with `innerHTML`.
+
+⚠️ **Risk:**
+If left unfixed, attackers could potentially inject malicious JavaScript payloads through predictable search inputs, query parameters, or dynamically loaded content structures, leading to unauthorized actions, data exfiltration, or a compromised user experience (DOM-based Cross-Site Scripting).
+
+🛡️ **Solution:**
+Completely eliminated the use of `innerHTML` for any user-controlled or dynamically requested content across the affected files. Transitioned entirely to safe, native browser APIs like `document.createElement`, `textContent`, and `appendChild`. The visual output, animations, state management, and CSS styles have been preserved precisely by recreating the original layout using element objects. Verified the logic with standard QA processes (`eslint`, `@shopify/cli theme check`).
