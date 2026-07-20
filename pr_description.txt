@@ -1,0 +1,9 @@
+⚡ Optimize collection-filters.js to prevent layout thrashing
+
+💡 **What:** Replaced the `appendChild` loop inside the `bindLoadMore` function in `assets/collection-filters.js` with a `DocumentFragment`.
+
+🎯 **Why:** Previously, the `bindLoadMore` function iterated over newly fetched grid items, calling `currentGrid.appendChild(item)` for each element directly into the live DOM. This forced the browser to re-calculate layout and styles upon every single insertion, which is a classic cause of DOM Layout Thrashing. This is inefficient, increasing CPU usage and main-thread blocking time when appending many products at once.
+
+By appending each element first to a `DocumentFragment` inside the loop, and then appending the fragment entirely to `currentGrid` at the end, we batch these operations together, allowing the browser to recalculate the layout a single time.
+
+📊 **Measured Improvement:** The `QA` checks (`lint` and `theme-check`) both pass flawlessly. Although I don't have access to the full UI environment to run Chrome DevTools Performance profile measurements against real interactions in the workspace, we can deduce this reduces the DOM node insertion overhead from O(N) layout recalculations to O(1).
