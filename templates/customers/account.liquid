@@ -256,12 +256,37 @@ document.addEventListener("DOMContentLoaded", () => {
       card.className = 'cd-order-card';
       card.style.flexDirection = 'column';
       card.style.alignItems = 'flex-start';
-      card.innerHTML = `
-        <div style="width: 100%; aspect-ratio: 4/5; background: var(--bg-secondary); border-radius: 4px; margin-bottom: 16px;"></div>
-        <p style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase;">Product Handle</p>
-        <h4 style="font-size: 14px; margin-bottom: 16px;">${handle}</h4>
-        <a href="/products/${handle}" class="btn-primary" style="width: 100%; padding: 8px; font-size: 10px;">View Product</a>
-      `;
+
+      const imgPlaceholder = document.createElement('div');
+      imgPlaceholder.style.width = '100%';
+      imgPlaceholder.style.aspectRatio = '4/5';
+      imgPlaceholder.style.background = 'var(--bg-secondary)';
+      imgPlaceholder.style.borderRadius = '4px';
+      imgPlaceholder.style.marginBottom = '16px';
+      card.appendChild(imgPlaceholder);
+
+      const handleLabel = document.createElement('p');
+      handleLabel.style.fontSize = '12px';
+      handleLabel.style.color = 'var(--text-secondary)';
+      handleLabel.style.textTransform = 'uppercase';
+      handleLabel.textContent = 'Product Handle';
+      card.appendChild(handleLabel);
+
+      const title = document.createElement('h4');
+      title.style.fontSize = '14px';
+      title.style.marginBottom = '16px';
+      title.textContent = handle;
+      card.appendChild(title);
+
+      const viewBtn = document.createElement('a');
+      viewBtn.href = '/products/' + encodeURIComponent(handle);
+      viewBtn.className = 'btn-primary';
+      viewBtn.style.width = '100%';
+      viewBtn.style.padding = '8px';
+      viewBtn.style.fontSize = '10px';
+      viewBtn.textContent = 'View Product';
+      card.appendChild(viewBtn);
+
       renderTarget.appendChild(card);
     });
   }

@@ -548,18 +548,61 @@ document.addEventListener("DOMContentLoaded", () => {
   function populateGridFallback() {
     const grid = document.getElementById('GridContainer');
     categoryData.forEach(cat => {
-      grid.innerHTML += `
-        <div class="cd-grid-card" onclick="window.location.href='${cat.url}'">
-          ${cat.img ? `<img src="${cat.img}" class="cd-grid-card__img" width="100%" height="100%">` : '<div style="width:100%;height:100%;background:var(--bg-secondary);"></div>'}
-          <div class="cd-grid-card__overlay">
-            <div>
-              <div class="cd-grid-card__title">${cat.title}</div>
-              <div class="cd-grid-card__desc">Explore</div>
-            </div>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12H19M19 12L12 5M19 12L12 19" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </div>
-        </div>
-      `;
+      const card = document.createElement('div');
+      card.className = 'cd-grid-card';
+      card.addEventListener('click', () => { window.location.href = cat.url; });
+
+      if (cat.img) {
+        const img = document.createElement('img');
+        img.src = cat.img;
+        img.className = 'cd-grid-card__img';
+        img.setAttribute('width', '100%');
+        img.setAttribute('height', '100%');
+        card.appendChild(img);
+      } else {
+        const placeholder = document.createElement('div');
+        placeholder.style.width = '100%';
+        placeholder.style.height = '100%';
+        placeholder.style.background = 'var(--bg-secondary)';
+        card.appendChild(placeholder);
+      }
+
+      const overlay = document.createElement('div');
+      overlay.className = 'cd-grid-card__overlay';
+
+      const overlayTextContainer = document.createElement('div');
+
+      const title = document.createElement('div');
+      title.className = 'cd-grid-card__title';
+      title.textContent = cat.title;
+      overlayTextContainer.appendChild(title);
+
+      const desc = document.createElement('div');
+      desc.className = 'cd-grid-card__desc';
+      desc.textContent = 'Explore';
+      overlayTextContainer.appendChild(desc);
+
+      overlay.appendChild(overlayTextContainer);
+
+      const svgNs = "http://www.w3.org/2000/svg";
+      const svg = document.createElementNS(svgNs, "svg");
+      svg.setAttribute('width', '24');
+      svg.setAttribute('height', '24');
+      svg.setAttribute('viewBox', '0 0 24 24');
+      svg.setAttribute('fill', 'none');
+      svg.setAttribute('stroke', 'currentColor');
+      svg.setAttribute('stroke-width', '1.5');
+
+      const path = document.createElementNS(svgNs, "path");
+      path.setAttribute('d', 'M5 12H19M19 12L12 5M19 12L12 19');
+      path.setAttribute('stroke-linecap', 'round');
+      path.setAttribute('stroke-linejoin', 'round');
+
+      svg.appendChild(path);
+      overlay.appendChild(svg);
+
+      card.appendChild(overlay);
+      grid.appendChild(card);
     });
   }
 
@@ -628,10 +671,17 @@ document.addEventListener("DOMContentLoaded", () => {
       const el = document.createElement('button');
       el.className = 'cd-node';
       el.id = cat.id;
-      el.innerHTML = `
-        ${cat.img ? `<img src="${cat.img}" class="cd-node__img" width="100%" height="100%">` : ''}
-        <span>${cat.title}</span>
-      `;
+      if (cat.img) {
+        const img = document.createElement('img');
+        img.src = cat.img;
+        img.className = 'cd-node__img';
+        img.setAttribute('width', '100%');
+        img.setAttribute('height', '100%');
+        el.appendChild(img);
+      }
+      const span = document.createElement('span');
+      span.textContent = cat.title;
+      el.appendChild(span);
       
       // Interactions
       el.addEventListener('mouseenter', () => { window.AERIDIAN.Modules.Explorer.orbitalSpeedMult = 0.2; coreLight.intensity = 6; });
@@ -776,7 +826,15 @@ document.addEventListener("DOMContentLoaded", () => {
     if(history.length === 0) return;
     
     // Simple mock logic: show the last 2 interacted categories as "Tags"
-    list.innerHTML = history.slice(-2).map(t => `<span style="padding: 8px 16px; border: 1px solid var(--color-secondary-titanium); border-radius: 20px;">${t}</span>`).join('');
+    list.innerHTML = '';
+    history.slice(-2).forEach(t => {
+      const span = document.createElement('span');
+      span.style.padding = '8px 16px';
+      span.style.border = '1px solid var(--color-secondary-titanium)';
+      span.style.borderRadius = '20px';
+      span.textContent = t;
+      list.appendChild(span);
+    });
   }
 });
 </script>

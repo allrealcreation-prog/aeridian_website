@@ -1,0 +1,13 @@
+🎯 **What:**
+Patched a DOM-based XSS vulnerability found in `sections/collection-discovery.liquid`, `templates/customers/account.liquid`, and `sections/page-wishlist.liquid`. Replaced multiple usages of `innerHTML` for DOM generation where user-controlled variables (like `cat.title`, `cat.img`, `handle`, `t`) were embedded directly via string interpolation. Also removed inline event handlers (e.g. `onclick`) in favor of `addEventListener`.
+
+⚠️ **Risk:**
+When user data is assigned directly to `innerHTML` via string templates, if that data can be controlled by an attacker (for example, through manipulated `localStorage` wishlist handles or injected metaobjects), they can execute arbitrary scripts (XSS). This could lead to account takeover, cookie theft, or a compromised user experience, representing a high security risk.
+
+🛡️ **Solution:**
+Replaced all risky `innerHTML` rendering operations with proper native DOM APIs.
+- Used `document.createElement()` and `document.createElementNS()` to construct standard and SVG elements respectively.
+- Assigned text securely using `textContent`.
+- Applied styles and classes natively (e.g. `element.className`, `element.style.property`).
+- Converted `onclick` attributes to safe `addEventListener()` bindings.
+- Ensured all existing visuals, functionality, and context bindings (like `this` in closures) were accurately preserved without requiring external sanitization libraries.
