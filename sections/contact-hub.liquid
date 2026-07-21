@@ -434,8 +434,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     io.observe(container);
 
+    let rafId;
     function animate() {
-      requestAnimationFrame(animate);
+      rafId = requestAnimationFrame(animate);
       if(!isVisible || document.hidden) return;
 
       globe.rotation.y += 0.002;
@@ -448,15 +449,43 @@ document.addEventListener("DOMContentLoaded", () => {
     animate();
 
     let resizeTimer;
-    window.addEventListener('resize', () => {
+    const resizeHandler = () => {
       clearTimeout(resizeTimer);
       resizeTimer = setTimeout(() => {
         camera.aspect = container.clientWidth / container.clientHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(container.clientWidth, container.clientHeight);
       }, 250);
+    };
+    window.addEventListener('resize', resizeHandler);
+
+    // Section Unload Cleanup
+    document.addEventListener('shopify:section:unload', function _cleanup(e) {
+      if(e.detail.sectionId === '{{ section.id }}') {
+        cancelAnimationFrame(rafId);
+        observer.disconnect();
+        io.disconnect();
+        window.removeEventListener('resize', resizeHandler);
+
+        geometry.dispose();
+        material.dispose();
+        pointsMaterial.dispose();
+        renderer.dispose();
+
+        if (canvas && canvas.parentNode) {
+          canvas.parentNode.removeChild(canvas);
+        }
+        document.removeEventListener('shopify:section:unload', _cleanup);
+      }
     });
   }
+
+  document.addEventListener('shopify:section:unload', function _sectionObserverCleanup(e) {
+    if (e.detail.sectionId === '{{ section.id }}') {
+      if (typeof observer !== 'undefined') observer.disconnect();
+      document.removeEventListener('shopify:section:unload', _sectionObserverCleanup);
+    }
+  });
 });
 </script>
 

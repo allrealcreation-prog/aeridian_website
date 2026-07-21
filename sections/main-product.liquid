@@ -342,9 +342,11 @@
 <script src="{{ 'product-form.js' | asset_url }}" defer></script>
 <script>
 document.addEventListener("DOMContentLoaded", () => {
+  const handlers = [];
+
   // 1. Accordions
   document.querySelectorAll('.js-accordion-toggle').forEach(btn => {
-    btn.addEventListener('click', () => {
+    const onAccordionClick = () => {
       const parent = btn.parentElement;
       parent.classList.toggle('is-open');
       const icon = btn.querySelector('svg');
@@ -354,7 +356,9 @@ document.addEventListener("DOMContentLoaded", () => {
         icon.style.transform = 'rotate(0deg)';
       }
       icon.style.transition = 'transform 0.3s ease';
-    });
+    };
+    btn.addEventListener('click', onAccordionClick);
+    handlers.push({ element: btn, event: 'click', fn: onAccordionClick });
   });
 
   // 2. Gallery Scroll Sync
@@ -364,7 +368,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if(mainScroll && thumbs.length > 0) {
     // Click thumb to scroll
     thumbs.forEach(thumb => {
-      thumb.addEventListener('click', () => {
+      const onThumbClick = () => {
         const index = thumb.getAttribute('data-index');
         const target = document.querySelector(`.pdp-media-item[data-index="${index}"]`);
         if(target) {
@@ -374,11 +378,13 @@ document.addEventListener("DOMContentLoaded", () => {
             behavior: 'smooth'
           });
         }
-      });
+      };
+      thumb.addEventListener('click', onThumbClick);
+      handlers.push({ element: thumb, event: 'click', fn: onThumbClick });
     });
 
     // Scroll updates active thumb
-    mainScroll.addEventListener('scroll', () => {
+    const onScroll = () => {
       let activeIndex = 0;
       const items = document.querySelectorAll('.pdp-media-item');
       items.forEach(item => {
@@ -398,8 +404,20 @@ document.addEventListener("DOMContentLoaded", () => {
       thumbs.forEach(t => t.classList.remove('is-active'));
       const activeThumb = document.querySelector(`.pdp-thumb[data-index="${activeIndex}"]`);
       if(activeThumb) activeThumb.classList.add('is-active');
-    });
+    };
+    mainScroll.addEventListener('scroll', onScroll, { passive: true });
+    handlers.push({ element: mainScroll, event: 'scroll', fn: onScroll });
   }
+
+  // Section Unload Cleanup
+  document.addEventListener('shopify:section:unload', function _cleanup(e) {
+    if (e.detail.sectionId === '{{ section.id }}') {
+      handlers.forEach(({ element, event, fn }) => {
+        element.removeEventListener(event, fn);
+      });
+      document.removeEventListener('shopify:section:unload', _cleanup);
+    }
+  });
 
   // 3. Sticky Bar Reveal (GSAP ScrollTrigger)
   if(window.gsap && window.ScrollTrigger) {

@@ -140,18 +140,26 @@
 
       // 3. Update Price
       if (this.priceWrap) {
-        let priceHtml = '';
+        this.priceWrap.replaceChildren();
         if (variant.compare_at_price > variant.price) {
-          priceHtml = `
-            <span class="pdp-price--compare">${this.formatMoney(variant.compare_at_price)}</span>
-            <span class="pdp-price--sale">${this.formatMoney(variant.price)}</span>
-          `;
+          const compareSpan = document.createElement('span');
+          compareSpan.className = 'pdp-price--compare';
+          compareSpan.textContent = this.formatMoney(variant.compare_at_price);
+
+          const saleSpan = document.createElement('span');
+          saleSpan.className = 'pdp-price--sale';
+          saleSpan.textContent = this.formatMoney(variant.price);
+
+          this.priceWrap.appendChild(compareSpan);
+          this.priceWrap.appendChild(document.createTextNode(' ')); // For spacing if needed
+          this.priceWrap.appendChild(saleSpan);
         } else {
-          priceHtml = `<span>${this.formatMoney(variant.price)}</span>`;
+          const priceSpan = document.createElement('span');
+          priceSpan.textContent = this.formatMoney(variant.price);
+          this.priceWrap.appendChild(priceSpan);
         }
-        this.priceWrap.innerHTML = priceHtml;
         if (this.stickyPrice) {
-          this.stickyPrice.innerHTML = this.formatMoney(variant.price);
+          this.stickyPrice.textContent = this.formatMoney(variant.price);
         }
       }
 

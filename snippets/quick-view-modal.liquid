@@ -101,7 +101,7 @@
     modal.classList.add('is-open');
     document.body.style.overflow = 'hidden';
     loading.style.display = 'flex';
-    rendered.innerHTML = '';
+    rendered.replaceChildren();
 
     // Shopify Section Rendering API
     // If no product template exists yet, this will fetch the full page and extract the main content.
@@ -111,13 +111,28 @@
         const parser = new DOMParser();
         const htmlDocument = parser.parseFromString(text, 'text/html');
         // Fallback extraction
-        const productHtml = htmlDocument.querySelector('main') ? htmlDocument.querySelector('main').innerHTML : '<h2>Product Placeholder</h2>';
+        const mainNode = htmlDocument.querySelector('main');
+
         loading.style.display = 'none';
-        rendered.innerHTML = `<div style="padding: 48px;">${productHtml}</div>`;
+        const wrapper = document.createElement('div');
+        wrapper.style.padding = '48px';
+
+        if (mainNode) {
+          wrapper.replaceChildren(...mainNode.childNodes);
+        } else {
+          const h2 = document.createElement('h2');
+          h2.textContent = 'Product Placeholder';
+          wrapper.appendChild(h2);
+        }
+
+        rendered.appendChild(wrapper);
       })
       .catch(e => {
         loading.style.display = 'none';
-        rendered.innerHTML = '<div style="padding: 48px;">Error loading product.</div>';
+        const errorDiv = document.createElement('div');
+        errorDiv.style.padding = '48px';
+        errorDiv.textContent = 'Error loading product.';
+        rendered.appendChild(errorDiv);
       });
   }
 

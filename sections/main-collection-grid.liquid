@@ -310,7 +310,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Use Event Delegation to survive DOM replacements from collection-filters.js
-  document.addEventListener('click', (e) => {
+  const clickHandler = (e) => {
     // Open Trigger
     if(e.target.closest('#ToggleFiltersBtn')) {
       e.preventDefault();
@@ -328,12 +328,23 @@ document.addEventListener("DOMContentLoaded", () => {
       closeDrawer();
       return;
     }
-  });
+  };
+  document.addEventListener('click', clickHandler);
 
-  document.addEventListener('keydown', (e) => {
+  const keydownHandler = (e) => {
     const sidebar = document.getElementById('CollectionSidebar');
     if(e.key === 'Escape' && sidebar && sidebar.classList.contains('is-open')) {
       closeDrawer();
+    }
+  };
+  document.addEventListener('keydown', keydownHandler);
+
+  // Section Unload Cleanup
+  document.addEventListener('shopify:section:unload', function _cleanup(e) {
+    if (e.detail.sectionId === '{{ section.id }}') {
+      document.removeEventListener('click', clickHandler);
+      document.removeEventListener('keydown', keydownHandler);
+      document.removeEventListener('shopify:section:unload', _cleanup);
     }
   });
 });

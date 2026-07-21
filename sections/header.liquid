@@ -258,7 +258,7 @@
     
     if(!isTransparentEnabled) return;
 
-    window.addEventListener('scroll', () => {
+    const scrollHandler = () => {
       if (window.scrollY > 50) {
         header.classList.remove('is-transparent');
         header.classList.add('is-scrolled');
@@ -266,7 +266,15 @@
         header.classList.remove('is-scrolled');
         header.classList.add('is-transparent');
       }
-    }, { passive: true });
+    };
+    window.addEventListener('scroll', scrollHandler, { passive: true });
+
+    document.addEventListener('shopify:section:unload', function _cleanup(e) {
+      if (e.detail.sectionId === '{{ section.id }}') {
+        window.removeEventListener('scroll', scrollHandler);
+        document.removeEventListener('shopify:section:unload', _cleanup);
+      }
+    });
   })();
 
   // Global Toggle Functions

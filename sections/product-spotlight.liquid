@@ -196,7 +196,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const back = document.getElementById('PSLayerBack');
 
       if(pin && window.innerWidth > 1024) {
-        pin.addEventListener('mousemove', (e) => {
+        const onMouseMove = (e) => {
           const x = (e.clientX / window.innerWidth - 0.5) * 2;
           const y = (e.clientY / window.innerHeight - 0.5) * 2;
           
@@ -211,11 +211,21 @@ document.addEventListener("DOMContentLoaded", () => {
              gsap.to(front, { x: x * -20, y: y * -20, duration: 1 });
              gsap.to(back, { x: x * 20, y: y * 20, duration: 1 });
           }
-        });
-        
-        pin.addEventListener('mouseleave', () => {
+        };
+        const onMouseLeave = () => {
           gsap.to(garment, { rotationY: 0, rotationX: 0, duration: 1 });
           if(front && back) gsap.to([front, back], { x: 0, y: 0, duration: 1 });
+        };
+        pin.addEventListener('mousemove', onMouseMove);
+        pin.addEventListener('mouseleave', onMouseLeave);
+
+        // Section Unload Cleanup
+        document.addEventListener('shopify:section:unload', function _cleanup(e) {
+          if (e.detail.sectionId === '{{ section.id }}') {
+            pin.removeEventListener('mousemove', onMouseMove);
+            pin.removeEventListener('mouseleave', onMouseLeave);
+            document.removeEventListener('shopify:section:unload', _cleanup);
+          }
         });
       }
 

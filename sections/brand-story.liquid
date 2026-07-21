@@ -605,11 +605,14 @@ document.addEventListener("DOMContentLoaded", () => {
         onEnter: () => {
           counters.forEach(counter => {
             const target = +counter.getAttribute('data-target');
-            gsap.to(counter, {
-              innerHTML: target,
+            const counterObj = { val: 0 };
+            gsap.to(counterObj, {
+              val: target,
               duration: 2,
-              snap: { innerHTML: 1 },
-              ease: "power2.out"
+              ease: "power2.out",
+              onUpdate: function() {
+                counter.textContent = Math.round(counterObj.val).toString();
+              }
             });
           });
         }
@@ -700,8 +703,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     io.observe(document.getElementById('BSFuture'));
 
+    let rafId;
     function animate() {
-      requestAnimationFrame(animate);
+      rafId = requestAnimationFrame(animate);
       if(!isVisible || document.hidden) return;
 
       count += 0.02;
@@ -738,15 +742,44 @@ document.addEventListener("DOMContentLoaded", () => {
     animate();
 
     let resizeTimer;
-    window.addEventListener('resize', () => {
+    const resizeHandler = () => {
       clearTimeout(resizeTimer);
       resizeTimer = setTimeout(() => {
         camera.aspect = container.clientWidth / container.clientHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(container.clientWidth, container.clientHeight);
       }, 250);
+    };
+    window.addEventListener('resize', resizeHandler);
+
+    // Section Unload Cleanup
+    document.addEventListener('shopify:section:unload', function _cleanup(e) {
+      if(e.detail.sectionId === '{{ section.id }}') {
+        cancelAnimationFrame(rafId);
+        observer.disconnect();
+        io.disconnect();
+        window.removeEventListener('resize', resizeHandler);
+
+        geometry.dispose();
+        material.dispose();
+        renderer.dispose();
+
+        if (canvas && canvas.parentNode) {
+          canvas.parentNode.removeChild(canvas);
+        }
+        document.removeEventListener('shopify:section:unload', _cleanup);
+      }
     });
   }
+
+  document.addEventListener('shopify:section:unload', function _sectionObserverCleanup(e) {
+    if (e.detail.sectionId === '{{ section.id }}') {
+      if (typeof window.brandStoryObserver !== 'undefined' && window.brandStoryObserver) {
+          window.brandStoryObserver.disconnect();
+      }
+      document.removeEventListener('shopify:section:unload', _sectionObserverCleanup);
+    }
+  });
 });
 </script>
 

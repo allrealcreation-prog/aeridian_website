@@ -155,34 +155,51 @@
 <script>
 document.addEventListener("DOMContentLoaded", () => {
   const slider = document.getElementById('TCSlider');
+  if (!slider) return;
   let isDown = false;
   let startX;
   let scrollLeft;
 
-  // Desktop Drag to Scroll (Momentum Simulation)
-  slider.addEventListener('mousedown', (e) => {
+  const onMouseDown = (e) => {
     isDown = true;
     slider.classList.add('is-dragging');
     startX = e.pageX - slider.offsetLeft;
     scrollLeft = slider.scrollLeft;
-  });
+  };
   
-  slider.addEventListener('mouseleave', () => {
+  const onMouseLeave = () => {
     isDown = false;
     slider.classList.remove('is-dragging');
-  });
+  };
   
-  slider.addEventListener('mouseup', () => {
+  const onMouseUp = () => {
     isDown = false;
     slider.classList.remove('is-dragging');
-  });
+  };
   
-  slider.addEventListener('mousemove', (e) => {
+  const onMouseMove = (e) => {
     if (!isDown) return;
     e.preventDefault();
     const x = e.pageX - slider.offsetLeft;
     const walk = (x - startX) * 2; // Scroll speed multiplier
     slider.scrollLeft = scrollLeft - walk;
+  };
+
+  // Desktop Drag to Scroll (Momentum Simulation)
+  slider.addEventListener('mousedown', onMouseDown);
+  slider.addEventListener('mouseleave', onMouseLeave);
+  slider.addEventListener('mouseup', onMouseUp);
+  slider.addEventListener('mousemove', onMouseMove);
+
+  // Section Unload Cleanup
+  document.addEventListener('shopify:section:unload', function _cleanup(e) {
+    if (e.detail.sectionId === '{{ section.id }}') {
+      slider.removeEventListener('mousedown', onMouseDown);
+      slider.removeEventListener('mouseleave', onMouseLeave);
+      slider.removeEventListener('mouseup', onMouseUp);
+      slider.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('shopify:section:unload', _cleanup);
+    }
   });
 });
 </script>
