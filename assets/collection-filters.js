@@ -156,19 +156,19 @@
           // Update Grid
           const newGridContainer = doc.getElementById('ProductGridContainer');
           if (newGridContainer) {
-            this.gridContainer.innerHTML = newGridContainer.innerHTML;
+            this.gridContainer.replaceChildren(...newGridContainer.childNodes);
           }
 
           // Update Sidebar Form (to get new product counts)
           const newForm = doc.getElementById('CollectionFilterForm');
           if (newForm) {
-            this.form.innerHTML = newForm.innerHTML;
+            this.form.replaceChildren(...newForm.childNodes);
           }
 
           // Update Active Filters
           const newActive = doc.getElementById('ActiveFiltersContainer');
           if (newActive && this.activeFiltersContainer) {
-            this.activeFiltersContainer.innerHTML = newActive.innerHTML;
+            this.activeFiltersContainer.replaceChildren(...newActive.childNodes);
           }
 
           // We destroyed old elements, so we must rebind
@@ -258,7 +258,7 @@
             // Replace pagination container
             const currentPagination = document.querySelector('.cg-pagination');
             if (newPagination) {
-              currentPagination.innerHTML = newPagination.innerHTML;
+              currentPagination.replaceChildren(...newPagination.childNodes);
               // We replaced the button, so we need to rebind it
               this.reInit();
               if (window.AERIDIAN && window.AERIDIAN.Modules.MotionEngine) {

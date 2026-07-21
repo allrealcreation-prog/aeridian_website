@@ -251,7 +251,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const heroCanvas = document.getElementById('CanvasWrapper');
   const heroGrid = document.getElementById('HeroGrid');
 
-  window.addEventListener('scroll', () => {
+  const onScroll = () => {
     if(!heroSection) return;
     const scrollY = window.scrollY;
     
@@ -267,7 +267,15 @@ document.addEventListener("DOMContentLoaded", () => {
       // Fade grid
       heroGrid.style.opacity = Math.max(0, 0.4 - (scrollY / 1000));
     }
-  }, { passive: true });
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  document.addEventListener('shopify:section:unload', function _scrollCleanup(e) {
+    if (e.detail.sectionId === '{{ section.id }}') {
+      window.removeEventListener('scroll', onScroll);
+      document.removeEventListener('shopify:section:unload', _scrollCleanup);
+    }
+  });
 
   // 3. Three.js Initialization (Wait for script to load)
   const checkThreeInterval = setInterval(() => {
@@ -361,21 +369,23 @@ document.addEventListener("DOMContentLoaded", () => {
     const windowHalfX = window.innerWidth / 2;
     const windowHalfY = window.innerHeight / 2;
 
-    document.addEventListener('mousemove', (event) => {
+    const onGlobalMouseMove = (event) => {
       mouseX = (event.clientX - windowHalfX);
       mouseY = (event.clientY - windowHalfY);
-    });
+    };
+    document.addEventListener('mousemove', onGlobalMouseMove);
 
     // Handle Resize
     let resizeTimer;
-    window.addEventListener('resize', () => {
+    const resizeHandler = () => {
       clearTimeout(resizeTimer);
       resizeTimer = setTimeout(() => {
         camera.aspect = wrapper.clientWidth / wrapper.clientHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(wrapper.clientWidth, wrapper.clientHeight);
       }, 250);
-    });
+    };
+    window.addEventListener('resize', resizeHandler);
 
     // Theme Mode Observer (Update core color based on mode)
     const observer = new MutationObserver(() => {
@@ -398,7 +408,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
 
-    wrapper.addEventListener('mousemove', (e) => {
+    const onWrapperMouseMove = (e) => {
       const rect = wrapper.getBoundingClientRect();
       mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
       mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
@@ -406,11 +416,13 @@ document.addEventListener("DOMContentLoaded", () => {
       raycaster.setFromCamera(mouse, camera);
       const intersects = raycaster.intersectObject(shell);
       isHovered = intersects.length > 0;
-    });
+    };
+    wrapper.addEventListener('mousemove', onWrapperMouseMove);
 
+    let rafId;
     function animate() {
       if(!isRendering) return;
-      requestAnimationFrame(animate);
+      rafId = requestAnimationFrame(animate);
 
       // Pause if tab is inactive
       if(document.hidden) return;
@@ -454,7 +466,43 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     animate();
+
+    // Section Unload Cleanup
+    document.addEventListener('shopify:section:unload', function _cleanup(e) {
+      if(e.detail.sectionId === '{{ section.id }}') {
+        cancelAnimationFrame(rafId);
+        window.removeEventListener('resize', resizeHandler);
+        document.removeEventListener('mousemove', onGlobalMouseMove);
+        wrapper.removeEventListener('mousemove', onWrapperMouseMove);
+
+        shellGeo.dispose();
+        shellMat.dispose();
+        coreGeo.dispose();
+        coreMat.dispose();
+        particlesGeo.dispose();
+        particlesMat.dispose();
+        renderer.dispose();
+
+        if (renderer.domElement && renderer.domElement.parentNode) {
+          renderer.domElement.parentNode.removeChild(renderer.domElement);
+        }
+
+        if (typeof observer !== 'undefined') observer.disconnect();
+        if (typeof io !== 'undefined') io.disconnect();
+
+        document.removeEventListener('shopify:section:unload', _cleanup);
+      }
+    });
   }
+
+  document.addEventListener('shopify:section:unload', function _sectionObserverCleanup(e) {
+    if (e.detail.sectionId === '{{ section.id }}') {
+      if (typeof window.hcObserver !== 'undefined' && window.hcObserver) {
+          window.hcObserver.disconnect();
+      }
+      document.removeEventListener('shopify:section:unload', _sectionObserverCleanup);
+    }
+  });
 });
 </script>
 

@@ -88,8 +88,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const doc = parser.parseFromString(html, 'text/html');
       const newContent = doc.querySelector('.product-recommendations');
       
-      if (newContent && newContent.innerHTML.trim().length > 0) {
-        container.innerHTML = newContent.innerHTML;
+      if (newContent && newContent.childNodes.length > 0) {
+        container.replaceChildren(...newContent.childNodes);
         // Re-initialize hover states/magnetic logic if needed
         if(window.MotionEngine) {
           window.MotionEngine.initMagneticElements();
