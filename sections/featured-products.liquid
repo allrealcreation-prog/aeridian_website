@@ -274,14 +274,33 @@ document.addEventListener("DOMContentLoaded", () => {
     const cards = document.querySelectorAll('.js-tilt-card');
     
     const handlers = [];
+
+    const onResize = () => {
+      handlers.forEach(h => h.cachedRect = null);
+    };
+    window.addEventListener('resize', onResize, { passive: true });
+
     cards.forEach(card => {
+      let cachedRect = null;
+
+      const onMouseEnter = () => {
+        cachedRect = card.getBoundingClientRect();
+        // Update the cachedRect in handlers array so resize listener can clear it
+        const handler = handlers.find(h => h.card === card);
+        if (handler) handler.cachedRect = cachedRect;
+      };
+
       const onMouseMove = (e) => {
-        const rect = card.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
+        if (!cachedRect) {
+          cachedRect = card.getBoundingClientRect();
+          const handler = handlers.find(h => h.card === card);
+          if (handler) handler.cachedRect = cachedRect;
+        }
+        const x = e.clientX - cachedRect.left;
+        const y = e.clientY - cachedRect.top;
         
-        const xPct = (x / rect.width) - 0.5;
-        const yPct = (y / rect.height) - 0.5;
+        const xPct = (x / cachedRect.width) - 0.5;
+        const yPct = (y / cachedRect.height) - 0.5;
         
         const rotateY = xPct * 20;
         const rotateX = -yPct * 20;
@@ -293,15 +312,18 @@ document.addEventListener("DOMContentLoaded", () => {
         card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg)`;
       };
 
+      card.addEventListener('mouseenter', onMouseEnter);
       card.addEventListener('mousemove', onMouseMove);
       card.addEventListener('mouseleave', onMouseLeave);
-      handlers.push({ card, onMouseMove, onMouseLeave });
+      handlers.push({ card, onMouseEnter, onMouseMove, onMouseLeave, cachedRect });
     });
 
     // Section Unload Cleanup
     document.addEventListener('shopify:section:unload', function _cleanup(e) {
       if (e.detail.sectionId === '{{ section.id }}') {
-        handlers.forEach(({ card, onMouseMove, onMouseLeave }) => {
+        window.removeEventListener('resize', onResize);
+        handlers.forEach(({ card, onMouseEnter, onMouseMove, onMouseLeave }) => {
+          card.removeEventListener('mouseenter', onMouseEnter);
           card.removeEventListener('mousemove', onMouseMove);
           card.removeEventListener('mouseleave', onMouseLeave);
         });

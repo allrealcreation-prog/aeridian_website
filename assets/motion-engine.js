@@ -248,8 +248,16 @@
 
       // Smooth follow loop using GSAP ticker
       const tickerFn = () => {
-        cursorX += (mouseX - cursorX) * 0.15;
-        cursorY += (mouseY - cursorY) * 0.15;
+        const dx = mouseX - cursorX;
+        const dy = mouseY - cursorY;
+
+        // Early exit to prevent unnecessary layout writes when idle
+        if (Math.abs(dx) < 0.1 && Math.abs(dy) < 0.1) {
+          return;
+        }
+
+        cursorX += dx * 0.15;
+        cursorY += dy * 0.15;
         gsap.set(cursor, { x: cursorX, y: cursorY });
       };
 
@@ -269,10 +277,22 @@
       const magnetics = document.querySelectorAll('.js-magnetic');
 
       magnetics.forEach((el) => {
+        let cachedRect = null;
+
+        this.on(el, 'mouseenter', () => {
+          cachedRect = el.getBoundingClientRect();
+        });
+
+        this.on(window, 'resize', () => {
+          cachedRect = null;
+        }, { passive: true });
+
         this.on(el, 'mousemove', (e) => {
-          const rect = el.getBoundingClientRect();
-          const x = e.clientX - rect.left - rect.width / 2;
-          const y = e.clientY - rect.top - rect.height / 2;
+          if (!cachedRect) {
+            cachedRect = el.getBoundingClientRect();
+          }
+          const x = e.clientX - cachedRect.left - cachedRect.width / 2;
+          const y = e.clientY - cachedRect.top - cachedRect.height / 2;
 
           // Intensity scaling - Refined for luxury
           const intensity = el.getAttribute('data-magnetic-intensity') || 0.3;
@@ -297,13 +317,22 @@
         return;
       }
 
+      let winHeightPx = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+
+      this.on(
+        window,
+        'resize',
+        () => {
+          winHeightPx = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        },
+        { passive: true }
+      );
+
       this.on(
         window,
         'scroll',
         () => {
           const scrollPx = document.documentElement.scrollTop;
-          const winHeightPx =
-            document.documentElement.scrollHeight - document.documentElement.clientHeight;
           const scrolled = winHeightPx > 0 ? (scrollPx / winHeightPx) * 100 : 0;
           bar.style.width = `${scrolled}%`;
         },

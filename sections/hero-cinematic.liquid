@@ -251,12 +251,20 @@ document.addEventListener("DOMContentLoaded", () => {
   const heroCanvas = document.getElementById('CanvasWrapper');
   const heroGrid = document.getElementById('HeroGrid');
 
+  let cachedInnerHeight = window.innerHeight;
+  window.addEventListener('resize', () => {
+    cachedInnerHeight = window.innerHeight;
+  }, { passive: true });
+
+  let wasPastHero = false;
+
   const onScroll = () => {
     if(!heroSection) return;
     const scrollY = window.scrollY;
     
     // Only calculate if within first screen
-    if(scrollY < window.innerHeight) {
+    if(scrollY < cachedInnerHeight) {
+      wasPastHero = false;
       // Fade content
       heroContent.style.opacity = Math.max(0, 1 - (scrollY / 400));
       heroContent.style.transform = `translateY(${scrollY * 0.2}px)`;
@@ -266,6 +274,12 @@ document.addEventListener("DOMContentLoaded", () => {
       
       // Fade grid
       heroGrid.style.opacity = Math.max(0, 0.4 - (scrollY / 1000));
+    } else if (!wasPastHero) {
+      wasPastHero = true;
+      heroContent.style.opacity = 0;
+      heroContent.style.transform = `translateY(${cachedInnerHeight * 0.2}px)`;
+      heroCanvas.style.transform = `translateY(${cachedInnerHeight * -0.3}px)`;
+      heroGrid.style.opacity = 0;
     }
   };
   window.addEventListener('scroll', onScroll, { passive: true });
@@ -407,11 +421,23 @@ document.addEventListener("DOMContentLoaded", () => {
     // Raycaster for hover
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
+    let wrapperRect = null;
+
+    const onWrapperMouseEnter = () => {
+      wrapperRect = wrapper.getBoundingClientRect();
+    };
+
+    wrapper.addEventListener('mouseenter', onWrapperMouseEnter);
+
+    const onWrapperResize = () => {
+      wrapperRect = null;
+    };
+    window.addEventListener('resize', onWrapperResize, { passive: true });
 
     const onWrapperMouseMove = (e) => {
-      const rect = wrapper.getBoundingClientRect();
-      mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-      mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+      if (!wrapperRect) wrapperRect = wrapper.getBoundingClientRect();
+      mouse.x = ((e.clientX - wrapperRect.left) / wrapperRect.width) * 2 - 1;
+      mouse.y = -((e.clientY - wrapperRect.top) / wrapperRect.height) * 2 + 1;
       
       raycaster.setFromCamera(mouse, camera);
       const intersects = raycaster.intersectObject(shell);
@@ -472,8 +498,10 @@ document.addEventListener("DOMContentLoaded", () => {
       if(e.detail.sectionId === '{{ section.id }}') {
         cancelAnimationFrame(rafId);
         window.removeEventListener('resize', resizeHandler);
+        window.removeEventListener('resize', onWrapperResize);
         document.removeEventListener('mousemove', onGlobalMouseMove);
         wrapper.removeEventListener('mousemove', onWrapperMouseMove);
+        wrapper.removeEventListener('mouseenter', onWrapperMouseEnter);
 
         shellGeo.dispose();
         shellMat.dispose();
@@ -495,14 +523,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  document.addEventListener('shopify:section:unload', function _sectionObserverCleanup(e) {
-    if (e.detail.sectionId === '{{ section.id }}') {
-      if (typeof window.hcObserver !== 'undefined' && window.hcObserver) {
-          window.hcObserver.disconnect();
-      }
-      document.removeEventListener('shopify:section:unload', _sectionObserverCleanup);
-    }
-  });
+
 });
 </script>
 
