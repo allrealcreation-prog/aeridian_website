@@ -728,8 +728,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const tempV = new THREE.Vector3();
     let rafId;
     function animate() {
+      rafId = requestAnimationFrame(animate);
       if(document.hidden) {
-        rafId = requestAnimationFrame(animate);
         return;
       }
 
@@ -768,7 +768,6 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       renderer.render(scene, camera);
-      rafId = requestAnimationFrame(animate);
     }
     animate();
 
@@ -811,15 +810,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Handle observer cleanup
-  document.addEventListener('shopify:section:unload', function _sectionObserverCleanup(e) {
-    if (e.detail.sectionId === '{{ section.id }}') {
-      if (window.AERIDIAN && window.AERIDIAN.Modules.Explorer && window.AERIDIAN.Modules.Explorer.observer) {
-          window.AERIDIAN.Modules.Explorer.observer.disconnect();
-      }
-      document.removeEventListener('shopify:section:unload', _sectionObserverCleanup);
-    }
-  });
+
 
   // 3. Explorer Panel Logic
   window.AERIDIAN.Modules.Explorer = window.AERIDIAN.Modules.Explorer || {};

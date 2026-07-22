@@ -240,8 +240,13 @@
               const newItems = Array.from(newGrid.children);
               const fragment = document.createDocumentFragment();
 
-              newItems.forEach((item, index) => {
+              newItems.forEach((item, _index) => {
                 fragment.appendChild(item);
+              });
+
+              currentGrid.appendChild(fragment);
+
+              newItems.forEach((item, index) => {
                 // Staggered reveal for new items
                 if (window.gsap) {
                   gsap.fromTo(
@@ -251,8 +256,6 @@
                   );
                 }
               });
-
-              currentGrid.appendChild(fragment);
             }
 
             // Replace pagination container

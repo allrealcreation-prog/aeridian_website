@@ -480,12 +480,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  document.addEventListener('shopify:section:unload', function _sectionObserverCleanup(e) {
-    if (e.detail.sectionId === '{{ section.id }}') {
-      if (typeof observer !== 'undefined') observer.disconnect();
-      document.removeEventListener('shopify:section:unload', _sectionObserverCleanup);
-    }
-  });
+
 });
 </script>
 
