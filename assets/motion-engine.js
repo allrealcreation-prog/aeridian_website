@@ -283,9 +283,14 @@
           cachedRect = el.getBoundingClientRect();
         });
 
-        this.on(window, 'resize', () => {
-          cachedRect = null;
-        }, { passive: true });
+        this.on(
+          window,
+          'resize',
+          () => {
+            cachedRect = null;
+          },
+          { passive: true }
+        );
 
         this.on(el, 'mousemove', (e) => {
           if (!cachedRect) {
@@ -317,13 +322,15 @@
         return;
       }
 
-      let winHeightPx = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      let winHeightPx =
+        document.documentElement.scrollHeight - document.documentElement.clientHeight;
 
       this.on(
         window,
         'resize',
         () => {
-          winHeightPx = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+          winHeightPx =
+            document.documentElement.scrollHeight - document.documentElement.clientHeight;
         },
         { passive: true }
       );
